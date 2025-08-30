@@ -1,0 +1,39 @@
+/* src/index.css ou src/main.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Seus estilos personalizados */
+@layer components {
+  .botao-menu {
+    @apply bg-primary text-white p-4 rounded-2xl flex items-center gap-4 hover:bg-blue-800 transition;
+  }
+
+  .botao-submenu {
+    @apply block w-full text-white px-4 py-2 rounded-lg text-center;
+  }
+
+  .input-padrao {
+    @apply bg-blue-50 text-cinza rounded-sm w-full px-3 py-2 text-sm border border-gray-400 focus:ring-2 focus:ring-borderLigth focus:outline-none focus:border-b-secondary focus:border-b-2 appearance-none leading-tight;
+  }
+  
+  }
+  
+  .botao-submenu-cor {
+    @apply bg-secondary hover:bg-alternativo;
+  }
+  body {
+    @apply bg-blue-50  font-Poppins; 
+  }
+@layer components {
+  /* Botão base e variações de cor */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded text-white text-sm transition;
+  }
+  .btn-green  { @apply bg-emerald-600 hover:bg-emerald-700; } /* salvar/confirmar */
+  .btn-yellow { @apply bg-amber-500 hover:bg-amber-600; }    /* editar/atenção  */
+  .btn-red    { @apply bg-red-600 hover:bg-red-700; }        /* excluir/perigo  */
+  .btn-gray   { @apply bg-gray-300 text-gray-800 hover:bg-gray-400; } /* neutro */
+}
+
