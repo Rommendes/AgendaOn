@@ -7,6 +7,7 @@ import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
 import Header from "../Componentes/Header/Header";
 
 import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp"; 
+import { data } from "react-router-dom";
 function formatarValor(valor) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -28,39 +29,15 @@ const AgendaAtendimento = () => {
   const [agendamentos, setAgendamentos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [formEdicao, setFormEdicao] = useState({
+    data: "",
+    cliente_id:"",
     horario: "",
     servico: "",
     valor: "",
     pagamento: "",
     obs: ""
   });
-  {/**
-  useEffect(() => {
-    const buscarClientes = async () => {
-      const { data, error } = await supabase.from("clientes").select("id, nome");
-      if (error) console.error("Erro ao buscar clientes:", error);
-      else setClientes(data);
-    };
-    buscarClientes();
-  }, []);
-
-  useEffect(() => {
-    const buscarAgendamentos = async () => {
-      const { data, error } = await supabase
-        .from("agendamentos")
-        .select(`
-          id, data, horario, servico, valor, pagamento, obs, cliente_id,
-          clientes (id, nome, telefone )
-        `)
-        .order("data", { ascending: true })
-        .order("horario", { ascending: true });
-      if (error) console.error("Erro ao buscar agendamentos:", error);
-      else setAgendamentos(data);
-    };
-    buscarAgendamentos();
-  }, []);
  
- */}
 
  useEffect(() => {
   const buscarAgendamentos = async () => {
@@ -70,12 +47,25 @@ const AgendaAtendimento = () => {
         id, data, horario, servico, valor, pagamento, obs, cliente_id,
         clientes ( id, nome, telefone )
       `)
-      .order("data", { ascending: true })
+      .order("data", { ascending: false })
       .order("horario", { ascending: true });
     if (error) console.error("Erro ao buscar agendamentos:", error);
     else setAgendamentos(data);
   };
   buscarAgendamentos();
+}, []);
+
+useEffect(() => {
+  const buscarClientes = async () => {
+    const { data, error } = await supabase.from("clientes").select("id, nome");
+    if (error) {
+      console.error("Erro ao buscar clientes:", error);
+    } else {
+      console.log(data);  // Verifique se os dados estão corretos
+      setClientes(data);
+    }
+  };
+  buscarClientes();
 }, []);
 
   
@@ -125,43 +115,97 @@ const AgendaAtendimento = () => {
       location.reload();
     }
   };
-
   const iniciarEdicao = (agendamento) => {
-    setEditandoId(agendamento.id);
-    setFormEdicao({
-      horario: agendamento.horario,
-      servico: agendamento.servico,
-      valor: agendamento.valor,
-      pagamento: agendamento.pagamento,
-      obs: agendamento.obs
-    });
-  };
+  setEditandoId(agendamento.id);
+  setFormEdicao({
+    data: agendamento.data,                               // YYYY-MM-DD
+    cliente_id: String(agendamento.cliente_id ?? ""),     // string p/ <select>
+    horario: agendamento.horario || "",
+    servico: agendamento.servico || "",
+    valor: agendamento.valor != null
+      ? String(agendamento.valor).replace(".", ",")       // mostra com vírgula
+      : "",
+    pagamento: agendamento.pagamento || "",
+    obs: agendamento.obs || ""
+  });
+};
+
+
 
   const atualizarCampoEdicao = (campo, valor) => {
     setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
   };
 
-  const salvarEdicao = async (id) => {
-    const valorConvertido = parseFloat(formEdicao.valor.replace(",", "."));
-    if (isNaN(valorConvertido)) {
-      alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
-      return;
-    }
+const salvarEdicao = async (id) => {
+  // valor pode vir como "25,00" ou "1.234,56"
+  const valorStr = String(formEdicao.valor ?? "")
+    .trim()
+    .replace(/\./g, "")    // remove separador de milhar
+    .replace(",", ".");    // vírgula -> ponto
 
-    const { error } = await supabase
-      .from("agendamentos")
-      .update({ ...formEdicao, valor: valorConvertido })
-      .eq("id", id);
+  const valorConvertido = Number(valorStr);
+  if (Number.isNaN(valorConvertido)) {
+    alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
+    return;
+  }
+  if (!formEdicao.data) {
+    alert("Selecione a data.");
+    return;
+  }
+  if (!formEdicao.cliente_id) {
+    alert("Selecione o cliente.");
+    return;
+  }
 
-    if (error) {
-      console.error("Erro ao atualizar agendamento:", error);
-      alert("Erro ao atualizar. Verifique os dados.");
-    } else {
-      alert("Agendamento atualizado com sucesso!");
-      setEditandoId(null);
-      location.reload();
-    }
-  };
+  const clienteId = Number(formEdicao.cliente_id);
+
+  const { error } = await supabase
+    .from("agendamentos")
+    .update({
+      data: formEdicao.data,          // YYYY-MM-DD
+      cliente_id: clienteId,          // int
+      horario: formEdicao.horario,
+      servico: formEdicao.servico,
+      valor: valorConvertido,         // número
+      pagamento: formEdicao.pagamento,
+      obs: formEdicao.obs
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Erro ao atualizar agendamento:", error);
+    alert("Erro ao atualizar. Verifique os dados.");
+  } else {
+    //alert("Agendamento atualizado com sucesso!");
+    setEditandoId(null);
+    location.reload(); // mantém seu fluxo atual
+  }
+
+// ✅ Atualiza a lista local mantendo o objeto clientes preenchido
+  const clienteObj = clientes.find((c) => Number(c.id) === clienteId) || null;
+ 
+  setAgendamentos((prev) =>
+    prev.map((a) =>
+      a.id === id
+        ? {
+            ...a,
+            data: formEdicao.data,
+            cliente_id: clienteId,
+            horario: formEdicao.horario,
+            servico: formEdicao.servico,
+            valor: valorConvertido,
+            pagamento: formEdicao.pagamento,
+            obs: formEdicao.obs,
+            clientes: clienteObj ? { ...a.clientes, ...clienteObj } : null,
+          }
+        : a
+    )
+  );
+
+  setEditandoId(null);
+  alert("Agendamento atualizado com sucesso!");
+};
+
 
   const excluirAgendamento = async (id) => {
     const { error } = await supabase.from("agendamentos").delete().eq("id", id);
@@ -239,6 +283,8 @@ className="w-full border px-3 py-2 rounded bg-white text-gray-600 text-sm"
 {/* Cliente */}
 <div className="flex flex-col">
 <label className="text-sm mb-1">Cliente</label>
+
+{/* 
 <select
 value={novoAgendamento.cliente_id}
 onChange={(e) => setNovoAgendamento({ ...novoAgendamento, cliente_id: e.target.value })}
@@ -251,6 +297,27 @@ className="input-padrao"
   </option>
 ))}
 </select>
+ */}
+
+ <select
+  value={novoAgendamento.cliente_id}
+  onChange={(e) => {
+    const { value } = e.target;
+    setNovoAgendamento((prev) => ({
+      ...prev,
+      cliente_id: value,
+    }));
+  }}
+  className="input-padrao"
+>
+  <option value="">Selecione um cliente</option>
+  {clientes.map((cliente) => (
+    <option key={cliente.id} value={cliente.id}>
+      {cliente.nome}
+    </option>
+  ))}
+</select>
+
 </div>
 
 
@@ -390,104 +457,131 @@ if (faltandoTelefone?.length) {
         {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
         {agendamentosDoDia.map((agendamento) => (
           <tr key={agendamento.id} className="border">
-
-            <td className="border-2 px-4 py-3">
-            {new Date(agendamento.data + "T12:00:00").toLocaleDateString("pt-BR")}
-            </td>
-
-            <td className="p-2 border">
-              {editandoId === agendamento.id ? (
-                <input
-                  value={formEdicao.horario}
-                  onChange={(e) => atualizarCampoEdicao("horario", e.target.value)}
-                  className="border p-1 rounded"
-                />
-              ) : (
-                agendamento.horario
-              )}
-            </td>
-            <td className="border-2 p-2 min-w-[250px] text-left ">{agendamento.clientes?.nome || "Sem nome"}</td>
-            <td className="border px-2 py-3 text-left">
-              {editandoId === agendamento.id ? (
-                <input
-                  value={formEdicao.servico}
-                  onChange={(e) => atualizarCampoEdicao("servico", e.target.value)}
-                  className="border p-1 rounded"
-                />
-              ) : (
-                agendamento.servico
-              )}
-            </td>
-            <td className="p-2 border">
-              {editandoId === agendamento.id ? (
-                <input
-                  value={formEdicao.valor}
-                  onChange={(e) => atualizarCampoEdicao("valor", e.target.value)}
-                  className="border p-1 rounded"
-                />
-              ) : (
-                formatarValor(agendamento.valor)
-              )}
-            </td>
-            <td className="p-2 border">
-              {editandoId === agendamento.id ? (
-                <input
-                  value={formEdicao.pagamento}
-                  onChange={(e) => atualizarCampoEdicao("pagamento", e.target.value)}
-                  className="border p-1 rounded"
-                />
-              ) : (
-                agendamento.pagamento
-              )}
-            </td>
-            <td className="border-2 p-2 min-w-[250px] text-left ">
-              {editandoId === agendamento.id ? (
-                <input
-                  value={formEdicao.obs}
-                  onChange={(e) => atualizarCampoEdicao("obs", e.target.value)}
-                  className="border p-1 rounded"
-                />
-              ) : (
-                agendamento.obs
-              )}
-            </td>
-        {editandoId === agendamento.id ? (
-  <button
-    type="button"
-    onClick={() => salvarEdicao(agendamento.id)}
-    className="btn btn-green"
-    title="Salvar edição"
-  >
-    <Save size={18} />
-    <span className="hidden sm:inline">Salvar</span>
-  </button>
-) : (
-  <td>
-  <button
-    type="button"
-    onClick={() => iniciarEdicao(agendamento)}
-    className="btn btn-yellow"
-    title="Editar agendamento"
-  >
-    
-    <Pencil size={18} />
-    <span className="hidden sm:inline">Editar</span>
-  </button>
+  {/* Data */}
+  <td className="border-2 px-4 py-3">
+    {editandoId === agendamento.id ? (
+      <input
+        type="date"
+        value={formEdicao.data || ""}
+        onChange={(e) => atualizarCampoEdicao("data", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      new Date(agendamento.data + "T12:00:00").toLocaleDateString("pt-BR")
+    )}
   </td>
-)}
-<td>
-<button
-  type="button"
-  onClick={() => excluirAgendamento(agendamento.id)}
-  className="btn btn-red"
-  title="Excluir agendamento"
->
-  <Trash2 size={18} />
-  <span className="hidden sm:inline">Excluir</span>
-</button>
-</td>
 
-          </tr>
+  {/* Horário */}
+  <td className="p-2 border">
+    {editandoId === agendamento.id ? (
+      <input
+        value={formEdicao.horario}
+        onChange={(e) => atualizarCampoEdicao("horario", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      agendamento.horario
+    )}
+  </td>
+
+  {/* Cliente */}
+  <td className="border-2 p-2 min-w-[250px] text-left ">
+    {editandoId === agendamento.id ? (
+      <select
+        value={formEdicao.cliente_id || ""}
+        onChange={(e) => atualizarCampoEdicao("cliente_id", e.target.value)}
+        className="border p-1 rounded w-full"
+      >
+        <option value="">Selecione um cliente</option>
+        {clientes.map((c) => (
+          <option key={c.id} value={c.id}>{c.nome}</option>
+        ))}
+      </select>
+    ) : (
+      agendamento.clientes?.nome || "Sem nome"
+    )}
+  </td>
+
+  {/* Serviço */}
+  <td className="border px-2 py-3 text-left">
+    {editandoId === agendamento.id ? (
+      <input
+        value={formEdicao.servico}
+        onChange={(e) => atualizarCampoEdicao("servico", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      agendamento.servico
+    )}
+  </td>
+
+  {/* Valor */}
+  <td className="p-2 border">
+    {editandoId === agendamento.id ? (
+      <input
+        value={formEdicao.valor}
+        onChange={(e) => atualizarCampoEdicao("valor", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      formatarValor(agendamento.valor)
+    )}
+  </td>
+
+  {/* Pagamento */}
+  <td className="p-2 border">
+    {editandoId === agendamento.id ? (
+      <input
+        value={formEdicao.pagamento}
+        onChange={(e) => atualizarCampoEdicao("pagamento", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      agendamento.pagamento
+    )}
+  </td>
+
+  {/* Observações */}
+  <td className="border-2 p-2 min-w-[250px] text-left ">
+    {editandoId === agendamento.id ? (
+      <input
+        value={formEdicao.obs}
+        onChange={(e) => atualizarCampoEdicao("obs", e.target.value)}
+        className="border p-1 rounded"
+      />
+    ) : (
+      agendamento.obs
+    )}
+  </td>
+
+  {/* Ações */}
+  <td className="p-2 flex gap-2">
+    {editandoId === agendamento.id ? (
+      <button
+        onClick={() => salvarEdicao(agendamento.id)}
+        className="text-green-600"
+        title="Salvar"
+      >
+        <Save size={20} />
+      </button>
+    ) : (
+      <button
+        onClick={() => iniciarEdicao(agendamento)}
+        className="text-yellow-500"
+        title="Editar"
+      >
+        <Pencil size={20} />
+      </button>
+    )}
+    <button
+      onClick={() => excluirAgendamento(agendamento.id)}
+      className="text-red-600"
+    >
+      <Trash2 size={20} />
+    </button>
+  </td>
+</tr>
+
         ))}
       </tbody>
     </table>
@@ -499,7 +593,7 @@ if (faltandoTelefone?.length) {
 
     
   );
-};
+}
 
 export default AgendaAtendimento;
 
