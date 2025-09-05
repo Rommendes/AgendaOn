@@ -136,43 +136,22 @@ const iniciarEdicao = (agendamento) => {
   });
 };
 
-
-
-
-
-  const atualizarCampoEdicao = (campo, valor) => {
-    setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
-  };
-
- // 1) validar/converter valor
 const salvarEdicao = async (id) => {
-  // normaliza valor "1.234,56" -> 1234.56
-  const valorStr = String(formEdicao.valor ?? "")
-    .trim()
-    .replace(/\./g, "")
-    .replace(",", ".");
+  const valorStr = String(formEdicao.valor ?? "").trim().replace(/\./g, "").replace(",", ".");
   const valorConvertido = Number(valorStr);
-  if (Number.isNaN(valorConvertido)) {
-    alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
-    return;
-  }
-  if (!formEdicao.data) {
-    alert("Selecione a data.");
-    return;
-  }
-  if (!formEdicao.cliente_id) {
-    alert("Selecione o cliente.");
-    return;
-  }
+  if (Number.isNaN(valorConvertido)) { alert("Valor inválido."); return; }
+  if (!formEdicao.data) { alert("Selecione a data."); return; }
+  if (!formEdicao.cliente_id) { alert("Selecione o cliente."); return; }
 
-  const clienteId = Number(formEdicao.cliente_id);
+  const clienteIdValue = Number.isNaN(Number(formEdicao.cliente_id))
+    ? String(formEdicao.cliente_id)   // UUID / texto
+    : Number(formEdicao.cliente_id);  // inteiro
 
-  // 2) Atualiza no Supabase
   const { error } = await supabase
     .from("agendamentos")
     .update({
       data: formEdicao.data,
-      cliente_id: clienteId,
+      cliente_id: clienteIdValue,          // <-- tipo correto
       horario: formEdicao.horario,
       servico: formEdicao.servico,
       valor: valorConvertido,
@@ -181,42 +160,43 @@ const salvarEdicao = async (id) => {
     })
     .eq("id", id);
 
-  if (error) {
-    console.error("Erro ao atualizar agendamento:", error);
-    alert("Erro ao atualizar. Verifique os dados.");
-    return;
-  }
+  if (error) { console.error(error); alert("Erro ao atualizar."); return; }
 
-  // 3) Atualiza o estado local, incluindo o objeto 'clientes' para exibição
+  // procura o cliente na lista comparando como string
+  const clienteObj = clientes.find((c) => String(c.id) === String(formEdicao.cliente_id)) || null;
 
-  //const clienteObj = clientes.find((c) => string(c.id) === clienteId) || null;
-  const clienteObj = clientes.find((c) => Number(c.id) === clienteId) || null;
+  setAgendamentos((prev) =>
+    prev.map((a) =>
+      a.id === id
+        ? {
+            ...a,
+            data: formEdicao.data,
+            cliente_id: clienteIdValue,
+            horario: formEdicao.horario,
+            servico: formEdicao.servico,
+            valor: valorConvertido,
+            pagamento: formEdicao.pagamento,
+            obs: formEdicao.obs,
+            clientes: clienteObj
+              ? { id: clienteObj.id, nome: clienteObj.nome, telefone: a.clientes?.telefone ?? null }
+              : null,
+          }
+        : a
+    )
+  );
 
-    setAgendamentos((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? {
-              ...a,
-              data: formEdicao.data,
-              cliente_id: clienteId,
-              horario: formEdicao.horario,
-              servico: formEdicao.servico,
-              valor: valorConvertido,
-              pagamento: formEdicao.pagamento,
-              obs: formEdicao.obs,
-              // ⬇️ garante que a coluna "Cliente" mostre o nome imediatamente
-              clientes: clienteObj,
-            }
-          : a
-      )
-    );
-      setEditandoId(null);
+  setEditandoId(null);
   alert("Agendamento atualizado com sucesso!");
-  } 
+};
 
 
 
-//console.log("Atualizado:", atualizado);
+
+
+  const atualizarCampoEdicao = (campo, valor) => {
+    setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
+  };
+
 
 
 
@@ -312,7 +292,7 @@ className="w-full border px-3 py-2 rounded bg-white text-gray-600 text-sm"
 >
   <option value="">Selecione um cliente</option>
   {clientes.map((cliente) => (
-    <option key={cliente.id} value={cliente.id}>
+    <option key={cliente.id} value={String(cliente.id)}>
       {cliente.nome}
     </option>
   ))}
@@ -401,8 +381,6 @@ className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-white shadow
 {Object.entries(agendamentosAgrupadosPorDiaSemana).map(([diaSemana, agendamentosDoDia]) => (
   <div key={diaSemana} className=" pt-5 pb-5 ">
 
-
-
     {/**<h2 className="text-xl font-bold text-primary mb-0  relative pb-[-4px]  "> {diaSemana} </h2> */}
     
   <div className="flex items-center justify-between">
@@ -428,15 +406,12 @@ if (faltandoTelefone?.length) {
 }
 
     }}
-    className="btn btn-alt"
+    className="btn btn-lembrete-primary"
     title="Enviar lembretes para todos deste dia"
   >
     ⏰ Enviar lembretes do dia
   </button>
 </div>
-
-
-
 
   <div className="overflow-x-auto">
     <table className="w-full border min-w-[700px]">
@@ -454,6 +429,8 @@ if (faltandoTelefone?.length) {
         </tr>
       </thead>
       <tbody>
+
+
         {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
         {agendamentosDoDia.map((agendamento) => (
           <tr key={agendamento.id} className="border">
@@ -485,7 +462,7 @@ if (faltandoTelefone?.length) {
   </td>
 
   {/* Cliente */}
-  <td className="border-2 p-2 min-w-[250px] text-left ">
+  <td className="border-2 p-2 min-w-[180px] text-left ">
     {editandoId === agendamento.id ? (
       <select
         value={formEdicao.cliente_id || ""}
@@ -569,7 +546,7 @@ if (faltandoTelefone?.length) {
       <button
       type="button"
         onClick={() => iniciarEdicao(agendamento)}
-        className="text-yellow-500"
+        className="text-yellow-600"
         title="Editar"
       >
         <Pencil size={20} />

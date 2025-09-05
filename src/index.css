@@ -18,7 +18,16 @@
     @apply bg-blue-50 text-cinza rounded-sm w-full px-3 py-2 text-sm border border-gray-400 focus:ring-2 focus:ring-borderLigth focus:outline-none focus:border-b-secondary focus:border-b-2 appearance-none leading-tight;
   }
   
+   /* Botão de lembrete */
+  .btn-lembrete-primary {
+    @apply bg-primary text-white hover:bg-alternativo transition;
   }
+
+  .btn-lembrete-secondary {
+    @apply bg-secondary text-white hover:bg-alternativo transition;
+  }
+}
+  
   
   .botao-submenu-cor {
     @apply bg-secondary hover:bg-alternativo;
@@ -26,6 +35,8 @@
   body {
     @apply bg-blue-50  font-Poppins; 
   }
+
+  
 @layer components {
   /* Botão base e variações de cor */
   .btn {
