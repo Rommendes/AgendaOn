@@ -49,8 +49,13 @@ const AgendaAtendimento = () => {
       `)
       .order("data", { ascending: false })
       .order("horario", { ascending: true });
-    if (error) console.error("Erro ao buscar agendamentos:", error);
-    else setAgendamentos(data);
+    if (error){
+        console.error("Erro ao buscar agendamentos:", error);
+   
+    } else {
+        setAgendamentos(data || []);
+      }
+     
   };
   buscarAgendamentos();
 }, []);
@@ -115,20 +120,23 @@ useEffect(() => {
       location.reload();
     }
   };
-  const iniciarEdicao = (agendamento) => {
+const iniciarEdicao = (agendamento) => {
   setEditandoId(agendamento.id);
   setFormEdicao({
     data: agendamento.data,                               // YYYY-MM-DD
     cliente_id: String(agendamento.cliente_id ?? ""),     // string p/ <select>
     horario: agendamento.horario || "",
     servico: agendamento.servico || "",
-    valor: agendamento.valor != null
-      ? String(agendamento.valor).replace(".", ",")       // mostra com vírgula
-      : "",
+    valor:
+      agendamento.valor != null
+        ? String(agendamento.valor).replace(".", ",")
+        : "",
     pagamento: agendamento.pagamento || "",
-    obs: agendamento.obs || ""
+    obs: agendamento.obs || "",
   });
 };
+
+
 
 
 
@@ -136,13 +144,13 @@ useEffect(() => {
     setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
   };
 
+ // 1) validar/converter valor
 const salvarEdicao = async (id) => {
-  // valor pode vir como "25,00" ou "1.234,56"
+  // normaliza valor "1.234,56" -> 1234.56
   const valorStr = String(formEdicao.valor ?? "")
     .trim()
-    .replace(/\./g, "")    // remove separador de milhar
-    .replace(",", ".");    // vírgula -> ponto
-
+    .replace(/\./g, "")
+    .replace(",", ".");
   const valorConvertido = Number(valorStr);
   if (Number.isNaN(valorConvertido)) {
     alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
@@ -159,52 +167,57 @@ const salvarEdicao = async (id) => {
 
   const clienteId = Number(formEdicao.cliente_id);
 
+  // 2) Atualiza no Supabase
   const { error } = await supabase
     .from("agendamentos")
     .update({
-      data: formEdicao.data,          // YYYY-MM-DD
-      cliente_id: clienteId,          // int
+      data: formEdicao.data,
+      cliente_id: clienteId,
       horario: formEdicao.horario,
       servico: formEdicao.servico,
-      valor: valorConvertido,         // número
+      valor: valorConvertido,
       pagamento: formEdicao.pagamento,
-      obs: formEdicao.obs
+      obs: formEdicao.obs,
     })
     .eq("id", id);
 
   if (error) {
     console.error("Erro ao atualizar agendamento:", error);
     alert("Erro ao atualizar. Verifique os dados.");
-  } else {
-    //alert("Agendamento atualizado com sucesso!");
-    setEditandoId(null);
-    location.reload(); // mantém seu fluxo atual
+    return;
   }
 
-// ✅ Atualiza a lista local mantendo o objeto clientes preenchido
-  const clienteObj = clientes.find((c) => Number(c.id) === clienteId) || null;
- 
-  setAgendamentos((prev) =>
-    prev.map((a) =>
-      a.id === id
-        ? {
-            ...a,
-            data: formEdicao.data,
-            cliente_id: clienteId,
-            horario: formEdicao.horario,
-            servico: formEdicao.servico,
-            valor: valorConvertido,
-            pagamento: formEdicao.pagamento,
-            obs: formEdicao.obs,
-            clientes: clienteObj ? { ...a.clientes, ...clienteObj } : null,
-          }
-        : a
-    )
-  );
+  // 3) Atualiza o estado local, incluindo o objeto 'clientes' para exibição
 
-  setEditandoId(null);
+  //const clienteObj = clientes.find((c) => string(c.id) === clienteId) || null;
+  const clienteObj = clientes.find((c) => Number(c.id) === clienteId) || null;
+
+    setAgendamentos((prev) =>
+      prev.map((a) =>
+        a.id === id
+          ? {
+              ...a,
+              data: formEdicao.data,
+              cliente_id: clienteId,
+              horario: formEdicao.horario,
+              servico: formEdicao.servico,
+              valor: valorConvertido,
+              pagamento: formEdicao.pagamento,
+              obs: formEdicao.obs,
+              // ⬇️ garante que a coluna "Cliente" mostre o nome imediatamente
+              clientes: clienteObj,
+            }
+          : a
+      )
+    );
+      setEditandoId(null);
   alert("Agendamento atualizado com sucesso!");
-};
+  } 
+
+
+
+//console.log("Atualizado:", atualizado);
+
 
 
   const excluirAgendamento = async (id) => {
@@ -284,20 +297,7 @@ className="w-full border px-3 py-2 rounded bg-white text-gray-600 text-sm"
 <div className="flex flex-col">
 <label className="text-sm mb-1">Cliente</label>
 
-{/* 
-<select
-value={novoAgendamento.cliente_id}
-onChange={(e) => setNovoAgendamento({ ...novoAgendamento, cliente_id: e.target.value })}
-className="input-padrao"
->
-<option value="">Selecione um cliente</option>
-{clientes.map((cliente) => (
-  <option key={cliente.id} value={cliente.id}>
-    {cliente.nome}
-  </option>
-))}
-</select>
- */}
+
 
  <select
   value={novoAgendamento.cliente_id}
@@ -558,6 +558,7 @@ if (faltandoTelefone?.length) {
   <td className="p-2 flex gap-2">
     {editandoId === agendamento.id ? (
       <button
+      type="button"
         onClick={() => salvarEdicao(agendamento.id)}
         className="text-green-600"
         title="Salvar"
@@ -566,6 +567,7 @@ if (faltandoTelefone?.length) {
       </button>
     ) : (
       <button
+      type="button"
         onClick={() => iniciarEdicao(agendamento)}
         className="text-yellow-500"
         title="Editar"
@@ -574,6 +576,7 @@ if (faltandoTelefone?.length) {
       </button>
     )}
     <button
+    type="button"
       onClick={() => excluirAgendamento(agendamento.id)}
       className="text-red-600"
     >
@@ -593,7 +596,7 @@ if (faltandoTelefone?.length) {
 
     
   );
-}
 
+}
 export default AgendaAtendimento;
 
