@@ -114,7 +114,7 @@ export function mensagemLembrete({ nome, servico, data, hora, observacoes } = {}
     _obs ? `📝 Observações: ${_obs}` : "",
     ``,
     `Aguardamos você! 💇‍♀️💅`,
-    `*Meu Salão Criativo*`
+    `*Salão Sandro e Carmem*`
   ].filter(Boolean).join("\n");
 }
 
