@@ -11,9 +11,9 @@ export default {
     },
     extend: {
       colors: {
-        primary: "#000080",
-        secondary: "#FF3399",
-        alternativo: "#5170ff",
+        primary: "#324560",
+        secondary: "#fc962f",
+        alternativo: "#3e73a1",
         opcao: "#ff69b4",
         cinza: "#2F3136",
         cinzaClaro: "#b4b4b6",

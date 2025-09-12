@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient";
-import { Pencil, Trash2, Save } from "lucide-react";
+import { Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
 
 import InputData from "../Componentes/CamposReutilizaveis/InputData"
 import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
@@ -242,7 +242,9 @@ const salvarEdicao = async (id) => {
 {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
 <div className="w-full max-w-[100%] mx-auto border border-violet-200 p-4 rounded-lg bg-gray-50 shadow-lg">
-<h3 className="text-lg font-bold text-primary mb-4">Novo Agendamento</h3>
+<h3 className="text-lg font-normal text-primary mb-4 flex gap-2">
+  <ClipboardPlusIcon className="text-secondary "/>
+  Novo Agendamento</h3>
 
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -366,7 +368,7 @@ className="input-padrao resize-none h-[38px]"
 </div>
 <button
 onClick={salvarAgendamento}
-className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-white shadow flex items-center gap-2 mt-5"
+className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-primary shadow flex items-center gap-2 mt-5"
 >
 <Save size={20} />
 <span className="hidden sm:inline">Salvar</span>
@@ -383,9 +385,11 @@ className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-white shadow
 
     {/**<h2 className="text-xl font-bold text-primary mb-0  relative pb-[-4px]  "> {diaSemana} </h2> */}
     
-  <div className="flex items-center justify-between">
-  <h2 className="text-xl font-bold text-primary mb-0 relative">{diaSemana}</h2>
-  <button
+  <div className="flex items-center justify-between ">
+  <h2 className="text-xl font-normal text-primary mb-0 relative">{diaSemana}</h2>
+  
+  {/* 🟡 ENVIAR Lembrete */}
+  <button 
     type="button"
     onClick={async () => {
       if (!agendamentosDoDia?.length) return;
@@ -406,10 +410,12 @@ if (faltandoTelefone?.length) {
 }
 
     }}
-    className="btn btn-lembrete-primary"
+    className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-4 py-2 rounded-lg hover:bg-secondary transition"
     title="Enviar lembretes para todos deste dia"
   >
-    ⏰ Enviar lembretes do dia
+    <Clock size={24}/>
+  Enviar lembrete
+    {/*⏰ Enviar lembrete*/}
   </button>
 </div>
 

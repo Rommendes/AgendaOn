@@ -22,6 +22,10 @@ function App() {
 
    <div>
     <Routes >
+      {/* pública */}
+      <Route path="/" element={<Login />} />
+
+      {/* privadas */}
       <Route path="/"element= { <Login setIsAuthenticated={setIsAuthenticated}/> }/>
       <Route path="/busca-cliente" element={<BuscaCliente />} />
       <Route path="/home" element = { <Home/> }/>

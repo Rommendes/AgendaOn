@@ -1,7 +1,8 @@
 import { Link} from "react-router-dom";
 import { useState } from "react";
-import minhaImagem from "../assets/mulher.svg"
+import minhaImagem from "../assets/agendaOn.png"
 import BotaoSair from "../Componentes/BotaoSair/index.jsx";
+import { Minus, Sparkles } from "lucide-react"
 
 export default function Home() {
 
@@ -23,10 +24,17 @@ export default function Home() {
             alt="Imagem"
             className="py-1 w-40 h-40 rounded-xl"
           />
-          <h1 className="pb-4 text-justify text-md text-cinza">
-            Aqui mostro que o meu serviço é com excelência e
-            <span className="font-bold text-primary"> minhas clientes são especiais</span>.
-          </h1>
+         <div className="flex flex-col justify-start">
+            <h1 className="font-bold text-md text-primary flex flex-wrap items-center justify-center">
+              <Sparkles className="text-primary mx-2" />
+              Agenda
+              <span className="text-secondary font-bold">On</span>
+              <Sparkles className="text-primary mx-2" />
+              <span className="text-sm text-primary font-normal">
+                mais que agenda, sua parceira de confiança.
+              </span>
+            </h1>
+          </div>
         </div>
 
         {/* Botão de Agenda com submenu */}

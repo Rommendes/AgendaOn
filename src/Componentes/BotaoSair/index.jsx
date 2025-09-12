@@ -21,8 +21,8 @@ const BotaoSair = () => {
     <>
     
     <button onClick={handleLogout}
-        className="bg-secondary px-1.5 pt-1 rounded hover:bg-alternativo shadow-lg w-fit">
-        <Icon className=" pb-2 text-2xl text-white ">exit_to_app</Icon>
+        className="bg-secondary px-1.5 pt-1 rounded hover:bg-alternativo shadow-lg w-fit text-primary">
+        <Icon className=" pb-2 text-2xl text-primary  hover:text-secondary ">exit_to_app</Icon>
         </button>
 
     </>
