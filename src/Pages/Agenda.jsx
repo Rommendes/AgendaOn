@@ -312,13 +312,16 @@ onChange={(e) => setNovoAgendamento({ ...novoAgendamento, servico: e.target.valu
 className="input-padrao"
 >
   <option value="">Selecione</option>
-<option value="tintura">Tintura</option>
+<option value="Tintura">Tintura</option>
 <option value="Corte">Corte</option>
-<option value="escova progressiva">Escova progressiva</option>
-<option value="butox">Butox</option>
-<option value="manicure">Manicure</option>
-<option value="maquiagem">Maquiagem</option>
-<option value="sobrancelha">Sobrancelha</option>
+<option value="Escova progressiva">Escova progressiva</option>
+<option value="Butox">Butox</option>
+<option value="Manicure">Manicure</option>
+<option value="Maquiagem">Maquiagem</option>
+<option value="Sobrancelha">Sobrancelha</option>
+<option value="Depilação">Depilação</option>
+<option value="Penteado festa">Penteado festa</option>
+
 </select>
 </div>
 

@@ -12,7 +12,8 @@ import HistoricoSemanal from "./Pages/HistoricoSemanal.jsx"
 import CobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import EnviarCobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
-
+import PrivateRoute from "./Routes/PrivateRoute.jsx"
+import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
 
 function App() {
   
@@ -38,6 +39,8 @@ function App() {
       <Route path="cobrancas" element= { <CobrancasPendentes/> }/>
       <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
       <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
+      <Route path="/agenda-semanal" element={<AgendaSemanal />} />
+
   
     </Routes>
     </div>

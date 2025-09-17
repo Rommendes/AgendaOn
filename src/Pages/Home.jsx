@@ -1,8 +1,8 @@
 import { Link} from "react-router-dom";
 import { useState } from "react";
-import minhaImagem from "../assets/agendaOn.png"
+import minhaImagem from "../assets/LogoCarmemAgenda.png"
 import BotaoSair from "../Componentes/BotaoSair/index.jsx";
-import { Minus, Sparkles } from "lucide-react"
+import { CalendarCog, Minus, Sparkles } from "lucide-react"
 
 export default function Home() {
 
@@ -22,10 +22,10 @@ export default function Home() {
           <img
             src={minhaImagem}
             alt="Imagem"
-            className="py-1 w-40 h-40 rounded-xl"
+            className="py-1 rounded-xl w-[150px] h-[100px]"
           />
          <div className="flex flex-col justify-start">
-            <h1 className="font-bold text-md text-primary flex flex-wrap items-center justify-center">
+            <h1 className=" text-lg font-semibold pb-3  text-md text-primary flex flex-wrap items-center justify-center">
               <Sparkles className="text-primary mx-2" />
               Agenda
               <span className="text-secondary font-bold">On</span>
@@ -43,6 +43,7 @@ export default function Home() {
           onClick={toggleSubmenu}
           className="botao-menu w-full"
         >
+          
           <span className="material-icons text-secondary text-4xl">event</span>
           <div className="flex flex-col justify-center text-left">
             <h2 className="font-bold text-lg">Agenda</h2>
@@ -59,6 +60,15 @@ export default function Home() {
           <div>
             <h2 className="font-bold text-lg">Busca cliente</h2>
             <p className="text-sm">Pesquisa o histórico do cliente cadastrado  </p>
+          </div>
+        </Link>
+
+         <Link to="/agenda-semanal" className="botao-menu w-full">
+          <CalendarCog className=" text-secondary text-4xl"/>
+        
+          <div>
+            <h2 className="font-bold text-lg">Agenda Semanal</h2>
+            <p className="text-sm">Pesquisa os atendimentos cadastrados  </p>
           </div>
         </Link>
 
