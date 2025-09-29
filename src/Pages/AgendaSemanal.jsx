@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../api/supabaseClient";
 import Header from "../Componentes/Header/Header";
 import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp.jsx";
-
+import { CalendarCog, Clock, AlarmClock } from "lucide-react";
 // --- helpers simples ---
 function hojeISO() {
   const d = new Date();
@@ -13,6 +13,22 @@ function hojeISO() {
 function formatarBRDataISO(iso) {
   return new Date(iso + "T12:00:00").toLocaleDateString("pt-BR");
 }
+
+//🟣 telefone válido?
+function temTelefone(ag) {
+  const tel = (ag?.clientes?.telefone || ag?.telefone || "").toString();
+  return tel.replace(/\D/g, "").length >= 10;
+}
+
+// 🟣 conta total / com telefone / sem telefone / enviados (usaremos depois)
+function contarDia(ags, enviadosSessao = new Set()) {
+  const total  = ags.length;
+  const comTel = ags.filter(temTelefone).length;
+  const semTel = total - comTel;
+  const enviados = ags.filter((ag) => enviadosSessao.has(String(ag.id))).length; // por enquanto deve dar 0
+  return { total, comTel, semTel, enviados };
+}
+
 function formatarValorBR(v) {
   if (v == null) return "";
   const n = Number(v);
@@ -110,7 +126,8 @@ export default function AgendaSemanal() {
             {/* Botão: lembretes da semana inteira */}
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-2 py-2 rounded-lg hover:bg-secondary transition"
+    
               title="Enviar lembretes para todos desta semana"
               onClick={async () => {
                 const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
@@ -118,7 +135,8 @@ export default function AgendaSemanal() {
                 alert(`Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ""}.`);
               }}
             >
-              ⏰ Lembretes da semana
+                <Clock size={20}/>
+               Lembretes da semana
             </button>
           </div>
 
@@ -139,7 +157,8 @@ export default function AgendaSemanal() {
                       alert(`${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ""}.`);
                     }}
                   >
-                    ⏰ Lembretes do dia
+                     <Clock size={20}/>
+                     Lembretes do dia
                   </button>
                 </div>
 
@@ -173,7 +192,8 @@ export default function AgendaSemanal() {
                                 if (r === "copiado") alert("Sem telefone. Mensagem copiada para a área de transferência.");
                               }}
                             >
-                              ⏰ Lembrar cliente
+                                <AlarmClock/>
+                              Lembrar cliente
                             </button>
                           </td>
                         </tr>

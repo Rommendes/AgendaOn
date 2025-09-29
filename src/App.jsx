@@ -14,6 +14,7 @@ import EnviarCobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
 import PrivateRoute from "./Routes/PrivateRoute.jsx"
 import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
+import Teste from "./Teste/Teste.jsx"
 
 function App() {
   
@@ -40,6 +41,8 @@ function App() {
       <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
       <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
       <Route path="/agenda-semanal" element={<AgendaSemanal />} />
+      {/* rota de teste */}
+        <Route path="/teste" element={<Teste />} />
 
   
     </Routes>

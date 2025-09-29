@@ -141,6 +141,41 @@ export function montarTextoLembreteDeAgendamento(ag) {
   });
 }
 
+//ADICIONANDO A FUNÇÃO ENVIAR, REAGENDAR, CANCELAR
+// 1) pegue o número do salão do .env (ficará disponível no build)
+const NUMERO_WHATS_SALAO = import.meta.env.VITE_WHATS_SALAO || "";
+
+/**
+ * Gera links do WhatsApp para o salão com as ações:
+ * - confirmar
+ * - reagendar
+ * - cancelar
+ * Se não houver número do salão configurado, retorna null.
+ */
+export function criarLinksDeAcoes({ nome, data, hora }) {
+  if (!NUMERO_WHATS_SALAO) return null;
+
+  const _nome = limpa(nome) || "Cliente";
+  const _data = limpa(data);
+  const _hora = limpa(hora);
+
+  // monta “dia 10/10 às 14:00” conforme o que existir
+  const partes = [];
+  if (_data) partes.push(`dia ${_data}`);
+  if (_hora) partes.push(`às ${_hora}`);
+  const quando = partes.length ? ` ${partes.join(" ")}` : "";
+
+  const msgConfirmar = `Olá! Confirmo meu atendimento${quando}. (${_nome})`;
+  const msgReagendar = `Olá! Gostaria de remarcar meu atendimento${quando}. (${_nome})`;
+  const msgCancelar  = `Olá! Preciso cancelar meu atendimento${quando}. (${_nome})`;
+
+  return {
+    confirmar: buildWaUrl(NUMERO_WHATS_SALAO, msgConfirmar),
+    reagendar: buildWaUrl(NUMERO_WHATS_SALAO, msgReagendar),
+    cancelar:  buildWaUrl(NUMERO_WHATS_SALAO, msgCancelar),
+  };
+}
+
 /**
  * Envia 1 lembrete:
  * - Se tiver telefone: abre WhatsApp com a mensagem
@@ -205,6 +240,9 @@ export async function enviarLembretesEmLote(lista, { intervalMs = 1600, copiarSe
       await sleep(120);
     }
   }
+
+  
+  
 
   return { enviados, copiados, faltandoTelefone }
 
