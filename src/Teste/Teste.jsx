@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { criarLinksDeAcoes } from "./utils/whatsapp";
+import { criarLinksDeAcoes } from "../utils/whatsapp";
 
 export default function Teste() {
   useEffect(() => {
