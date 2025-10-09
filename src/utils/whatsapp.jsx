@@ -1,5 +1,6 @@
 // =======================
-// src/utils/whatsapp.jsx
+// src/utils/wnpm run dev
+// atsapp.jsx
 // =======================
 
 // Número do WhatsApp do salão – usado nos links de ação
@@ -118,7 +119,7 @@ export function mensagemLembrete({ nome, servico, data, hora, observacoes }) {
     ``,
     blocoAcoes,
     `Aguardamos você! 💇‍♀️💅`,
-    `*Salão Sandro e Carmem*`,
+    `*Carmem Studio*`,
   ].filter(Boolean).join("\n");
 }
 
