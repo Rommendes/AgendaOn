@@ -1,5 +1,5 @@
 import BtnHome from "../BotaoHome/BtnHome";
-import BotaoSair from "../BotaoSair";
+import BotaoSair from "@/Componentes/common/BotaoSair";
 
 const Header = ({title = 'Agenda de Atendimentos', actionButton = null}) => {
     return(

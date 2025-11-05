@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { supabase } from "../api/supabaseClient"; // Importe seu Supabase
-import EnderecoForm from "../Componentes/EnderecoForm";
+import { supabase } from "@/lib/supabaseClient"; // Importe seu Supabase
+import EnderecoForm from "@/Componentes/EnderecoForm";
 
-import Header from "../Componentes/Header/Header";
+import Header from "@/Componentes/Header/Header";
 
 const CadastrarCliente = () => {
   const [formData, setFormData] = useState({

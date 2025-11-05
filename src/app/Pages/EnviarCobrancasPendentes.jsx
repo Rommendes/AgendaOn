@@ -1,7 +1,7 @@
 // import React, { useEffect, useState } from "react";
-// import BotaoEnviarCobranca from "../Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx";
-// import { getAgendamentosPendentes } from "../api/supabaseClient.js"; 
-// import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
+// import BotaoEnviarCobranca from "@/Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx";
+// import { getAgendamentosPendentes } from "@/services/agendamentosService.js"; 
+// import formatarTelefoneExibicao from "@/Componentes/Utilitarios/formatarTelefone.js";
 
 // export default function EnviarCobrancasPendentes() {
 //   const [agendamentos, setAgendamentos] = useState([]);
@@ -55,10 +55,10 @@
 //   );
 // }
 import React, { useEffect, useState } from "react";
-import BotaoEnviarCobranca from "../Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx";
-import { getAgendamentosPendentes } from "../api/supabaseClient.js";
-import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
-import Header from "../Componentes/Header/Header.jsx";
+import BotaoEnviarCobranca from "@/Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx";
+import { getAgendamentosPendentes } from "@/services/agendamentosService.js";
+import formatarTelefoneExibicao from "@/Componentes/Utilitarios/formatarTelefone.js";
+import Header from "@/Componentes/Header/Header.jsx";
 
 function formatarValorBR(valor) {
   const n = Number(valor);

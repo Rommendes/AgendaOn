@@ -1,9 +1,8 @@
 
 import { useEffect, useState } from "react";
-import { supabase } from "../api/supabaseClient";
-
+import { listarClientes } from "@/services/clientesService.js";
 import { useNavigate } from "react-router-dom";
-import Header from "../Componentes/Header/Header";
+import Header from "@/Componentes/Header/Header";
 
 //import EditarCliente from "../EditarCliente/editarCliente";
 
@@ -11,17 +10,18 @@ const ListaClientes = () => {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState([]);
 
-  useEffect(() => {
-    const fetchClientes = async () => {
-      const { data, error } = await supabase.from("clientes").select("*");
-      if (error) {
-        console.error("Erro ao buscar clientes: ", error);
-      } else {
-        setClientes(data);
-      }
-    };
-    fetchClientes();
-  }, []);
+useEffect(() => {
+  async function fetchClientes() {
+    try {
+      const data = await listarClientes(); // 👈 chama o service
+      setClientes(data);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  }
+
+  fetchClientes();
+}, []);
 
   // 🔹 Função para excluir um cliente
   const handleExcluir = async (id) => {

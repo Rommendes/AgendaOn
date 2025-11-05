@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../Componentes/Header/Header";
-import { supabase } from "../api/supabaseClient";
-import { mensagemLembrete, abrirWhatsApp, copiarTexto } from "../utils/whatsapp.jsx";
+import Header from "@/Componentes/Header/Header";
+import { supabase } from "@/lib/supabaseClient";
+import { mensagemLembrete, abrirWhatsApp, copiarTexto } from "@/utils/whatsapp.jsx";
 
 function hojeISO() {
   const d = new Date();

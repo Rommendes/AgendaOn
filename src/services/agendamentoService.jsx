@@ -11,3 +11,4 @@ export async function getAgendamentosPendentes() {
   if (error) throw error
   return data || []
 }
+EOF

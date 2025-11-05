@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../api/supabaseClient";
-import Header from "../Componentes/Header/Header";
-import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp.jsx";
+import { supabase } from "@/lib/supabaseClient";
+import Header from "@/Componentes/Header/Header";
+import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "@/utils/whatsapp.jsx";
 import { CalendarCog, Clock, AlarmClock } from "lucide-react";
 // --- helpers simples ---
 function hojeISO() {

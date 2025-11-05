@@ -4,13 +4,13 @@ import * as XLSX from "xlsx";
 
 import { ArrowLeft, ArrowRight, CalendarCog, FileDown, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
-import { supabase } from "../api/supabaseClient";
-import { getDiaSemanaComData } from "../Componentes/Utilitarios/getDiaSemanaComData";
-import { formatarValor } from "../Componentes/Utilitarios/formatarValor";
-import BotaoSair from "../Componentes/BotaoSair";
-import BtnHome from "../Componentes/BotaoHome/BtnHome";
+import { supabase } from "@/lib/supabaseClient";
+import { getDiaSemanaComData } from "@/Componentes/Utilitarios/getDiaSemanaComData";
+import { formatarValor } from "@/Componentes/Utilitarios/formatarValor";
+import BotaoSair from "@/Componentes/common/BotaoSair";
+import BtnHome from "@/Componentes/BotaoHome/BtnHome";
 import { Link } from "react-router-dom";
-import Header from "../Componentes/Header/Header";
+import Header from "@/Componentes/Header/Header";
 
 export default function HistoricoSemanal() {
   const [mesSelecionado, setMesSelecionado] = useState("");

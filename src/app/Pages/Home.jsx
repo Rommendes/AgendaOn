@@ -1,7 +1,7 @@
 import { Link} from "react-router-dom";
 import { useState } from "react";
-import minhaImagem from "../assets/LogoCarmemAgenda.png"
-import BotaoSair from "../Componentes/BotaoSair/index.jsx";
+import minhaImagem from "@/assets/LogoCarmemAgenda.png"
+import BotaoSair from "@/Componentes/common/BotaoSair";
 import { CalendarCog, Minus, Sparkles } from "lucide-react"
 
 export default function Home() {

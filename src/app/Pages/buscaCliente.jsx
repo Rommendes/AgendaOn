@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "../api/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import Header from "../Componentes/Header/Header"
+import Header from "@/Componentes/Header/Header"
 import HistoricoDoCliente from "./HistoricoDoCliente";
 
 const PesquisandoClientes = () => {

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../api/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
 
-import InputData from "../Componentes/CamposReutilizaveis/InputData"
-import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
-import Header from "../Componentes/Header/Header";
+import InputData from "@/Componentes/CamposReutilizaveis/InputData"
+import InputHorario from "@/Componentes/CamposReutilizaveis/InputHorario";
+import Header from "@/Componentes/Header/Header";
 
-import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp"; 
+import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "@/utils/whatsapp"; 
 import { data } from "react-router-dom";
 function formatarValor(valor) {
   return new Intl.NumberFormat('pt-BR', {
