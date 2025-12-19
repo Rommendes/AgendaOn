@@ -15,6 +15,7 @@ import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
 import PrivateRoute from "./Routes/PrivateRoute.jsx"
 import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
 import Teste from "./Teste/Teste.jsx"
+import ResetSenha from "./Pages/ResetSenha.jsx"
 
 function App() {
   
@@ -41,6 +42,8 @@ function App() {
       <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
       <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
       <Route path="/agenda-semanal" element={<AgendaSemanal />} />
+      <Route path="/reset-senha" element={<ResetSenha />} />
+
       {/* rota de teste */}
         <Route path="/teste" element={<Teste />} />
 

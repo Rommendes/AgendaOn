@@ -39,4 +39,8 @@ export async function getAgendamentosPendentes() {
     return [];
   }
   return data ?? [];
+
+  
 }
+console.log("SUPABASE_URL:", supabaseUrl);
+console.log("SUPABASE_KEY_OK:", !!supabaseAnonKey);
