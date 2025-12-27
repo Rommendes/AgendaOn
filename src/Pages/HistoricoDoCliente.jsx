@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient";
 
+import { createLogger } from "../lib/logger";
+const logger = createLogger("HistoricoDoCliente")
+
 const HistoricoDoCliente = ({ clienteId }) => {
   const [agendamentos, setAgendamentos] = useState([]);
 
@@ -14,7 +17,7 @@ const HistoricoDoCliente = ({ clienteId }) => {
         .order("data", { ascending: false });
 
       if (error) {
-        console.error("Erro ao buscar agendamentos:", error);
+        logger.error("Erro ao buscar agendamentos:", error);
       } else {
         setAgendamentos(data);
       }
@@ -26,7 +29,7 @@ const HistoricoDoCliente = ({ clienteId }) => {
   }, [clienteId]);
 
   useEffect(() => {
-    console.log("Agendamentos:", agendamentos);
+   
     agendamentos.forEach((item) => {
       console.log("VALOR ORIGINAL:", item.valor, " -> PARSED:", parseValor(item.valor));
     });

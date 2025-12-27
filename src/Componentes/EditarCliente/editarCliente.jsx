@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../api/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { createLogger } from "../../lib/logger";
+const logger = createLogger("EditarCliente")
+
 const EditarCliente = () => {
   const { id } = useParams(); // Pegando o ID do cliente pela URL
     const navigate = useNavigate();
@@ -24,8 +27,7 @@ const EditarCliente = () => {
 
   useEffect(() => {
     const fetchCliente = async () => {
-      console.log("Buscando cliente com ID:", id);
-  
+     
       const { data, error } = await supabase
         .from("clientes")
         .select("*")
@@ -33,10 +35,10 @@ const EditarCliente = () => {
         .single(); // ✅ Correto: apenas busca o cliente
   
       if (error) {
-        console.error("Erro ao buscar cliente:", error);
+        logger.error("Erro ao buscar cliente:", error);
         alert("Erro ao carregar dados do cliente.");
       } else {
-        console.log("Dados do cliente carregados:", data);
+        ;
         setCliente({
           nome: data.nome || "",
           data_aniversario: data.data_aniversario || "",
@@ -65,9 +67,6 @@ const EditarCliente = () => {
       return;
     }
 
-    console.log("🟢ID do cliente:", id);
-    console.log("🟢Dados a serem atualizados:", cliente);
-
     const { data, error } = await supabase
       .from("clientes")
       .update(cliente)
@@ -75,10 +74,10 @@ const EditarCliente = () => {
       .select(); // ✅ Garante que os dados atualizados sejam retornados
 
     if (error) {
-      console.error("🔴Erro ao atualizar cliente:", error);
+      
       alert("Erro ao atualizar cliente. Verifique o console.");
     } else {
-      console.log("Cliente atualizado com sucesso:", data);
+     
       alert("Cliente atualizado com sucesso!");
 
       navigate("/lista-clientes", { state: { updated: true }});

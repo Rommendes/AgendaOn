@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import Header from "../Componentes/Header/Header";
 import { supabase } from "../api/supabaseClient";
 import { mensagemLembrete, abrirWhatsApp, copiarTexto } from "../utils/whatsapp.jsx";
+import { createLogger } from "../lib/logger.js";
+const logger = createLogger("LembreteAgendamentos");
 
 function hojeISO() {
   const d = new Date();
@@ -50,7 +52,7 @@ export default function LembreteAgendamentos() {
         if (error) throw error;
         setLista(data || []);
       } catch (e) {
-        console.error(e);
+        logger.error(e);
         setLista([]);
       } finally {
         setCarregando(false);
@@ -91,7 +93,7 @@ export default function LembreteAgendamentos() {
         alert(`Telefone ausente para ${nome}. Mensagem copiada.`);
       }
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       alert("Não foi possível preparar o lembrete.");
     } finally {
       setEnviando((s) => ({ ...s, [id]: false }));

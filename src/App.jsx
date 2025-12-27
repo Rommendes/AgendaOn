@@ -12,10 +12,9 @@ import HistoricoSemanal from "./Pages/HistoricoSemanal.jsx"
 import CobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import EnviarCobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
-import PrivateRoute from "./Routes/PrivateRoute.jsx"
 import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
-import Teste from "./Teste/Teste.jsx"
 import ResetSenha from "./Pages/ResetSenha.jsx"
+import ProtectedRoute from "./Componentes/ProtectedRoute.jsx"
 
 function App() {
   
@@ -27,27 +26,25 @@ function App() {
     <Routes >
       {/* pública */}
       <Route path="/" element={<Login />} />
-
-      {/* privadas */}
-      <Route path="/"element= { <Login setIsAuthenticated={setIsAuthenticated}/> }/>
-      <Route path="/busca-cliente" element={<BuscaCliente />} />
-      <Route path="/home" element = { <Home/> }/>
-      <Route path="/cadastrar-cliente" element= { <CadastrarCliente/> }/>
-      <Route path="/lista-clientes" element={ <ListaClientes/> } />
-    
-      <Route path="/editar-cliente" element={ <EditarCliente/> }/>
-      <Route path="/agenda" element= { <Agenda/> }/>
-      <Route path="/historico-semanal" element= { <HistoricoSemanal/> }/>
-      <Route path="cobrancas" element= { <CobrancasPendentes/> }/>
-      <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
-      <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
-      <Route path="/agenda-semanal" element={<AgendaSemanal />} />
       <Route path="/reset-senha" element={<ResetSenha />} />
 
-      {/* rota de teste */}
-        <Route path="/teste" element={<Teste />} />
+      {/* privadas */}
+    <Route element={<ProtectedRoute/>}>
 
-  
+          <Route path="/"element= { <Login setIsAuthenticated={setIsAuthenticated}/> }/>
+          <Route path="/busca-cliente" element={<BuscaCliente />} />
+          <Route path="/home" element = { <Home/> }/>
+          <Route path="/cadastrar-cliente" element= { <CadastrarCliente/> }/>
+          <Route path="/lista-clientes" element={ <ListaClientes/> } />
+          <Route path="/editar-cliente" element={ <EditarCliente/> }/>
+          <Route path="/agenda" element= { <Agenda/> }/>
+          <Route path="/historico-semanal" element= { <HistoricoSemanal/> }/>
+          <Route path="cobrancas" element= { <CobrancasPendentes/> }/>
+          <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
+          <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
+          <Route path="/agenda-semanal" element={<AgendaSemanal />} />
+      </Route>
+
     </Routes>
     </div>
    

@@ -5,9 +5,12 @@ import { Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
 import InputData from "../Componentes/CamposReutilizaveis/InputData"
 import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
 import Header from "../Componentes/Header/Header";
-
 import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp"; 
-import { data } from "react-router-dom";
+//import { data } from "react-router-dom";
+
+import { createLogger } from "../lib/logger"; // ajuste o caminho
+const logger = createLogger("Agendamentos");
+
 function formatarValor(valor) {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -50,7 +53,7 @@ const AgendaAtendimento = () => {
       .order("data", { ascending: false })
       .order("horario", { ascending: true });
     if (error){
-        console.error("Erro ao buscar agendamentos:", error);
+        logger.error("Erro ao buscar agendamentos:", error);
    
     } else {
         setAgendamentos(data || []);
@@ -64,9 +67,9 @@ useEffect(() => {
   const buscarClientes = async () => {
     const { data, error } = await supabase.from("clientes").select("id, nome");
     if (error) {
-      console.error("Erro ao buscar clientes:", error);
+      logger.error("Erro ao buscar clientes:", error);
     } else {
-      console.log(data);  // Verifique se os dados estão corretos
+      // Verifique se os dados estão corretos
       setClientes(data);
     }
   };
@@ -105,7 +108,7 @@ useEffect(() => {
     const { error } = await supabase.from("agendamentos").insert([agendamentoFinal]);
 
     if (error) {
-      console.error("Erro ao salvar agendamento:", error);
+      logger.error("Erro ao salvar agendamento:", error);
       alert("Erro ao salvar agendamento. Verifique os dados e tente novamente.");
     } else {
       setNovoAgendamento({
@@ -160,7 +163,7 @@ const salvarEdicao = async (id) => {
     })
     .eq("id", id);
 
-  if (error) { console.error(error); alert("Erro ao atualizar."); return; }
+  if (error) { logger.error(error); alert("Erro ao atualizar."); return; }
 
   // procura o cliente na lista comparando como string
   const clienteObj = clientes.find((c) => String(c.id) === String(formEdicao.cliente_id)) || null;
@@ -202,7 +205,7 @@ const salvarEdicao = async (id) => {
 
   const excluirAgendamento = async (id) => {
     const { error } = await supabase.from("agendamentos").delete().eq("id", id);
-    if (error) console.error("Erro ao excluir:", error);
+    if (error) logger.error("Erro ao excluir:", error);
     else {
       alert("Agendamento excluído com sucesso!");
       location.reload();
@@ -406,7 +409,6 @@ alert(
   (faltandoTelefone?.length ? `\n${faltandoTelefone.length} sem telefone (veja Console).` : "")
 );
 
-// opcional: mostra no console quem ficou sem telefone
 if (faltandoTelefone?.length) {
   console.table(
     faltandoTelefone.map(f => ({ nome: f.nome, mensagem: f.mensagem }))

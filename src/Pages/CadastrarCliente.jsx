@@ -4,6 +4,10 @@ import EnderecoForm from "../Componentes/EnderecoForm";
 
 import Header from "../Componentes/Header/Header";
 
+import { createLogger } from "../lib/logger";
+const logger = createLogger("CadastrarCliente");
+
+
 const CadastrarCliente = () => {
   const [formData, setFormData] = useState({
     nome: "",
@@ -104,7 +108,7 @@ const CadastrarCliente = () => {
 
       setErrors({});
     } catch (error) {
-      console.error("Erro ao cadastrar cliente:", error.message);
+      logger.error("Erro ao cadastrar cliente:", error.message);
       alert(`Erro ao cadastrar cliente: ${error.message || "Erro desconhecido"}`);
     } finally {
       setLoading(false);

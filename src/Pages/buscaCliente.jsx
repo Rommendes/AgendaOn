@@ -15,7 +15,7 @@ const PesquisandoClientes = () => {
     const fetchClientes = async () => {
       const { data, error } = await supabase.from("clientes").select("*");
       if (error) {
-        console.error("Erro ao buscar clientes: ", error);
+        logger.error("Erro ao buscar clientes: ", error);
       } else {
         setClientes(data);
       }
@@ -37,7 +37,7 @@ const PesquisandoClientes = () => {
   const handleExcluir = async (id) => {
     const { error } = await supabase.from("clientes").delete().eq("id", id);
     if (error) {
-      console.error("Erro ao excluir cliente:", error);
+      logger.error("Erro ao excluir cliente:", error);
     } else {
       setClientes((prev) => prev.filter((c) => c.id !== id));
       setResultados((prev) => prev.filter((c) => c.id !== id));

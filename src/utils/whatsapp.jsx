@@ -1,41 +1,37 @@
-// =======================
-// src/utils/wnpm run dev
-// atsapp.jsx
-// =======================
+import { createLogger } from "../lib/logger";
+const logger = createLogger("WhatsApp");
 
-// Número do WhatsApp do salão – usado nos links de ação
-const NUMERO_WHATS_SALAO = import.meta.env.VITE_WHATS_SALAO || "";
+const NUMERO_WHATS_SALAO = import.meta.env.VITE_NUMERO_WHATS_SALAO
 
-/**
- * Valida se o número do WhatsApp está em formato E.164 (Brasil)
- * Exemplo válido: 5555999870951
- * 55 (Brasil) + DDD (2 dígitos) + número (9 dígitos)
- */
-function validarE164BR(numero) {
+export function validarE164BR(numero) {
   const digitos = (numero ?? "").toString().replace(/\D/g, ""); // só números
 
   if (!digitos.startsWith("55")) {
+    logger.warn("⚠️ Número inválido (sem DDI 55):", numero);
     return { ok: false, motivo: "falta o código do país (55)" };
   }
 
   const semDDI = digitos.slice(2); // tira os dois primeiros (55)
   if (semDDI.length !== 11) {
+    logger.warn("⚠️ Número inválido (tamanho após DDI):", numero, "len:", semDDI.length);
     return { ok: false, motivo: `esperado 11 dígitos após DDI, veio ${semDDI.length}` };
   }
 
   if (semDDI[2] !== "9") {
+    logger.warn("⚠️ Número inválido (sem 9º dígito):", numero);
     return { ok: false, motivo: "faltando o 9º dígito do celular" };
   }
 
+  logger.info("✅ Número do salão válido:", digitos);
   return { ok: true };
 }
 
 // Checa ao carregar o app
 const check = validarE164BR(NUMERO_WHATS_SALAO);
 if (!check.ok) {
-  console.warn("[WhatsApp] ⚠️ VITE_WHATS_SALAO inválido:", NUMERO_WHATS_SALAO, "-", check.motivo);
+  
 } else {
-  console.log("[WhatsApp] ✅ Número do salão válido:", NUMERO_WHATS_SALAO);
+ 
 }
 
 export const ENVIADOS_NA_SESSAO = new Set();

@@ -5,6 +5,8 @@ import { supabase } from "../api/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Header from "../Componentes/Header/Header";
 
+import { createLogger } from "../lib/logger";
+const logger = createLogger("ListaClientes")
 //import EditarCliente from "../EditarCliente/editarCliente";
 
 const ListaClientes = () => {
@@ -15,7 +17,7 @@ const ListaClientes = () => {
     const fetchClientes = async () => {
       const { data, error } = await supabase.from("clientes").select("*");
       if (error) {
-        console.error("Erro ao buscar clientes: ", error);
+        logger.error("Erro ao buscar clientes: ", error);
       } else {
         setClientes(data);
       }
@@ -25,11 +27,11 @@ const ListaClientes = () => {
 
   // 🔹 Função para excluir um cliente
   const handleExcluir = async (id) => {
-    console.log("ID do cliente sendo excluído:", id);
+   
 
     const { error } = await supabase.from("clientes").delete().eq("id", id);
     if (error) {
-      console.error("Erro ao excluir cliente:", error);
+      logger.error("Erro ao excluir cliente:", error);
     } else {
       setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
     }

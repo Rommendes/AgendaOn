@@ -3,6 +3,10 @@ import { supabase } from "../api/supabaseClient";
 import Header from "../Componentes/Header/Header";
 import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp.jsx";
 import { CalendarCog, Clock, AlarmClock } from "lucide-react";
+import { createLogger } from "../lib/logger.js";
+const logger = createLogger("AgendaSemanal")
+
+
 // --- helpers simples ---
 function hojeISO() {
   const d = new Date();
@@ -66,7 +70,7 @@ export default function AgendaSemanal() {
         .order("horario", { ascending: true });
 
       if (error) {
-        console.error("Erro ao buscar agendamentos:", error);
+        logger.error("Erro ao buscar agendamentos:", error);
         setAgendamentos([]);
       } else {
         setAgendamentos(data || []);

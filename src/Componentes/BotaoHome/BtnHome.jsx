@@ -3,6 +3,9 @@ import { supabase } from "../../api/supabaseClient";
 import { Icon } from "@mui/material";
 import { House } from "lucide-react";
 
+import { createLogger } from "../../lib/logger";
+const logger = createLogger("BtnHome")
+
 const BtnHome = () => {
   const navigate = useNavigate();
 
@@ -10,7 +13,7 @@ const BtnHome = () => {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error("Erro ao sair:", error);
+      logger.error("Erro ao sair:", error);
       alert("Erro ao sair!");
     } else {
      
