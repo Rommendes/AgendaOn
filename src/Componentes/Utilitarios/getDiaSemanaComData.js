@@ -12,7 +12,7 @@ export const getDiaSemanaComData = (data) => {
     "Sábado",
   ];
 
-  const dataObj = new Date(data);
+  const dataObj = new Date(data + "T12:00:00");
   if (isNaN(dataObj)) return "Data inválida";
 
   const diaSemana = diasDaSemana[dataObj.getDay()];

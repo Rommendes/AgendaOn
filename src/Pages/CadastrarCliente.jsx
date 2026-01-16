@@ -4,8 +4,33 @@ import EnderecoForm from "../Componentes/EnderecoForm";
 
 import Header from "../Componentes/Header/Header";
 
+import {
+  apenasNumeros,
+  mascararCEP,
+  mascararTelefoneBR
+} from "../Componentes/Utilitarios/formadores";
+
+
 import { createLogger } from "../lib/logger";
 const logger = createLogger("CadastrarCliente");
+{/* 
+const mascararTelefoneBR = (valor) => {
+  const digits = String(valor || "").replace(/\D/g, "").slice(0, 11); // limita 11
+
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+*/}
+
+{/*const mascararCEP = (valor) => {
+  const digits = String(valor || "").replace(/\D/g, "").slice(0, 8); // 8 dígitos
+  if (digits.length <= 5) return digits;
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+};
+
+const apenasNumeros = (valor) => String(valor || "").replace(/\D/g, "");
+*/}
 
 
 const CadastrarCliente = () => {
@@ -35,33 +60,58 @@ const CadastrarCliente = () => {
   };
 
   
-  // Validação dos campos obrigatórios
-  const validate = () => {
-    let tempErrors = {};
-    if (!formData.nome) tempErrors.nome = "O nome é obrigatório";
-    if (!formData.telefone) {
-      tempErrors.telefone = "O telefone é obrigatório";
-    } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(formData.telefone)) {
-      tempErrors.telefone = "Formato inválido. Use (99) 99999-9999";
+const validate = () => {
+  let tempErrors = {};
+
+  if (!formData.nome) tempErrors.nome = "O nome é obrigatório";
+
+  if (!formData.telefone) {
+    tempErrors.telefone = "O telefone é obrigatório";
+  } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(formData.telefone)) {
+    tempErrors.telefone = "Formato inválido. Use (99) 99999-9999";
+  }
+
+  // ✅ CEP opcional, mas se preencher tem que ter 8 dígitos
+  if (formData.endereco.cep) {
+    const cepLimpo = apenasNumeros(formData.endereco.cep);
+    if (cepLimpo.length !== 8) {
+      tempErrors.cep = "CEP inválido. Use 12345-678";
     }
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
+  }
 
-  // Captura a mudança nos inputs
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  setErrors(tempErrors);
+  return Object.keys(tempErrors).length === 0;
+};
 
-  // Captura a mudança nos campos do endereço
-  const handleEnderecoChange = (e) => {
-    const { name, value } = e.target;
+
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === "telefone") {
+    setFormData((prev) => ({ ...prev, telefone: mascararTelefoneBR(value) }));
+    return;
+  }
+
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+ const handleEnderecoChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === "cep") {
     setFormData((prev) => ({
       ...prev,
-      endereco: { ...prev.endereco, [name]: value },
+      endereco: { ...prev.endereco, cep: mascararCEP(value) },
     }));
-  };
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    endereco: { ...prev.endereco, [name]: value },
+  }));
+};
+
 
   // Função para cadastrar cliente no Supabase
   const handleSubmit = async (e) => {
@@ -74,7 +124,7 @@ const CadastrarCliente = () => {
       const { error } = await supabase.from("clientes").insert([
         {
           nome: formData.nome,
-          telefone: formData.telefone,
+          telefone: apenasNumeros(formData.telefone),
           email: formData.email,
           data_aniversario: formData.dataAniversario,
           rua: formData.endereco.rua,
@@ -82,7 +132,8 @@ const CadastrarCliente = () => {
           complemento: formData.endereco.complemento,
           bairro: formData.endereco.bairro,
           cidade: formData.endereco.cidade,
-          cep: toNullableNumber(formData.endereco.cep),
+          cep: toNullableNumber(apenasNumeros(formData.endereco.cep)),
+
         },
       ]);
 

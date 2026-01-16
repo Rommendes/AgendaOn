@@ -65,14 +65,18 @@ const AgendaAtendimento = () => {
 
 useEffect(() => {
   const buscarClientes = async () => {
-    const { data, error } = await supabase.from("clientes").select("id, nome");
+    const { data, error } = await supabase.
+    from("clientes")
+    .select("id, nome, telefone");
+
     if (error) {
       logger.error("Erro ao buscar clientes:", error);
     } else {
       // Verifique se os dados estão corretos
-      setClientes(data);
+      setClientes(data || []);
     }
   };
+  
   buscarClientes();
 }, []);
 
@@ -146,9 +150,12 @@ const salvarEdicao = async (id) => {
   if (!formEdicao.data) { alert("Selecione a data."); return; }
   if (!formEdicao.cliente_id) { alert("Selecione o cliente."); return; }
 
-  const clienteIdValue = Number.isNaN(Number(formEdicao.cliente_id))
-    ? String(formEdicao.cliente_id)   // UUID / texto
-    : Number(formEdicao.cliente_id);  // inteiro
+  // const clienteIdValue = Number.isNaN(Number(formEdicao.cliente_id))
+  //   ? String(formEdicao.cliente_id)   // UUID / texto
+  //   : Number(formEdicao.cliente_id);  // inteiro
+
+
+  const clienteIdValue = String(formEdicao.cliente_id);
 
   const { error } = await supabase
     .from("agendamentos")
@@ -181,8 +188,12 @@ const salvarEdicao = async (id) => {
             pagamento: formEdicao.pagamento,
             obs: formEdicao.obs,
             clientes: clienteObj
-              ? { id: clienteObj.id, nome: clienteObj.nome, telefone: a.clientes?.telefone ?? null }
-              : null,
+              ? { 
+                id: clienteObj.id, 
+                nome: clienteObj.nome, 
+                telefone: clienteObj.telefone ?? null,
+               }
+              : a.clientes,
           }
         : a
     )
