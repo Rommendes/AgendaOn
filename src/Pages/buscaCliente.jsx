@@ -3,7 +3,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "../api/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import Header from "../Componentes/Header/Header"
-import HistoricoDoCliente from "./HistoricoDoCliente";
+import HistoricoDoCliente from "./HistoricoDoCliente"
+import { formatarDataBR, formatarCEP, formatarTelefoneBR } from "../Componentes/Utilitarios/formadores";
+import { createLogger } from "../lib/logger";
+const logger = createLogger("PesquisandoClientes")
 
 const PesquisandoClientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -98,14 +101,14 @@ const PesquisandoClientes = () => {
                   <tbody>
                     <tr className="hover:bg-gray-50 text-center">
                       <td className="border px-4 py-2">{cliente.nome}</td>
-                      <td className="border px-4 py-2">{cliente.data_aniversario}</td>
-                      <td className="border px-4 py-2">{cliente.telefone}</td>
+                      <td className="border px-4 py-2">{formatarDataBR(cliente.data_aniversario)}</td>
+                      <td className="border px-4 py-2">{formatarTelefoneBR(cliente.telefone)}</td>
                       <td className="border px-4 py-2">{cliente.rua}</td>
                       <td className="border px-4 py-2">{cliente.numero}</td>
                       <td className="border px-4 py-2">{cliente.complemento}</td>
                       <td className="border px-4 py-2">{cliente.bairro}</td>
                       <td className="border px-4 py-2">{cliente.cidade}</td>
-                      <td className="border px-4 py-2">{cliente.cep}</td>
+                      <td className="border px-4 py-2">{formatarCEP(cliente.cep)}</td>
                       <td className="border px-4 py-2">
                         <button onClick={() => handleEditar(cliente.id)} className="text-yellow-500 text-xl">✏️</button>
                       </td>

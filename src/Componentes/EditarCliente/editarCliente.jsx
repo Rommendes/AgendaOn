@@ -1,14 +1,20 @@
+import { Navigate } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../api/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
 
+
 import { createLogger } from "../../lib/logger";
 const logger = createLogger("EditarCliente")
 
+
+
 const EditarCliente = () => {
   const { id } = useParams(); // Pegando o ID do cliente pela URL
-    const navigate = useNavigate();
+    console.log("ID da URL:", id);
+
+  const navigate = useNavigate();
 
   // Estado inicial corrigido para evitar inputs descontrolados
  // const [cliente, setCliente] = useState(null); 
@@ -24,39 +30,66 @@ const EditarCliente = () => {
   cep: "",
 });
 
+const [redirect, setRedirect] = useState(false);
 
-  useEffect(() => {
-    const fetchCliente = async () => {
-     
-      const { data, error } = await supabase
-        .from("clientes")
-        .select("*")
-        .eq("id", id)
-        .single(); // ✅ Correto: apenas busca o cliente
+const [loading, setLoading] = useState(true);
+console.log("RENDER: loading =", loading);
+
   
-      if (error) {
-        logger.error("Erro ao buscar cliente:", error);
-        alert("Erro ao carregar dados do cliente.");
-      } else {
-        ;
-        setCliente({
-          nome: data.nome || "",
-          data_aniversario: data.data_aniversario || "",
-          telefone: data.telefone || "",
-          rua: data.rua || "",
-          numero: data.numero || "",
-          complemento: data.complemento || "",
-          bairro: data.bairro || "",
-          cidade: data.cidade || "",
-          cep: data.cep || "",
-        })
-      }
-    };
-  
-    if (id) {
-      fetchCliente();
+useEffect(() => {
+  let ativo = true;
+
+  const fetchCliente = async () => {
+  console.log("A) fetchCliente começou", id);
+  setLoading(true);
+
+  try {
+    console.log("B) antes do await supabase");
+
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("nome, data_aniversario, telefone, rua, numero, complemento, bairro, cidade, cep")
+      .eq("id", id)
+      .single();
+
+    console.log("C) depois do await supabase", { data, error });
+
+    if (error) {
+      console.log("D) entrou no if(error)");
+      logger.error("Erro ao buscar cliente:", error);
+      alert("Erro ao carregar dados do cliente.");
+      return;
     }
-  }, [id]); // ✅ Executa sempre que o ID mudar
+
+    setCliente({
+      nome: data?.nome || "",
+      data_aniversario: data?.data_aniversario || "",
+      telefone: data?.telefone || "",
+      rua: data?.rua || "",
+      numero: data?.numero ?? "",
+      complemento: data?.complemento || "",
+      bairro: data?.bairro || "",
+      cidade: data?.cidade || "",
+      cep: data?.cep ?? "",
+    });
+  } catch (e) {
+    console.log("E) caiu no catch", e);
+    logger.error("Erro inesperado ao buscar cliente:", e);
+    alert("Erro inesperado ao carregar dados do cliente.");
+  } finally {
+    console.log("F) finally rodou -> setLoading(false)");
+    setLoading(false);
+  }
+};
+
+
+  if (id) fetchCliente();
+
+  return () => {
+    ativo = false;
+  };
+}, [id]);
+
   
 
   const handleSalvar = async (e) => {
@@ -74,19 +107,29 @@ const EditarCliente = () => {
       .select(); // ✅ Garante que os dados atualizados sejam retornados
 
     if (error) {
-      
+      console.log("❌ Deu erro no update", error);
       alert("Erro ao atualizar cliente. Verifique o console.");
     } else {
-     
-      alert("Cliente atualizado com sucesso!");
-
-      navigate("/lista-clientes", { state: { updated: true }});
+     setRedirect(true);
     }
   };
 
-  if (!cliente) {
-    return <p className="text-center text-lg font-bold text-red-500">Carregando dados do cliente...</p>;
-  }
+
+if (loading) {
+  return (
+    <div className="p-6">
+      <p className="text-red-500 font-bold">Carregando dados do cliente...</p>
+      <p className="text-sm text-gray-600">ID: {id}</p>
+      <p className="text-sm text-gray-600">
+        Nome no state: {cliente.nome ? cliente.nome : "(vazio)"}
+      </p>
+    </div>
+  );
+}
+
+if (redirect) {
+  return <Navigate to="/lista-clientes" replace state={{ updated: true }} />;
+}
 
   return (
     <div className="container mx-auto p-6">

@@ -3,8 +3,17 @@ import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute() {
   const { user, loading } = useAuth();
+  
+  if (loading) {
+  return (
+    <div style={{ padding: 24 }}>
+      <p>Carregando...</p>
+    </div>
+  );
+}
 
-  if (loading) return null; // ou um loader bonitinho
+
+
   if (!user) return <Navigate to="/" replace />;
 
   return <Outlet />;

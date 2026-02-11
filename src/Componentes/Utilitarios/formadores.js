@@ -2,7 +2,7 @@ export const apenasNumeros = (valor) =>
   String(valor || "").replace(/\D/g, "");
 
 // (99) 99999-9999
-export const mascararTelefoneBR = (valor) => {
+export const formatarTelefoneBR = (valor) => {
   const digits = apenasNumeros(valor).slice(0, 11);
 
   if (digits.length <= 2) return digits;
@@ -11,9 +11,19 @@ export const mascararTelefoneBR = (valor) => {
 };
 
 // 12345-678
-export const mascararCEP = (valor) => {
+export const formatarCEP = (valor) => {
   const digits = apenasNumeros(valor).slice(0, 8);
 
   if (digits.length <= 5) return digits;
+  
   return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+};
+
+// Exibição: dd/mm/aaaa (aceita ISO "YYYY-MM-DD")
+export const formatarDataBR = (iso) => {
+  if (!iso) return "";
+  // evita bug de fuso horário
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("pt-BR");
 };

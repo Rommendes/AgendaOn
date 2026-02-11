@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from "react";
 import BotaoEnviarCobranca from "../Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx";
 import { getAgendamentosPendentes } from "../api/supabaseClient.js";
-import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
+//import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
 import Header from "../Componentes/Header/Header.jsx";
-
+import { formatarTelefoneBR } from "../Componentes/Utilitarios/formadores.js";
 function formatarValorBR(valor) {
   const n = Number(valor);
   if (Number.isFinite(n)) {
@@ -59,7 +59,7 @@ export default function EnviarCobrancasPendentes() {
                 agendamentos.map((a) => (
                   <tr key={a.id} className="border">
                     <td className="p-2">{a.clientes?.nome || "Sem nome"}</td>
-                    <td className="p-2">{formatarTelefoneExibicao(a.clientes?.telefone) || "Sem telefone"}</td>
+                    <td className="p-2">{formatarTelefoneBR(a.clientes?.telefone) || "Sem telefone"}</td>
                     <td className="p-2">{formatarValorBR(a.valor)}</td>
                     <td className="p-2">
                       <span
@@ -109,7 +109,7 @@ export default function EnviarCobrancasPendentes() {
                 </div>
 
                 <div className="mt-2 text-sm text-gray-700 space-y-1">
-                  <p><strong>Telefone:</strong> {formatarTelefoneExibicao(a.clientes?.telefone) || "Sem telefone"}</p>
+                  <p><strong>Telefone:</strong> {formatarTelefoneBR(a.clientes?.telefone) || "Sem telefone"}</p>
                   <p><strong>Valor:</strong> {formatarValorBR(a.valor)}</p>
                 </div>
 

@@ -6,31 +6,13 @@ import Header from "../Componentes/Header/Header";
 
 import {
   apenasNumeros,
-  mascararCEP,
-  mascararTelefoneBR
+  formatarCEP,
+  formatarTelefoneBR
 } from "../Componentes/Utilitarios/formadores";
 
 
 import { createLogger } from "../lib/logger";
 const logger = createLogger("CadastrarCliente");
-{/* 
-const mascararTelefoneBR = (valor) => {
-  const digits = String(valor || "").replace(/\D/g, "").slice(0, 11); // limita 11
-
-  if (digits.length <= 2) return digits;
-  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-};
-*/}
-
-{/*const mascararCEP = (valor) => {
-  const digits = String(valor || "").replace(/\D/g, "").slice(0, 8); // 8 dígitos
-  if (digits.length <= 5) return digits;
-  return `${digits.slice(0, 5)}-${digits.slice(5)}`;
-};
-
-const apenasNumeros = (valor) => String(valor || "").replace(/\D/g, "");
-*/}
 
 
 const CadastrarCliente = () => {
@@ -88,7 +70,7 @@ const validate = () => {
   const { name, value } = e.target;
 
   if (name === "telefone") {
-    setFormData((prev) => ({ ...prev, telefone: mascararTelefoneBR(value) }));
+    setFormData((prev) => ({ ...prev, telefone: formatarTelefoneBR(value) }));
     return;
   }
 
@@ -101,7 +83,7 @@ const validate = () => {
   if (name === "cep") {
     setFormData((prev) => ({
       ...prev,
-      endereco: { ...prev.endereco, cep: mascararCEP(value) },
+      endereco: { ...prev.endereco, cep: formatarCEP(value) },
     }));
     return;
   }

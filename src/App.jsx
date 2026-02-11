@@ -36,13 +36,14 @@ function App() {
           <Route path="/home" element = { <Home/> }/>
           <Route path="/cadastrar-cliente" element= { <CadastrarCliente/> }/>
           <Route path="/lista-clientes" element={ <ListaClientes/> } />
-          <Route path="/editar-cliente" element={ <EditarCliente/> }/>
           <Route path="/agenda" element= { <Agenda/> }/>
           <Route path="/historico-semanal" element= { <HistoricoSemanal/> }/>
           <Route path="cobrancas" element= { <CobrancasPendentes/> }/>
           <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
           <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
           <Route path="/agenda-semanal" element={<AgendaSemanal />} />
+          <Route path="/editar-cliente/:id" element={<EditarCliente />} />
+
       </Route>
 
     </Routes>
