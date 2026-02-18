@@ -4,7 +4,8 @@ import BotaoEnviarCobranca from "../Componentes/BotaoEnviarCobranca/BotaoEnviarC
 import { getAgendamentosPendentes } from "../api/supabaseClient.js";
 //import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
 import Header from "../Componentes/Header/Header.jsx";
-import { formatarTelefoneBR } from "../Componentes/Utilitarios/formadores.js";
+import { formatarTelefoneBR, whatsappLink} from "../Componentes/Utilitarios/formadores.js";
+
 function formatarValorBR(valor) {
   const n = Number(valor);
   if (Number.isFinite(n)) {
@@ -20,10 +21,13 @@ export default function EnviarCobrancasPendentes() {
   useEffect(() => {
     async function carregarAgendamentos() {
       const resultado = await getAgendamentosPendentes();
+
+      
       setAgendamentos(resultado || []);
     }
     carregarAgendamentos();
   }, []);
+
 
   const atualizarStatus = (id, status) => {
     setStatusEnvio((prev) => ({ ...prev, [id]: status }));
@@ -64,7 +68,7 @@ export default function EnviarCobrancasPendentes() {
                     <td className="p-2">
                       <span
                         className={`inline-block text-xs px-2 py-0.5 rounded ${
-                          a.pagamento === "Não pagou"
+                          a.pagamento === "PENDENTE"
                             ? "bg-red-100 text-red-700"
                             : "bg-emerald-100 text-emerald-700"
                         }`}
@@ -77,6 +81,7 @@ export default function EnviarCobrancasPendentes() {
                         agendamento={a}
                         atualizarStatus={atualizarStatus}
                         status={statusEnvio[a.id]}
+                        disabled={!whatsappLink(a.clientes?.telefone)}
                       />
                     </td>
                   </tr>
@@ -99,7 +104,7 @@ export default function EnviarCobrancasPendentes() {
                   <h2 className="font-semibold text-gray-800">{a.clientes?.nome || "Sem nome"}</h2>
                   <span
                     className={`text-xs px-2 py-0.5 rounded ${
-                      a.pagamento === "Não pagou"
+                      a.pagamento === "PENDENTE"
                         ? "bg-red-100 text-red-700"
                         : "bg-emerald-100 text-emerald-700"
                     }`}
@@ -118,6 +123,7 @@ export default function EnviarCobrancasPendentes() {
                     agendamento={a}
                     atualizarStatus={atualizarStatus}
                     status={statusEnvio[a.id]}
+                    disabled={!a.clientes?.telefone}
                   />
                 </div>
               </div>

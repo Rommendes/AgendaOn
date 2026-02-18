@@ -1,12 +1,25 @@
 import React, { useState } from "react";
 import { montarMensagemCobranca, abrirWhatsApp } from "../../utils/whatsapp.jsx";
+import { apenasNumeros } from "../Utilitarios/formadores.js"; 
+// ⚠️ ajuste o caminho se necessário. Se der erro, me diga onde está o formadores.js.
 
-export default function BotaoEnviarCobranca({ agendamento, atualizarStatus, status, label="Enviar no WhatsApp", className="" }) {
+export default function BotaoEnviarCobranca({
+  agendamento,
+  atualizarStatus,
+  status,
+  label = "Enviar no WhatsApp",
+  className = "",
+  disabled: disabledExternamente = false, // ✅ NOVO
+}) {
   const [enviando, setEnviando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState(false);
 
+  const disabledFinal = enviando || status === "enviado" || disabledExternamente;
+
   const handleClick = async () => {
+    if (disabledFinal) return; // ✅ proteção extra
+
     setEnviando(true);
     setMensagem("");
     setErro(false);
@@ -14,18 +27,28 @@ export default function BotaoEnviarCobranca({ agendamento, atualizarStatus, stat
     try {
       const cliente = agendamento?.clientes || {};
       const nome = cliente?.nome || "Cliente";
-      const telefone = (cliente?.telefone || "").replace(/\D/g, ""); // só dígitos
-      const numeroE164 = telefone.startsWith("55") ? telefone : `55${telefone}`;
+
+      // ✅ TELEFONE SEGURO
+      const tel = apenasNumeros(cliente?.telefone);
+      if (tel.length !== 11 && !(tel.length === 13 && tel.startsWith("55"))) {
+        setErro(true);
+        setMensagem("Cliente sem telefone válido.");
+        return;
+      }
+
+      const numeroE164 = tel.startsWith("55") ? tel : `55${tel}`;
 
       const payload = {
         nome,
         servico: agendamento?.servico || agendamento?.serviço || "",
         data: agendamento?.data_formatada || agendamento?.data || "",
         hora: agendamento?.horario || agendamento?.hora || "",
-        valor: agendamento?.valor_formatado || (agendamento?.valor != null ? `R$ ${Number(agendamento.valor).toFixed(2)}` : ""),
+        valor:
+          agendamento?.valor_formatado ||
+          (agendamento?.valor != null ? `R$ ${Number(agendamento.valor).toFixed(2)}` : ""),
         formaPagamento: agendamento?.forma_pagamento || agendamento?.pagamento || "",
         linkPagamento: agendamento?.link_pagamento || "",
-        observacoes: agendamento?.obs || agendamento?.observacoes || ""
+        observacoes: agendamento?.obs || agendamento?.observacoes || "",
       };
 
       const textoEncoded = montarMensagemCobranca(payload);
@@ -43,22 +66,27 @@ export default function BotaoEnviarCobranca({ agendamento, atualizarStatus, stat
   };
 
   return (
-    <> 
     <div className="flex flex-col gap-1 items-start">
       <button
-        className={`px-3 py-1 rounded ${enviando ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"} text-white text-sm`}
+        type="button"
+        className={`px-3 py-1 rounded text-white text-sm ${
+          disabledFinal ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+        } ${className}`}
         onClick={handleClick}
-        disabled={enviando || status === "enviado"}
+        disabled={disabledFinal}
       >
-        {status === "enviado" ? "Enviado" : enviando ? "Abrindo..." : "Enviar no WhatsApp"}
+        {status === "enviado"
+          ? "Enviado"
+          : enviando
+          ? "Abrindo..."
+          : disabledExternamente
+          ? "Sem telefone"
+          : label}
       </button>
+
       {mensagem && (
         <p className={`text-xs ${erro ? "text-red-600" : "text-green-600"}`}>{mensagem}</p>
       )}
     </div>
-
-      
-
-    </>
   );
 }

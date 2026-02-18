@@ -21,7 +21,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 
 
-// Buscar agendamentos pendentes (pagamento = 'Não pagou')
+// Buscar agendamentos pendentes (pagamento = 'PENDENTE')
 export async function getAgendamentosPendentes() {
   const { data, error } = await supabase
     .from("agendamentos")
@@ -39,12 +39,16 @@ export async function getAgendamentosPendentes() {
         telefone
       )
     `)
-    .eq("pagamento", "Não pagou");
+    .eq("pagamento", "PENDENTE")
+    // .order("data", { ascending: true })
+    // .order("horario", { ascending: true });
 
   if (error) {
     logger.error("Erro ao buscar agendamentos pendentes:", error.message);
     return [];
   }
+  console.log("AGENDAMENTOS (SEM FILTRO):", data);
+
   return data ?? [];
 
   

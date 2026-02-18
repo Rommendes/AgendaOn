@@ -9,7 +9,6 @@ import EditarCliente from "./Componentes/EditarCliente/editarCliente.jsx"
 import Agenda from "./Pages/Agenda.jsx"
 import BuscaCliente from "./Pages/buscaCliente.jsx"
 import HistoricoSemanal from "./Pages/HistoricoSemanal.jsx"
-import CobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import EnviarCobrancasPendentes from "./Pages/EnviarCobrancasPendentes.jsx"
 import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
 import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
@@ -38,7 +37,7 @@ function App() {
           <Route path="/lista-clientes" element={ <ListaClientes/> } />
           <Route path="/agenda" element= { <Agenda/> }/>
           <Route path="/historico-semanal" element= { <HistoricoSemanal/> }/>
-          <Route path="cobrancas" element= { <CobrancasPendentes/> }/>
+          
           <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
           <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
           <Route path="/agenda-semanal" element={<AgendaSemanal />} />

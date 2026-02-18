@@ -364,7 +364,7 @@ className="input-padrao"
 <option value="Dinheiro">Dinheiro</option>
 <option value="Cartão">Cartão</option>
 <option value="Pix">Pix</option>
-<option value="Não pagou">Não pagou</option>
+<option value="PENDENTE">Pendente</option>
 </select>
 </div>
 

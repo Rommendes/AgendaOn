@@ -1,6 +1,6 @@
 import { Link} from "react-router-dom";
 import { useState } from "react";
-import minhaImagem from "../assets/LogoCarmemAgenda.png"
+//import minhaImagem from "../assets/LogoCarmemAgenda.png"
 import BotaoSair from "../Componentes/BotaoSair/index.jsx";
 import { CalendarCog, Minus, Sparkles } from "lucide-react"
 
@@ -19,11 +19,11 @@ export default function Home() {
 
         {/* Imagem e mensagem de boas-vindas */}
         <div className="inline-flex items-end gap-1">
-          <img
+          {/* <img
             src={minhaImagem}
             alt="Imagem"
             className="py-1 rounded-xl w-[150px] h-[100px]"
-          />
+          /> */}
          <div className="flex flex-col justify-start">
             <h1 className=" text-lg font-semibold pb-3  text-md text-primary flex flex-wrap items-center justify-center">
               <Sparkles className="text-primary mx-2" />
@@ -99,7 +99,7 @@ export default function Home() {
         <Link to="/cobrancas" className="botao-menu w-full">
           <span className="material-icons text-secondary text-4xl">group</span>
           <div>
-            <h2 className="font-bold text-lg">Contas  Cobranças</h2>
+            <h2 className="font-bold text-lg">Pendencias</h2>
             <p className="text-sm"> Aqui podemos enviar msg para contas Pendentes </p>
           </div>
         </Link>

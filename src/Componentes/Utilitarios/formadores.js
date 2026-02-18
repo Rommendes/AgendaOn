@@ -1,5 +1,12 @@
-export const apenasNumeros = (valor) =>
-  String(valor || "").replace(/\D/g, "");
+//export const apenasNumeros = (valor) =>
+  //String(valor || "").replace(/\D/g, "");
+export const apenasNumeros = (valor) => String(valor ?? "").replace(/\D/g, "");
+
+export const whatsappLink = (telefone) => {
+  const v = apenasNumeros(telefone);
+  if (v.length !== 11) return null;
+  return `https://wa.me/55${v}`;
+};
 
 // (99) 99999-9999
 export const formatarTelefoneBR = (valor) => {
@@ -27,3 +34,4 @@ export const formatarDataBR = (iso) => {
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("pt-BR");
 };
+
