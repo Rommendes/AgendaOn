@@ -4,7 +4,7 @@ import BotaoEnviarCobranca from "../Componentes/BotaoEnviarCobranca/BotaoEnviarC
 import { getAgendamentosPendentes } from "../api/supabaseClient.js";
 //import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
 import Header from "../Componentes/Header/Header.jsx";
-import { formatarTelefoneBR, whatsappLink} from "../Componentes/Utilitarios/formadores.js";
+import { formatarTelefoneBR, whatsappLink, formatarDataBR} from "../Componentes/Utilitarios/formadores.js";
 
 function formatarValorBR(valor) {
   const n = Number(valor);
@@ -67,13 +67,14 @@ export default function EnviarCobrancasPendentes() {
                     <td className="p-2">{formatarValorBR(a.valor)}</td>
                     <td className="p-2">
                       <span
-                        className={`inline-block text-xs px-2 py-0.5 rounded ${
-                          a.pagamento === "PENDENTE"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-emerald-100 text-emerald-700"
+                        className={`text-[11px] px-2 py-0.5 rounded-full bg-red-600 text-white font-semibold tracking-wide ${
+                          a.pagamento === "Pendente"
+                           
+                           
                         }`}
                       >
-                        {a.pagamento || "-"}
+                        {/*{a.pagamento || "-"}*/}
+                        Pendente
                       </span>
                     </td>
                     <td className="p-2">
@@ -99,31 +100,34 @@ export default function EnviarCobrancasPendentes() {
             </div>
           ) : (
             agendamentos.map((a) => (
-              <div key={a.id} className="border rounded-lg p-3 bg-white shadow">
+              <div
+                key={a.id}
+                className="card-pendente"
+              >
                 <div className="flex items-center justify-between">
                   <h2 className="font-semibold text-gray-800">{a.clientes?.nome || "Sem nome"}</h2>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      a.pagamento === "PENDENTE"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-emerald-100 text-emerald-700"
-                    }`}
-                  >
-                    {a.pagamento || "-"}
+
+                  <span className="badge-pendente">
+                    Pendente
                   </span>
                 </div>
 
-                <div className="mt-2 text-sm text-gray-700 space-y-1">
-                  <p><strong>Telefone:</strong> {formatarTelefoneBR(a.clientes?.telefone) || "Sem telefone"}</p>
+                <div className="mt-2 text-sm text-gray-500 space-y-1">
+                  {/* <p><strong>Telefone:</strong> {formatarTelefoneBR(a.clientes?.telefone) || "Sem telefone"}</p>
                   <p><strong>Valor:</strong> {formatarValorBR(a.valor)}</p>
+                  <p><strong>Serviço:</strong> {a.servico || "-"}</p>
+                  <p><strong>Data:</strong> {a.data || "-"}</p>
+                  <p><strong>Horário:</strong> {a.horario || "-"}</p> */}
+                  <p className="text-xs text-gray-500">
+                    Atendimento em {a.data}, às {a.horario}
+                  </p>
                 </div>
 
-                <div className="mt-3">
+                <div className="mt-3 flex justify-end">
                   <BotaoEnviarCobranca
                     agendamento={a}
                     atualizarStatus={atualizarStatus}
                     status={statusEnvio[a.id]}
-                    disabled={!a.clientes?.telefone}
                   />
                 </div>
               </div>

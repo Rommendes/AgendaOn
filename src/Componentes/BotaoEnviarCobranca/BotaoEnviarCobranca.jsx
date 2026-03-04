@@ -7,7 +7,7 @@ export default function BotaoEnviarCobranca({
   agendamento,
   atualizarStatus,
   status,
-  label = "Enviar no WhatsApp",
+  label = "Enviar cobrança",
   className = "",
   disabled: disabledExternamente = false, // ✅ NOVO
 }) {
@@ -70,7 +70,7 @@ export default function BotaoEnviarCobranca({
       <button
         type="button"
         className={`px-3 py-1 rounded text-white text-sm ${
-          disabledFinal ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+          disabledFinal ? "bg-emerald-600 text-white cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
         } ${className}`}
         onClick={handleClick}
         disabled={disabledFinal}

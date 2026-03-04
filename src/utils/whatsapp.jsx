@@ -164,7 +164,7 @@ export function mensagemCobranca({
     !_link && !_pix ? `Formas de pagamento: PIX, dinheiro ou cartão na recepção.` : "",
     ``,
     `Qualquer dúvida, estamos à disposição!`,
-    `*Salão Sandro e Carmem*`,
+    `*{ASSINATURA....}*`,
   ].filter(Boolean).join("\n");
 }
 export const montarMensagemCobranca = mensagemCobranca;

@@ -1,10 +1,14 @@
-/* src/index.css ou src/main.css */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Seus estilos personalizados */
+/* Estilos globais */
+body {
+  @apply bg-blue-50 font-Poppins;
+}
+
+/* Componentes (tudo em um lugar só) */
 @layer components {
   .botao-menu {
     @apply bg-primary text-white p-4 rounded-2xl flex items-center gap-4 hover:bg-blue-800 transition;
@@ -14,39 +18,47 @@
     @apply block w-full text-white px-4 py-2 rounded-lg text-center;
   }
 
-  .input-padrao {
-    @apply bg-blue-50 text-cinza rounded-sm w-full px-3 py-2 text-sm border border-gray-400 focus:ring-2 focus:ring-borderLigth focus:outline-none focus:border-b-secondary focus:border-b-2 appearance-none leading-tight;
-  }
-  
-   /* Botão de lembrete */
-  .btn-lembrete-primary {
-    @apply bg-primary text-white hover:bg-alternativo transition;
-  }
-
-  .btn-lembrete-secondary {
-    @apply bg-secondary text-white hover:bg-alternativo transition;
-  }
-}
-  
-  
   .botao-submenu-cor {
     @apply bg-secondary hover:bg-alternativo;
   }
-  body {
-    @apply bg-blue-50  font-Poppins; 
+
+  .input-padrao {
+    @apply bg-blue-50 text-cinza rounded-sm w-full px-3 py-2 text-sm border border-gray-400
+    focus:ring-2 focus:ring-borderLigth focus:outline-none focus:border-b-secondary focus:border-b-2
+    appearance-none leading-tight;
   }
 
-  
-@layer components {
   /* Botão base e variações de cor */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded text-white text-sm transition;
   }
-  .btn-green  { @apply bg-emerald-600 hover:bg-emerald-700; } /* salvar/confirmar */
-  .btn-yellow { @apply bg-amber-500 hover:bg-amber-600; }    /* editar/atenção  */
-  .btn-red    { @apply bg-red-600 hover:bg-red-700; }        /* excluir/perigo  */
-  .btn-gray   { @apply bg-gray-300 text-gray-800 hover:bg-gray-400; } /* neutro */
-  .btn-lembrete-primary   { @apply bg-primary text-white hover:bg-alternativo; }
-  .btn-lembrete-secondary { @apply bg-secondary text-white hover:bg-alternativo; }
-}
+  .btn-green  { @apply bg-emerald-600 hover:bg-emerald-700; }
+  .btn-yellow { @apply bg-amber-500 hover:bg-amber-600; }
+  .btn-red    { @apply bg-red-600 hover:bg-red-700; }
+  .btn-gray   { @apply bg-gray-300 text-gray-800 hover:bg-gray-400; }
 
+  /* Lembretes */
+  .btn-lembrete-primary   { @apply bg-primary text-white hover:bg-alternativo transition; }
+  .btn-lembrete-secondary { @apply bg-secondary text-white hover:bg-alternativo transition; }
+
+  /* ✅ Cobranças Pendentes (cards / badges) */
+  .card-pendente {
+    @apply border-l-4 border-l-red-500 border border-red-100 rounded-lg p-3 bg-white shadow-sm;
+  }
+
+  .badge-pendente {
+    @apply text-xs px-3 py-1 rounded-full bg-red-600 text-white font-semibold shadow-sm;
+  }
+
+  .badge-sem-numero {
+    @apply text-xs px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-semibold;
+  }
+
+  .valor-destaque {
+    @apply text-lg font-bold text-gray-900;
+  }
+
+  .status-enviado {
+    @apply inline-block text-xs px-3 py-1 rounded-full bg-emerald-600 text-white font-semibold;
+  }
+}
