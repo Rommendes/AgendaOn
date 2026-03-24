@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,Fragment } from "react";
 import { supabase } from "../api/supabaseClient";
-import { Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
+import { Check, X, Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
 
 import InputData from "../Componentes/CamposReutilizaveis/InputData"
 import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
@@ -19,14 +19,15 @@ function formatarValor(valor) {
 }
 
 const AgendaAtendimento = () => {
+  const [statusLocal, setStatusLocal] = useState({});
   const [clientes, setClientes] = useState([]);
+  const [linhaPagamentoAberta, setLinhaPagamentoAberta] = useState(null);
   const [novoAgendamento, setNovoAgendamento] = useState({
     data: "",
     horario: "",
     cliente_id: "",
     servico: "",
     valor: "",
-    pagamento: "",
     obs: "",
   });
   const [agendamentos, setAgendamentos] = useState([]);
@@ -40,14 +41,45 @@ const AgendaAtendimento = () => {
     pagamento: "",
     obs: ""
   });
- 
+const alterarStatus = async (id, novoStatus) => {
+  const mapaStatus = {
+    Agendado: "agendado",
+    Concluído: "concluido",
+    Cancelado: "cancelado",
+  };
+
+  const statusParaSalvar = mapaStatus[novoStatus] || "agendado";
+
+  const { data, error } = await supabase
+    .from("agendamentos")
+    .update({ status_agendamento: statusParaSalvar })
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    logger.error("Erro ao atualizar status:", error);
+    alert("Erro ao atualizar status do atendimento.");
+    return;
+  }
+
+    console.log("Status atualizado no banco:", data);
+
+  setStatusLocal((prev) => ({
+    ...prev,
+    [id]: novoStatus,
+  }));
+
+  if (novoStatus === "Concluído") {
+  setLinhaPagamentoAberta(id);
+}
+};
 
  useEffect(() => {
   const buscarAgendamentos = async () => {
     const { data, error } = await supabase
       .from("agendamentos")
       .select(`
-        id, data, horario, servico, valor, pagamento, obs, cliente_id,
+        id, data, horario, servico, valor, pagamento, obs, cliente_id, status_agendamento,
         clientes ( id, nome, telefone )
       `)
       .order("data", { ascending: false })
@@ -80,53 +112,55 @@ useEffect(() => {
   buscarClientes();
 }, []);
 
-  
   function converterDataParaISO(dataBr) {
     const [dia, mes, ano] = dataBr.split("/");
     return `${ano}-${mes}-${dia}`;
   }
+const salvarAgendamento = async () => {
+  const { data, horario, cliente_id, servico, valor } = novoAgendamento;
 
-  const salvarAgendamento = async () => {
-    const { data, horario, cliente_id, servico, valor, pagamento } = novoAgendamento;
+  if (!data || !horario || !cliente_id || !servico || !valor) {
+    alert("Por favor, preencha os campos obrigatórios: data, horário, cliente, serviço e valor.");
+    return;
+  }
 
-    if (!data || !horario || !cliente_id || !servico || !valor || !pagamento) {
-      alert("Por favor, preencha todos os campos obrigatórios: data, horário, cliente, serviço, valor e forma de pagamento.");
-      return;
-    }
+  const valorComPonto = valor.replace(",", ".");
+  const valorConvertido = parseFloat(valorComPonto);
 
-    const valorComPonto = valor.replace(",", ".");
-    const valorConvertido = parseFloat(valorComPonto);
-    if (isNaN(valorConvertido)) {
-      alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
-      return;
-    }
+  if (isNaN(valorConvertido)) {
+    alert("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
+    return;
+  }
 
-    const dataConvertida = converterDataParaISO(data);
+  const dataConvertida = converterDataParaISO(data);
 
-    const agendamentoFinal = {
-      ...novoAgendamento,
-      data: dataConvertida,
-      valor: valorConvertido,
-    };
-
-    const { error } = await supabase.from("agendamentos").insert([agendamentoFinal]);
-
-    if (error) {
-      logger.error("Erro ao salvar agendamento:", error);
-      alert("Erro ao salvar agendamento. Verifique os dados e tente novamente.");
-    } else {
-      setNovoAgendamento({
-        data: "",
-        horario: "",
-        cliente_id: "",
-        servico: "",
-        valor: "",
-        pagamento: "",
-        obs: "",
-      });
-      location.reload();
-    }
+  const agendamentoFinal = {
+    data: dataConvertida,
+    horario,
+    cliente_id,
+    servico,
+    valor: valorConvertido,
+    pagamento: "",
+    obs: novoAgendamento.obs || "",
   };
+
+  const { error } = await supabase.from("agendamentos").insert([agendamentoFinal]);
+
+  if (error) {
+    logger.error("Erro ao salvar agendamento:", error);
+    alert("Erro ao salvar agendamento. Verifique os dados e tente novamente.");
+  } else {
+    setNovoAgendamento({
+      data: "",
+      horario: "",
+      cliente_id: "",
+      servico: "",
+      valor: "",
+      obs: "",
+    });
+    location.reload();
+  }
+};
 const iniciarEdicao = (agendamento) => {
   setEditandoId(agendamento.id);
   setFormEdicao({
@@ -149,11 +183,6 @@ const salvarEdicao = async (id) => {
   if (Number.isNaN(valorConvertido)) { alert("Valor inválido."); return; }
   if (!formEdicao.data) { alert("Selecione a data."); return; }
   if (!formEdicao.cliente_id) { alert("Selecione o cliente."); return; }
-
-  // const clienteIdValue = Number.isNaN(Number(formEdicao.cliente_id))
-  //   ? String(formEdicao.cliente_id)   // UUID / texto
-  //   : Number(formEdicao.cliente_id);  // inteiro
-
 
   const clienteIdValue = String(formEdicao.cliente_id);
 
@@ -203,16 +232,9 @@ const salvarEdicao = async (id) => {
   alert("Agendamento atualizado com sucesso!");
 };
 
-
-
-
-
   const atualizarCampoEdicao = (campo, valor) => {
     setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
   };
-
-
-
 
   const excluirAgendamento = async (id) => {
     const { error } = await supabase.from("agendamentos").delete().eq("id", id);
@@ -245,9 +267,6 @@ const salvarEdicao = async (id) => {
     return acc;
   }, {});
 
-
-
-  
   return (
     <div className="container mx-auto p-4">
 
@@ -340,7 +359,6 @@ className="input-padrao"
 </select>
 </div>
 
-
 {/* Valor */}
 <div className="flex flex-col">
 <label className="text-sm mb-1">Valor</label>
@@ -352,23 +370,6 @@ onChange={(e) => setNovoAgendamento({ ...novoAgendamento, valor: e.target.value 
 className="input-padrao"
 />
 </div>
-{/* Pagamento */}
-<div className="flex flex-col">
-<label className="text-sm text-gray-700 mb-1">Forma de Pagamento</label>
-<select
-value={novoAgendamento.pagamento}
-onChange={(e) => setNovoAgendamento({ ...novoAgendamento, pagamento: e.target.value })}
-className="input-padrao"
->
-<option value="" >Selecione</option>
-<option value="Dinheiro">Dinheiro</option>
-<option value="Cartão">Cartão</option>
-<option value="Pix">Pix</option>
-<option value="PENDENTE">Pendente</option>
-</select>
-</div>
-
-
 
 {/* Observações */}
 <div className="flex flex-col ">
@@ -381,7 +382,6 @@ onChange={(e) => setNovoAgendamento({ ...novoAgendamento, obs: e.target.value })
 className="input-padrao resize-none h-[38px]"
 />
 </div>
-
 
 </div>
 <button
@@ -444,18 +444,18 @@ if (faltandoTelefone?.length) {
           <th className="border p-2">Horário</th>
           <th className="border p-2 min-w-[180px] text-center">Cliente</th>
           <th className="border p-2">Serviço</th>
-          
           <th className="border p-2">Valor</th>
-          <th className="border p-2">Pagamento</th>
-          <th className="border p-2 min-w-[180px] text-center">Observações</th>
+          <th className="border p-2">status</th>
+          {/* <th className="border p-2">Pagamento</th> */}
+          <th className="border p-2 min-w-[180px] text-center">Obs</th>
           <th className="border p-2">Ações</th>
         </tr>
       </thead>
+
       <tbody>
-
-
         {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
         {agendamentosDoDia.map((agendamento) => (
+          <Fragment key={agendamento.id}>
           <tr key={agendamento.id} className="border">
   {/* Data */}
   <td className="border-2 px-4 py-3">
@@ -528,18 +528,35 @@ if (faltandoTelefone?.length) {
     )}
   </td>
 
-  {/* Pagamento */}
-  <td className="p-2 border">
-    {editandoId === agendamento.id ? (
-      <input
-        value={formEdicao.pagamento}
-        onChange={(e) => atualizarCampoEdicao("pagamento", e.target.value)}
-        className="border p-1 rounded"
-      />
-    ) : (
-      agendamento.pagamento
-    )}
-  </td>
+{/*STATUS */}
+<td className="p-2 border text-center">
+  <span
+    className={`badge-status ${
+      (statusLocal[agendamento.id] ||
+        (agendamento.status_agendamento === "concluido"
+          ? "Concluído"
+          : agendamento.status_agendamento === "cancelado"
+          ? "Cancelado"
+          : "Agendado")) === "Concluído"
+        ? "badge-concluido"
+        : (statusLocal[agendamento.id] ||
+           (agendamento.status_agendamento === "concluido"
+             ? "Concluído"
+             : agendamento.status_agendamento === "cancelado"
+             ? "Cancelado"
+             : "Agendado")) === "Cancelado"
+        ? "badge-cancelado"
+        : "badge-agendado"
+    }`}
+  >
+    {statusLocal[agendamento.id] ||
+      (agendamento.status_agendamento === "concluido"
+        ? "Concluído"
+        : agendamento.status_agendamento === "cancelado"
+        ? "Cancelado"
+        : "Agendado")}
+  </span>
+</td>
 
   {/* Observações */}
   <td className="border-2 p-2 min-w-[250px] text-left ">
@@ -579,13 +596,55 @@ if (faltandoTelefone?.length) {
     type="button"
       onClick={() => excluirAgendamento(agendamento.id)}
       className="text-red-600"
+      title="Excluir atendimento"
     >
       <Trash2 size={20} />
     </button>
+    
+    <button
+  type="button"
+  onClick={() => alterarStatus(agendamento.id, "Concluído")}
+  className="text-green-700 hover:text-green-800"
+  title="Concluir atendimento"
+>
+  <Save size={20}/>
+</button>
+
+<button
+  type="button"
+  onClick={() => alterarStatus(agendamento.id, "Cancelado")}
+  className="text-red-600 hover:text-red-700"
+  title="Cancelar atendimento"
+>
+  <X size={24} className=""/>
+</button>
   </td>
 </tr>
 
+ {linhaPagamentoAberta === agendamento.id && (
+        <tr>
+          <td colSpan="8" className="bg-gray-50 px-4 py-3">
+            <div className="flex items-center gap-4">
+              <span className="font-medium text-gray-700">💰 Pagamento:</span>
+
+              <select className="input-padrao max-w-[150px]">
+                <option value="">Selecione</option>
+                <option value="Pix">Pix</option>
+                <option value="Cartão">Cartão</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Pendente">Pendente</option>
+              </select>
+
+              <button className="btn btn-green">
+                Confirmar pagamento
+              </button>
+            </div>
+          </td>
+        </tr>
+      )}
+</Fragment>
         ))}
+
       </tbody>
     </table>
     </div>
