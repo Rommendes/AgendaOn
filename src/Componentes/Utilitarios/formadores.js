@@ -1,5 +1,4 @@
-//export const apenasNumeros = (valor) =>
-  //String(valor || "").replace(/\D/g, "");
+//import { apenasNumeros } from "./getDiaSemanaComData"
 export const apenasNumeros = (valor) => String(valor ?? "").replace(/\D/g, "");
 
 export const whatsappLink = (telefone) => {
