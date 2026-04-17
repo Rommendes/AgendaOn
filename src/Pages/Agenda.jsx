@@ -71,31 +71,32 @@ const alterarStatus = async (id, novoStatus) => {
     mostrarMensagem("Erro ao atualizar status do atendimento.");
     return;
   }
-
-    console.log("Status atualizado no banco:", data);
-
-
-setStatusLocal((prev) => ({
+  setStatusLocal((prev) => ({
   ...prev,
   [id]: novoStatus,
 }));
 
-
 const agendamentoAtual = agendamentos.find((item) => item.id === id);
 
-console.log("Agendamento atual:", agendamentoAtual);
-console.log("Pagamento atual:", agendamentoAtual?.pagamento);
-
 if (novoStatus === "Concluído") {
-  if (!agendamentoAtual?.pagamento) {
+  const pagamentoAtual = agendamentoAtual?.pagamento;
+  const precisaAbrirPagamento =
+    !pagamentoAtual || pagamentoAtual === "PENDENTE";
+
+  if (precisaAbrirPagamento) {
     setLinhaPagamentoAberta(id);
   } else {
     setLinhaPagamentoAberta(null);
   }
-}
+
+  mostrarMensagem("sucesso", "Atendimento concluído.");
+} else if (novoStatus === "Cancelado") {
+  setLinhaPagamentoAberta(null);
+  mostrarMensagem("sucesso", "Atendimento cancelado com sucesso.");
 }
 
- useEffect(() => {
+}
+
   const buscarAgendamentos = async () => {
     const { data, error } = await supabase
       .from("agendamentos")
@@ -113,8 +114,12 @@ if (novoStatus === "Concluído") {
       }
      
   };
-  buscarAgendamentos();
-}, []);
+
+ useEffect(() => {
+
+    buscarAgendamentos();
+  }, []);
+
 
 useEffect(() => {
   const buscarClientes = async () => {
@@ -137,19 +142,20 @@ useEffect(() => {
     const [dia, mes, ano] = dataBr.split("/");
     return `${ano}-${mes}-${dia}`;
   }
+
 const salvarAgendamento = async () => {
   const { data, horario, cliente_id, servico, valor } = novoAgendamento;
 
   if (!data || !horario || !cliente_id || !servico || !valor) {
-    mostrarMensagem("Por favor, preencha os campos obrigatórios: data, horário, cliente, serviço e valor.");
+    mostrarMensagem("erro", "Preencha data, horário, cliente, serviço e valor.");
     return;
   }
 
-  const valorComPonto = valor.replace(",", ".");
+  const valorComPonto = String(valor).replace(",", ".");
   const valorConvertido = parseFloat(valorComPonto);
 
-  if (isNaN(valorConvertido)) {
-    mostrarMensagem("O valor informado é inválido. Use números (ex: 25.00 ou 25,00).");
+  if (isNaN(valorConvertido) || valorConvertido <= 0) {
+    mostrarMensagem("erro", "Valor inválido.");
     return;
   }
 
@@ -163,24 +169,32 @@ const salvarAgendamento = async () => {
     valor: valorConvertido,
     pagamento: "",
     obs: novoAgendamento.obs || "",
+    status_agendamento: "agendado",
   };
 
-  const { error } = await supabase.from("agendamentos").insert([agendamentoFinal]);
+  const { data: novoRegistro, error } = await supabase
+    .from("agendamentos")
+    .insert([agendamentoFinal])
+  
 
   if (error) {
     logger.error("Erro ao salvar agendamento:", error);
-    mostrarMensagem("Erro ao salvar agendamento. Verifique os dados e tente novamente.");
-  } else {
-    setNovoAgendamento({
-      data: "",
-      horario: "",
-      cliente_id: "",
-      servico: "",
-      valor: "",
-      obs: "",
-    });
-    location.reload();
+    mostrarMensagem("erro", "Erro ao salvar agendamento.");
+    return;
   }
+
+ await buscarAgendamentos();
+
+  setNovoAgendamento({
+    data: "",
+    horario: "",
+    cliente_id: "",
+    servico: "",
+    valor: "",
+    obs: "",
+  });
+
+  mostrarMensagem("sucesso", "Agendamento salvo com sucesso!");
 };
 
 
@@ -381,13 +395,7 @@ const mostrarMensagem = (tipo, texto) => {
     tipo,
     texto,
   });
-  //  setTimeout(() => {
-  //   setMensagemSistema({
-  //     aberta: false,
-  //     tipo: "",
-  //     texto: "",
-  //   });
-  // }, 3000);
+  
 };
 {/*Editar pagamento*/}
 const editarPagamento = (agendamento) => {
@@ -397,6 +405,36 @@ const editarPagamento = (agendamento) => {
   }));
 
   setLinhaPagamentoAberta(agendamento.id);
+};
+
+const getStatusBadge = (status, pagamento) => {
+  const pagamentoNormalizado = (pagamento || "").toUpperCase();
+
+  if (status === "Concluído" && pagamentoNormalizado === "PENDENTE") {
+    return {
+      label: "Pendente",
+      style: "bg-red-100 text-red-700",
+    };
+  }
+
+  if (status === "Concluído") {
+    return {
+      label: "Concluído",
+      style: "bg-green-100 text-green-700",
+    };
+  }
+
+  if (status === "Agendado") {
+    return {
+      label: "Agendado",
+      style: "bg-blue-100 text-blue-700",
+    };
+  }
+
+  return {
+    label: "Cancelado",
+    style: "bg-gray-200 text-gray-700",
+  };
 };
   return (
     <div className="container mx-auto p-4">
@@ -585,9 +623,20 @@ if (faltandoTelefone?.length) {
 
       <tbody>
         {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
-        {agendamentosDoDia.map((agendamento) => (
+        {agendamentosDoDia.map((agendamento) => {
+          const statusAtual =
+            statusLocal[agendamento.id] ||
+            (agendamento.status_agendamento === "concluido"
+              ? "Concluído"
+              : agendamento.status_agendamento === "cancelado"
+              ? "Cancelado"
+              : "Agendado");
+          const badge = getStatusBadge(statusAtual, agendamento.pagamento);
+        
+    return (
+
           <Fragment key={agendamento.id}>
-          <tr key={agendamento.id} className="border">
+          <tr className="border">
   {/* Data */}
 
 <td className="border-2 p-2 min-w-[100px] text-left">
@@ -684,50 +733,21 @@ if (faltandoTelefone?.length) {
 </td>
 
 
-
-
-<td className="p-2 border text-center">
+{/* <td className="p-2 border text-center">
   {(() => {
-    const status =
-      statusLocal[agendamento.id] ||
-      (agendamento.status_agendamento === "concluido"
-        ? "Concluído"
-        : agendamento.status_agendamento === "cancelado"
-        ? "Cancelado"
-        : "Agendado");
-
-    const pagamentoNormalizado = (agendamento.pagamento || "").toUpperCase();
-
-    if (status === "Concluído" && pagamentoNormalizado === "PENDENTE") {
-      return (
-        <span className="px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-semibold">
-          Pendente
-        </span>
-      );
-    }
-
-    if (status === "Concluído") {
-      return (
-        <span className="px-2 py-1 rounded bg-green-100 text-green-700 text-xs font-semibold">
-          Concluído
-        </span>
-      );
-    }
-
-    if (status === "Agendado") {
-      return (
-        <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-semibold">
-          Agendado
-        </span>
-      );
-    }
+    const badge = getStatusBadge(statusAtual, agendamento.pagamento);
 
     return (
-      <span className="px-2 py-1 rounded bg-gray-200 text-gray-700 text-xs font-semibold">
-        Cancelado
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.style}`}>
+        {badge.label}
       </span>
     );
   })()}
+</td> */}
+<td className="p-2 border text-center">
+  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.style}`}>
+    {badge.label}
+  </span>
 </td>
 
   {/* Observações */}
@@ -752,7 +772,7 @@ if (faltandoTelefone?.length) {
         className="text-green-600"
         title="Salvar"
       >
-        {/*💙*/}
+        
         <SquareCheckBig size={20} />
       </button>
     ) : (
@@ -791,14 +811,17 @@ if (faltandoTelefone?.length) {
 >
   <X size={24} className=""/>
 </button>
-     <button
+
+     {statusAtual !== "Cancelado" && (
+      <button
             type="button"
             onClick={() => editarPagamento(agendamento)}
             className="text-primary hover:text-alternativo"
             title="Editar pagamento"
           >
-         {/*♥️ */}   <BadgeDollarSign size={20}/>
+         <BadgeDollarSign size={20}/>
           </button>
+     )}
   </td>
 </tr>
 
@@ -852,7 +875,8 @@ if (faltandoTelefone?.length) {
 )}
 
 </Fragment>
-        ))}
+  )
+})}
 
       </tbody>
     </table>
