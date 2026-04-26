@@ -143,7 +143,7 @@ export default function AgendaSemanal() {
                Lembretes da semana
             </button>
           </div>
-
+A
           {/* Dias da semana */}
           <div className="p-3 space-y-6">
             {sem.dias.map(([dataISO, ags]) => (

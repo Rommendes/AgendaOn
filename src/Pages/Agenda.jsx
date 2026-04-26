@@ -1,11 +1,11 @@
 import { useEffect, useState,Fragment } from "react";
 import { supabase } from "../api/supabaseClient";
-import { X, BadgeDollarSign, SquareCheckBig, Pencil, Trash2, Save, Clock, ClipboardPlusIcon} from "lucide-react";
+import { X, BadgeDollarSign, SquareCheckBig, Pencil, Trash2, Save, Clock, CircleOff, ClipboardPlusIcon} from "lucide-react";
 
 import InputData from "../Componentes/CamposReutilizaveis/InputData"
 import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
 import Header from "../Componentes/Header/Header";
-import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp"; 
+import {  enviarLembreteDeAgendamento } from "../utils/whatsapp"; 
 import { createLogger } from "../lib/logger"; 
 const logger = createLogger("Agendamentos");
 
@@ -49,6 +49,11 @@ const AgendaAtendimento = () => {
   aberta: false,
   tipo: "",
   texto: "",
+});
+  const [filaLembretes, setFilaLembretes] = useState({
+  aberta: false,
+  lista: [],
+  indiceAtual: 0,
 });
 
 const alterarStatus = async (id, novoStatus) => {
@@ -377,7 +382,7 @@ const atualizarCampoEdicao = (campo, valor) => {
     );
 
     setLinhaPagamentoAberta(null);
-    mostrarMensagem("sucesso", "Pagamento salvo com sucesso!");
+    mostrarMensagem("sucesso", "Pagamento atualizado!");
   });
 };
 
@@ -436,6 +441,47 @@ const getStatusBadge = (status, pagamento) => {
     style: "bg-gray-200 text-gray-700",
   };
 };
+  const iniciarFilaLembretes = async (lista) => {
+  const listaComTelefone = lista.filter((ag) => ag?.clientes?.telefone);
+
+  if (!listaComTelefone.length) {
+    mostrarMensagem("erro", "Nenhum cliente deste dia possui telefone cadastrado.");
+    return;
+  }
+
+  setFilaLembretes({
+    aberta: true,
+    lista: listaComTelefone,
+    indiceAtual: 0,
+  });
+
+  await enviarLembreteDeAgendamento(listaComTelefone[0]);
+};
+
+const enviarProximoLembrete = async () => {
+  const proximoIndice = filaLembretes.indiceAtual + 1;
+  const proximoAgendamento = filaLembretes.lista[proximoIndice];
+
+  if (!proximoAgendamento) {
+    setFilaLembretes({
+      aberta: false,
+      lista: [],
+      indiceAtual: 0,
+    });
+
+    mostrarMensagem("sucesso", "Todos os lembretes foram abertos.");
+    return;
+  }
+
+  setFilaLembretes((prev) => ({
+    ...prev,
+    indiceAtual: proximoIndice,
+  }));
+
+  await enviarLembreteDeAgendamento(proximoAgendamento);
+};
+
+
   return (
     <div className="container mx-auto p-4">
 
@@ -576,48 +622,30 @@ className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-primary shad
   <h2 className="text-xl font-normal text-primary mb-0 relative">{diaSemana}</h2>
   
   {/* 🟡 ENVIAR Lembrete */}
-  <button 
-    type="button"
-    onClick={async () => {
-      if (!agendamentosDoDia?.length) return;
-     const { enviados, copiados, faltandoTelefone } =
-  await enviarLembretesEmLote(agendamentosDoDia, { intervalMs: 2000, copiarSemTelefone: false });
-
-mostrarMensagem(
-  `Lembretes: ${enviados} enviados no WhatsApp` +
-  (copiados ? `, ${copiados} copiados` : "") +
-  (faltandoTelefone?.length ? `\n${faltandoTelefone.length} sem telefone (veja Console).` : "")
-);
-
-if (faltandoTelefone?.length) {
-  console.table(
-    faltandoTelefone.map(f => ({ nome: f.nome, mensagem: f.mensagem }))
-  );
-}
-
-    }}
-    className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-4 py-2 rounded-lg hover:bg-secondary transition"
-    title="Enviar lembretes para todos deste dia"
-  >
-    <Clock size={24}/>
+  <button
+  type="button"
+  onClick={() => iniciarFilaLembretes(agendamentosDoDia)}
+  className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-4 py-2 rounded-lg hover:bg-secondary transition"
+  title="Enviar lembretes para todos deste dia"
+>
+  <Clock size={24} />
   Enviar lembrete
-    {/*⏰ Enviar lembrete*/}
-  </button>
+</button>
 </div>
 
-  <div className="overflow-x-auto">
-    <table className="w-full border min-w-[700px]">
-      <thead className="bg-gray-100 text-sm uppercase text-cinza font-bold ">
+  <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+    <table className="w-full min-w-[820px] border-separate border-spacing-0">
+      <thead className="bg-violet-100 text-[11px] uppercase text-primary ">
         <tr className="overflow-x-auto">
-          <th className="border p-2">Data</th>
-          <th className="border p-2">Horário</th>
-          <th className="border p-2 min-w-[180px] text-center">Cliente</th>
-          <th className="border p-2">Serviço</th>
-          <th className="border p-2">Valor</th>
-          <th className="border p-2">status</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">Data</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">Horário</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-center font-semibold min-w-[180px]">Cliente</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">Serviço</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">Valor</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">status</th>
           {/* <th className="border p-2">Pagamento</th> */}
-          <th className="border p-2 min-w-[180px] text-center">Obs</th>
-          <th className="border p-2">Ações</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-center font-semibold min-w-[180px]">Obs</th>
+          <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">Ações</th>
         </tr>
       </thead>
 
@@ -639,7 +667,7 @@ if (faltandoTelefone?.length) {
           <tr className="border">
   {/* Data */}
 
-<td className="border-2 p-2 min-w-[100px] text-left">
+<td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
   {editandoId === agendamento.id ? (
     <InputData
       value={formEdicao.data || ""}
@@ -650,7 +678,7 @@ if (faltandoTelefone?.length) {
   )}
 </td>
   {/* Horário */}
-  <td className="border-2 p-2 min-w-[100px] text-left">
+  <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
   {editandoId === agendamento.id ? (
     <input
       type="time"
@@ -670,7 +698,7 @@ if (faltandoTelefone?.length) {
 </td>
 
   {/* Cliente */}
-  <td className="border-2 p-2 min-w-[180px] text-left ">
+  <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm ">
     {editandoId === agendamento.id ? (
       <select
         value={formEdicao.cliente_id || ""}
@@ -689,7 +717,7 @@ if (faltandoTelefone?.length) {
 
   {/* Serviço */}
 
-<td className="border px-2 p-2 min-w-[180px] text-left">
+<td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
   {editandoId === agendamento.id ? (
     <select
       value={formEdicao.servico || ""}
@@ -712,7 +740,7 @@ if (faltandoTelefone?.length) {
   )}
 </td>
   {/* Valor */}
-  <td className="p-2 border">
+  <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
   {editandoId === agendamento.id ? (
     <input
       value={formEdicao.valorFormatado || ""}
@@ -733,25 +761,14 @@ if (faltandoTelefone?.length) {
 </td>
 
 
-{/* <td className="p-2 border text-center">
-  {(() => {
-    const badge = getStatusBadge(statusAtual, agendamento.pagamento);
-
-    return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.style}`}>
-        {badge.label}
-      </span>
-    );
-  })()}
-</td> */}
-<td className="p-2 border text-center">
+<td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.style}`}>
     {badge.label}
   </span>
 </td>
 
   {/* Observações */}
-  <td className="border-2 p-2 min-w-[250px] text-left ">
+  <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
     {editandoId === agendamento.id ? (
       <input
         value={formEdicao.obs}
@@ -764,65 +781,73 @@ if (faltandoTelefone?.length) {
   </td>
 
   {/* Ações */}
-  <td className="p-2 flex gap-2">
+
+ <td className="border-b border-gray-200 px-3 py-2 md:px-4 md:py-3 min-w-[180px]">
+  <div className="flex items-center justify-center gap-3 whitespace-nowrap">
     {editandoId === agendamento.id ? (
       <button
-      type="button"
+        type="button"
         onClick={() => salvarEdicao(agendamento.id)}
         className="text-green-600"
         title="Salvar"
       >
-        
         <SquareCheckBig size={20} />
       </button>
     ) : (
       <button
-      type="button"
+        type="button"
         onClick={() => iniciarEdicao(agendamento)}
-        className="text-yellow-600"
+        className="p-2 rounded-md hover:bg-yellow-100 text-yellow-600 transition"
         title="Editar"
       >
         <Pencil size={20} />
       </button>
     )}
+
     <button
-    type="button"
-      onClick={() => excluirAgendamento(agendamento.id)}
-      className="text-red-600"
+      type="button"
+      onClick={() =>
+        abrirConfirmacao(
+          "Deseja realmente excluir este atendimento?",
+          () => excluirAgendamento(agendamento.id)
+        )
+      }
+      className="p-2 rounded-md hover:bg-red-100 text-red-600 transition"
       title="Excluir atendimento"
     >
       <Trash2 size={20} />
     </button>
-    
+
     <button
-  type="button"
-  onClick={() => alterarStatus(agendamento.id, "Concluído")}
-  className="text-green-700 hover:text-green-800"
-  title="Concluir atendimento"
->
-  <Save size={20}/>
-</button>
+      type="button"
+      onClick={() => alterarStatus(agendamento.id, "Concluído")}
+      className="p-2 rounded-md hover:bg-red-100 text-green-600 transition"
+      title="Concluir atendimento"
+    >
+      <Save size={20} />
+    </button>
 
-<button
-  type="button"
-  onClick={() => alterarStatus(agendamento.id, "Cancelado")}
-  className="text-red-600 hover:text-red-700"
-  title="Cancelar atendimento"
->
-  <X size={24} className=""/>
-</button>
+    <button
+      type="button"
+      onClick={() => alterarStatus(agendamento.id, "Cancelado")}
+      className="p-2 rounded-md hover:bg-red-100 text-orange-600 transition"
+      title="Cancelar atendimento"
+    >
+      <CircleOff size={20} />
+    </button>
 
-     {statusAtual !== "Cancelado" && (
+    {statusAtual !== "Cancelado" && (
       <button
-            type="button"
-            onClick={() => editarPagamento(agendamento)}
-            className="text-primary hover:text-alternativo"
-            title="Editar pagamento"
-          >
-         <BadgeDollarSign size={20}/>
-          </button>
-     )}
-  </td>
+        type="button"
+        onClick={() => editarPagamento(agendamento)}
+        className="text-primary hover:text-alternativo"
+        title="Editar pagamento"
+      >
+        <BadgeDollarSign size={20} />
+      </button>
+    )}
+  </div>
+</td>
 </tr>
 
 {/**Pagamento */}
@@ -960,6 +985,52 @@ if (faltandoTelefone?.length) {
         </button>
       </div>
 
+    </div>
+  </div>
+)}
+    {filaLembretes.aberta && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg">
+      <h2 className="text-lg font-semibold text-primary mb-3">
+        Fila de lembretes
+      </h2>
+
+      <p className="text-gray-700 mb-4">
+        Lembrete{" "}
+        <strong>{filaLembretes.indiceAtual + 1}</strong> de{" "}
+        <strong>{filaLembretes.lista.length}</strong>
+      </p>
+
+      <p className="text-gray-700 mb-6">
+        Cliente atual:{" "}
+        <strong>
+          {filaLembretes.lista[filaLembretes.indiceAtual]?.clientes?.nome}
+        </strong>
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          className="btn btn-gray"
+          onClick={() =>
+            setFilaLembretes({
+              aberta: false,
+              lista: [],
+              indiceAtual: 0,
+            })
+          }
+        >
+          Fechar
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-green"
+          onClick={enviarProximoLembrete}
+        >
+          Próximo lembrete
+        </button>
+      </div>
     </div>
   </div>
 )}
