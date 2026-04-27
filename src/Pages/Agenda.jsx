@@ -34,6 +34,7 @@ const AgendaAtendimento = () => {
     valor: "",
     obs: "",
   });
+  const [abrindoLembrete, setAbrindoLembrete] = useState(false);
   const [agendamentos, setAgendamentos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [formEdicao, setFormEdicao] = useState({
@@ -457,8 +458,23 @@ const getStatusBadge = (status, pagamento) => {
 
   await enviarLembreteDeAgendamento(listaComTelefone[0]);
 };
+  const tocarSomLeve = () => {
+  try {
+    const audio = new Audio("/sounds/click.mp3");
+    audio.volume = 0.3;
+    audio.play();
+  } catch (error) {
+    console.log("Som não pôde ser reproduzido.");
+  }
+};
 
 const enviarProximoLembrete = async () => {
+  if (abrindoLembrete) return;
+
+  setAbrindoLembrete(true);
+
+  await tocarSomLeve(); // 👈 aqui fica o som
+
   const proximoIndice = filaLembretes.indiceAtual + 1;
   const proximoAgendamento = filaLembretes.lista[proximoIndice];
 
@@ -469,6 +485,7 @@ const enviarProximoLembrete = async () => {
       indiceAtual: 0,
     });
 
+    setAbrindoLembrete(false);
     mostrarMensagem("sucesso", "Todos os lembretes foram abertos.");
     return;
   }
@@ -479,7 +496,10 @@ const enviarProximoLembrete = async () => {
   }));
 
   await enviarLembreteDeAgendamento(proximoAgendamento);
+
+  setAbrindoLembrete(false);
 };
+
 
 
   return (
@@ -1000,37 +1020,65 @@ className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-primary shad
         <strong>{filaLembretes.indiceAtual + 1}</strong> de{" "}
         <strong>{filaLembretes.lista.length}</strong>
       </p>
-
-      <p className="text-gray-700 mb-6">
-        Cliente atual:{" "}
-        <strong>
-          {filaLembretes.lista[filaLembretes.indiceAtual]?.clientes?.nome}
-        </strong>
-      </p>
-
-      <div className="flex justify-end gap-3">
-        <button
-          type="button"
-          className="btn btn-gray"
-          onClick={() =>
-            setFilaLembretes({
-              aberta: false,
-              lista: [],
-              indiceAtual: 0,
-            })
-          }
-        >
-          Fechar
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-green"
-          onClick={enviarProximoLembrete}
-        >
-          Próximo lembrete
-        </button>
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-5">
+        <div
+          className="bg-primary h-2 rounded-full transition-all"
+          style={{
+            width: `${
+              ((filaLembretes.indiceAtual + 1) / filaLembretes.lista.length) * 100
+            }%`,
+          }}
+        />
       </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 space-y-2">
+        <p className="text-gray-700">
+          <span className="font-medium text-primary">Cliente:</span>{" "}
+          {filaLembretes.lista[filaLembretes.indiceAtual]?.clientes?.nome}
+        </p>
+
+        <p className="text-gray-700">
+          <span className="font-medium text-primary">Serviço:</span>{" "}
+          {filaLembretes.lista[filaLembretes.indiceAtual]?.servico}
+        </p>
+
+        <p className="text-gray-700">
+          <span className="font-medium text-primary">Horário:</span>{" "}
+          {filaLembretes.lista[filaLembretes.indiceAtual]?.horario}
+        </p>
+      </div>
+
+     
+      <div className="flex justify-between items-center mt-4">
+  <button
+    type="button"
+    className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+    onClick={() =>
+      setFilaLembretes({
+        aberta: false,
+        lista: [],
+        indiceAtual: 0,
+      })
+    }
+  >
+    Fechar
+  </button>
+
+
+  <button
+  type="button"
+  disabled={abrindoLembrete}
+  className={`px-4 py-2 rounded-lg text-white transition flex items-center gap-2 ${
+    abrindoLembrete
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-primary hover:bg-secondary"
+  }`}
+  onClick={enviarProximoLembrete}
+>
+  {abrindoLembrete ? "Abrindo..." : "Próximo"}
+</button>
+</div>
+
     </div>
   </div>
 )}
