@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Header from "../Componentes/Header/Header";
 import { supabase } from "../api/supabaseClient";
-import { mensagemLembrete, abrirWhatsApp, copiarTexto } from "../utils/whatsapp.jsx";
+import {
+  mensagemLembrete,
+  abrirWhatsApp,
+  copiarTexto,
+} from "../utils/whatsapp.jsx";
 import { createLogger } from "../lib/logger.js";
 const logger = createLogger("LembreteAgendamentos");
 
@@ -33,7 +37,7 @@ export default function LembreteAgendamentos() {
   const [lista, setLista] = useState([]);
   const [carregando, setCarregando] = useState(false);
   const [enviando, setEnviando] = useState({}); // id -> true/false
-  const [status, setStatus] = useState({});     // id -> "enviado" | "copiado"
+  const [status, setStatus] = useState({}); // id -> "enviado" | "copiado"
 
   // Busca os agendamentos do DIA (filtraremos as horas no frontend)
   useEffect(() => {
@@ -42,10 +46,12 @@ export default function LembreteAgendamentos() {
       try {
         let { data, error } = await supabase
           .from("agendamentos")
-          .select(`
+          .select(
+            `
             id, data, horario, servico, obs, cliente_id,
             clientes ( id, nome, telefone )
-          `)
+          `,
+          )
           .eq("data", dataBase)
           .order("horario", { ascending: true });
 
@@ -64,10 +70,10 @@ export default function LembreteAgendamentos() {
   const filtrada = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     return (lista || [])
-      .filter((a) => horaDentroIntervalo(a.horario || "00:00", horaInicio, horaFim))
       .filter((a) =>
-        (a.clientes?.nome || "").toLowerCase().includes(termo)
-      );
+        horaDentroIntervalo(a.horario || "00:00", horaInicio, horaFim),
+      )
+      .filter((a) => (a.clientes?.nome || "").toLowerCase().includes(termo));
   }, [lista, busca, horaInicio, horaFim]);
 
   async function enviarUm(ag) {
@@ -111,15 +117,16 @@ export default function LembreteAgendamentos() {
     }
   }
 
-  const intervaloInvalido =
-    horaInicio > horaFim; // simples: garante início <= fim
+  const intervaloInvalido = horaInicio > horaFim; // simples: garante início <= fim
 
   return (
     <div className="container mx-auto p-4 space-y-4">
       <Header />
 
       <div className="w-full max-w-[100%] mx-auto border border-[rgba(128,128,128,0.3)] p-4 rounded-lg bg-gray-50 shadow-lg">
-        <h1 className="text-lg font-bold text-primary mb-3">Lembretes de Agendamentos</h1>
+        <h1 className="text-lg font-bold text-primary mb-3">
+          Lembretes de Agendamentos
+        </h1>
 
         {/* Filtros */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-3">
@@ -166,7 +173,9 @@ export default function LembreteAgendamentos() {
         </div>
 
         <div className="flex items-center justify-between mb-3">
-          <p className={`text-sm ${intervaloInvalido ? "text-red-600" : "text-gray-600"}`}>
+          <p
+            className={`text-sm ${intervaloInvalido ? "text-red-600" : "text-gray-600"}`}
+          >
             {intervaloInvalido
               ? "⚠️ Hora inicial deve ser menor ou igual à hora final."
               : `Exibindo agendamentos entre ${horaInicio} e ${horaFim}.`}
@@ -198,13 +207,19 @@ export default function LembreteAgendamentos() {
             <tbody>
               {carregando ? (
                 <tr>
-                  <td colSpan={6} className="p-4 text-center text-sm text-gray-600">
+                  <td
+                    colSpan={6}
+                    className="p-4 text-center text-sm text-gray-600"
+                  >
                     Carregando…
                   </td>
                 </tr>
               ) : filtrada.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-4 text-center text-sm text-gray-600">
+                  <td
+                    colSpan={6}
+                    className="p-4 text-center text-sm text-gray-600"
+                  >
                     Nenhum agendamento no intervalo.
                   </td>
                 </tr>
@@ -214,7 +229,9 @@ export default function LembreteAgendamentos() {
                     <td className="p-2">{ag.clientes?.nome || "-"}</td>
                     <td className="p-2">{ag.servico || "-"}</td>
                     <td className="p-2">
-                      {new Date(ag.data + "T12:00:00").toLocaleDateString("pt-BR")}
+                      {new Date(ag.data + "T12:00:00").toLocaleDateString(
+                        "pt-BR",
+                      )}
                     </td>
                     <td className="p-2">{horaBR(ag.horario)}</td>
                     <td className="p-2">{ag.obs || "-"}</td>
@@ -230,7 +247,9 @@ export default function LembreteAgendamentos() {
                       {status[ag.id] && (
                         <span
                           className={`ml-2 text-xs ${
-                            status[ag.id] === "enviado" ? "text-emerald-700" : "text-gray-600"
+                            status[ag.id] === "enviado"
+                              ? "text-emerald-700"
+                              : "text-gray-600"
                           }`}
                         >
                           {status[ag.id] === "enviado" ? "Enviado" : "Copiado"}
@@ -256,18 +275,33 @@ export default function LembreteAgendamentos() {
             </div>
           ) : (
             filtrada.map((ag) => (
-              <div key={ag.id} className="border rounded-lg p-3 bg-white shadow">
+              <div
+                key={ag.id}
+                className="border rounded-lg p-3 bg-white shadow"
+              >
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-gray-800">{ag.clientes?.nome || "-"}</h2>
+                  <h2 className="font-semibold text-gray-800">
+                    {ag.clientes?.nome || "-"}
+                  </h2>
                 </div>
                 <div className="mt-2 text-sm text-gray-700 space-y-1">
-                  <p><strong>Serviço:</strong> {ag.servico || "-"}</p>
+                  <p>
+                    <strong>Serviço:</strong> {ag.servico || "-"}
+                  </p>
                   <p>
                     <strong>Data:</strong>{" "}
-                    {new Date(ag.data + "T12:00:00").toLocaleDateString("pt-BR")}
+                    {new Date(ag.data + "T12:00:00").toLocaleDateString(
+                      "pt-BR",
+                    )}
                   </p>
-                  <p><strong>Hora:</strong> {horaBR(ag.horario)}</p>
-                  {ag.obs && <p><strong>Obs.:</strong> {ag.obs}</p>}
+                  <p>
+                    <strong>Hora:</strong> {horaBR(ag.horario)}
+                  </p>
+                  {ag.obs && (
+                    <p>
+                      <strong>Obs.:</strong> {ag.obs}
+                    </p>
+                  )}
                 </div>
                 <div className="mt-3">
                   <button
@@ -281,7 +315,9 @@ export default function LembreteAgendamentos() {
                   {status[ag.id] && (
                     <p
                       className={`mt-1 text-xs ${
-                        status[ag.id] === "enviado" ? "text-emerald-700" : "text-gray-600"
+                        status[ag.id] === "enviado"
+                          ? "text-emerald-700"
+                          : "text-gray-600"
                       }`}
                     >
                       {status[ag.id] === "enviado" ? "Enviado" : "Copiado"}

@@ -14,6 +14,7 @@ import LembreteAgendamentos from "./Pages/LembreteAgendamentos.jsx"
 import AgendaSemanal from "./Pages/AgendaSemanal.jsx"
 import ResetSenha from "./Pages/ResetSenha.jsx"
 import ProtectedRoute from "./Componentes/ProtectedRoute.jsx"
+import HistoricoLembretes from "./Pages/HistoricoLembretes";
 
 function App() {
   
@@ -42,7 +43,7 @@ function App() {
           <Route path="/lembretes" element= {<LembreteAgendamentos /> } />
           <Route path="/agenda-semanal" element={<AgendaSemanal />} />
           <Route path="/editar-cliente/:id" element={<EditarCliente />} />
-
+          <Route path="/historico-lembretes" element={<HistoricoLembretes />} />
       </Route>
 
     </Routes>

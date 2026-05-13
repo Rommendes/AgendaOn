@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../api/supabaseClient";
 import Header from "../Componentes/Header/Header";
-import { enviarLembretesEmLote, enviarLembreteDeAgendamento } from "../utils/whatsapp.jsx";
+import {
+  enviarLembretesEmLote,
+  enviarLembreteDeAgendamento,
+} from "../utils/whatsapp.jsx";
 import { CalendarCog, Clock, AlarmClock } from "lucide-react";
 import { createLogger } from "../lib/logger.js";
-const logger = createLogger("AgendaSemanal")
-
+const logger = createLogger("AgendaSemanal");
 
 // --- helpers simples ---
 function hojeISO() {
@@ -26,7 +28,7 @@ function temTelefone(ag) {
 
 // 🟣 conta total / com telefone / sem telefone / enviados (usaremos depois)
 function contarDia(ags, enviadosSessao = new Set()) {
-  const total  = ags.length;
+  const total = ags.length;
   const comTel = ags.filter(temTelefone).length;
   const semTel = total - comTel;
   const enviados = ags.filter((ag) => enviadosSessao.has(String(ag.id))).length; // por enquanto deve dar 0
@@ -36,7 +38,9 @@ function contarDia(ags, enviadosSessao = new Set()) {
 function formatarValorBR(v) {
   if (v == null) return "";
   const n = Number(v);
-  return Number.isFinite(n) ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : String(v);
+  return Number.isFinite(n)
+    ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+    : String(v);
 }
 // retorna { ano, semana } no padrão ISO
 function getISOWeekInfo(dateISO) {
@@ -48,7 +52,8 @@ function getISOWeekInfo(dateISO) {
   const firstThursday = new Date(target.getFullYear(), 0, 4);
   const firstThursdayDayNr = (firstThursday.getDay() + 6) % 7;
   firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNr + 3);
-  const week = 1 + Math.round((target - firstThursday) / (7 * 24 * 3600 * 1000));
+  const week =
+    1 + Math.round((target - firstThursday) / (7 * 24 * 3600 * 1000));
   return { ano: target.getFullYear(), semana: week };
 }
 
@@ -61,11 +66,13 @@ export default function AgendaSemanal() {
       setCarregando(true);
       const { data, error } = await supabase
         .from("agendamentos")
-        .select(`
+        .select(
+          `
           id, data, horario, servico, valor, pagamento, obs, cliente_id,
           clientes ( id, nome, telefone )
-        `)
-        .gte("data", hojeISO())          // somente hoje em diante
+        `,
+        )
+        .gte("data", hojeISO()) // somente hoje em diante
         .order("data", { ascending: true })
         .order("horario", { ascending: true });
 
@@ -95,8 +102,9 @@ export default function AgendaSemanal() {
 
     // ordenar dias dentro da semana
     const array = Array.from(mapa.values()).map((sem) => {
-      const diasOrdenados = Array.from(sem.dias.entries())
-        .sort((a, b) => (a[0] < b[0] ? -1 : 1)); // por data asc
+      const diasOrdenados = Array.from(sem.dias.entries()).sort((a, b) =>
+        a[0] < b[0] ? -1 : 1,
+      ); // por data asc
       return { ...sem, dias: diasOrdenados };
     });
 
@@ -112,7 +120,9 @@ export default function AgendaSemanal() {
   return (
     <div className="container mx-auto p-4">
       <Header />
-      <h1 className="text-xl font-bold text-primary mb-4">Agenda Semanal (atual e futura)</h1>
+      <h1 className="text-xl font-bold text-primary mb-4">
+        Agenda Semanal (atual e futura)
+      </h1>
 
       {carregando && <div className="text-gray-600">Carregando…</div>}
 
@@ -120,97 +130,121 @@ export default function AgendaSemanal() {
         <div className="text-gray-600">Não há agendamentos futuros.</div>
       )}
 
-      {!carregando && semanas.map((sem) => (
-        <div key={`${sem.ano}-${sem.semana}`} className="mb-8 border rounded-lg bg-white shadow">
-          {/* Cabeçalho da semana */}
-          <div className="flex items-center justify-between p-3 bg-blue-50 rounded-t-lg">
-            <h2 className="font-semibold text-primary">
-              Semana {sem.semana} de {sem.ano}
-            </h2>
-            {/* Botão: lembretes da semana inteira */}
-            <button
-              type="button"
-              className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-2 py-2 rounded-lg hover:bg-secondary transition"
-    
-              title="Enviar lembretes para todos desta semana"
-              onClick={async () => {
-                const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
-                const { enviados, copiados } = await enviarLembretesEmLote(listaSemana, { intervalMs: 2000 });
-                alert(`Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ""}.`);
-              }}
-            >
-                <Clock size={20}/>
-               Lembretes da semana
-            </button>
-          </div>
-A
-          {/* Dias da semana */}
-          <div className="p-3 space-y-6">
-            {sem.dias.map(([dataISO, ags]) => (
-              <div key={dataISO} className="border border-gray-200 rounded-md">
-                {/* Cabeçalho do dia */}
-                <div className="flex items-center justify-between bg-gray-50 p-2 rounded-t-md">
-                  <div className="font-medium text-cinza">
-                    {formatarBRDataISO(dataISO)}
+      {!carregando &&
+        semanas.map((sem) => (
+          <div
+            key={`${sem.ano}-${sem.semana}`}
+            className="mb-8 border rounded-lg bg-white shadow"
+          >
+            {/* Cabeçalho da semana */}
+            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-t-lg">
+              <h2 className="font-semibold text-primary">
+                Semana {sem.semana} de {sem.ano}
+              </h2>
+              {/* Botão: lembretes da semana inteira */}
+              <button
+                type="button"
+                className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-2 py-2 rounded-lg hover:bg-secondary transition"
+                title="Enviar lembretes para todos desta semana"
+                onClick={async () => {
+                  const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
+                  const { enviados, copiados } = await enviarLembretesEmLote(
+                    listaSemana,
+                    { intervalMs: 2000 },
+                  );
+                  alert(
+                    `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ""}.`,
+                  );
+                }}
+              >
+                <Clock size={20} />
+                Lembretes da semana
+              </button>
+            </div>
+            A{/* Dias da semana */}
+            <div className="p-3 space-y-6">
+              {sem.dias.map(([dataISO, ags]) => (
+                <div
+                  key={dataISO}
+                  className="border border-gray-200 rounded-md"
+                >
+                  {/* Cabeçalho do dia */}
+                  <div className="flex items-center justify-between bg-gray-50 p-2 rounded-t-md">
+                    <div className="font-medium text-cinza">
+                      {formatarBRDataISO(dataISO)}
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-lembrete-secondary"
+                      onClick={async () => {
+                        const { enviados, copiados } =
+                          await enviarLembretesEmLote(ags, {
+                            intervalMs: 2000,
+                          });
+                        alert(
+                          `${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ""}.`,
+                        );
+                      }}
+                    >
+                      <Clock size={20} />
+                      Lembretes do dia
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="btn btn-lembrete-secondary"
-                    onClick={async () => {
-                      const { enviados, copiados } = await enviarLembretesEmLote(ags, { intervalMs: 2000 });
-                      alert(`${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ""}.`);
-                    }}
-                  >
-                     <Clock size={20}/>
-                     Lembretes do dia
-                  </button>
-                </div>
 
-                {/* Lista do dia */}
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[760px]">
-                    <thead>
-                      <tr className="bg-gray-100 text-sm uppercase text-cinza">
-                        <th className="p-2 text-left">Hora</th>
-                        <th className="p-2 text-left min-w-[180px]">Cliente</th>
-                        <th className="p-2 text-left">Serviço</th>
-                        <th className="p-2 text-right">Valor</th>
-                        <th className="p-2 text-left">Obs</th>
-                        <th className="p-2 text-center">Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ags.map((ag) => (
-                        <tr key={ag.id} className="border-t">
-                          <td className="p-2">{ag.horario}</td>
-                          <td className="p-2">{ag.clientes?.nome || "Sem nome"}</td>
-                          <td className="p-2">{ag.servico || "-"}</td>
-                          <td className="p-2 text-right">{formatarValorBR(ag.valor)}</td>
-                          <td className="p-2">{ag.obs || "-"}</td>
-                          <td className="p-2 text-center">
-                            <button
-                              type="button"
-                              className="btn btn-lembrete-primary"
-                              onClick={async () => {
-                                const r = await enviarLembreteDeAgendamento(ag);
-                                if (r === "copiado") alert("Sem telefone. Mensagem copiada para a área de transferência.");
-                              }}
-                            >
-                                <AlarmClock/>
-                              Lembrar cliente
-                            </button>
-                          </td>
+                  {/* Lista do dia */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px]">
+                      <thead>
+                        <tr className="bg-gray-100 text-sm uppercase text-cinza">
+                          <th className="p-2 text-left">Hora</th>
+                          <th className="p-2 text-left min-w-[180px]">
+                            Cliente
+                          </th>
+                          <th className="p-2 text-left">Serviço</th>
+                          <th className="p-2 text-right">Valor</th>
+                          <th className="p-2 text-left">Obs</th>
+                          <th className="p-2 text-center">Ações</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {ags.map((ag) => (
+                          <tr key={ag.id} className="border-t">
+                            <td className="p-2">{ag.horario}</td>
+                            <td className="p-2">
+                              {ag.clientes?.nome || "Sem nome"}
+                            </td>
+                            <td className="p-2">{ag.servico || "-"}</td>
+                            <td className="p-2 text-right">
+                              {formatarValorBR(ag.valor)}
+                            </td>
+                            <td className="p-2">{ag.obs || "-"}</td>
+                            <td className="p-2 text-center">
+                              <button
+                                type="button"
+                                className="btn btn-lembrete-primary"
+                                onClick={async () => {
+                                  const r =
+                                    await enviarLembreteDeAgendamento(ag);
+                                  if (r === "copiado")
+                                    alert(
+                                      "Sem telefone. Mensagem copiada para a área de transferência.",
+                                    );
+                                }}
+                              >
+                                <AlarmClock />
+                                Lembrar cliente
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 }

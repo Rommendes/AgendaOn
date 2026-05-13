@@ -1,112 +1,166 @@
-import { Link} from "react-router-dom";
-import { useState } from "react";
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 //import minhaImagem from "../assets/LogoCarmemAgenda.png"
-import BotaoSair from "../Componentes/BotaoSair/index.jsx";
-import { CalendarCog, Minus, Sparkles } from "lucide-react"
+import BotaoSair from '../Componentes/BotaoSair/index.jsx';
+import { CalendarCog, Minus, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
-
   const [mostrarSubmenu, setMostrarSubmenu] = useState(false);
-
+  const navigate = useNavigate();
 
   const toggleSubmenu = () => {
     setMostrarSubmenu(!mostrarSubmenu);
   };
 
   return (
-    <div className="bg-backgroundImage min-h-screen w-full flex justify-center items-center p-4">
-      <div className="w-full max-w-md space-y-4">
+    <div className="min-h-screen bg-blue-50 px-4 py-6">
+      <div className="mx-auto max-w-2xl">
+        {/* LOGO */}
+        <div className="mb-8 text-center">
+          <h1 className="flex items-center justify-center gap-2 text-xl font-bold text-primary">
+            <Sparkles className="text-primary" />
+            Agenda<span className="text-secondary">On</span>
+            <Sparkles className="text-primary" />
+          </h1>
 
-        {/* Imagem e mensagem de boas-vindas */}
-        <div className="inline-flex items-end gap-1">
-          {/* <img
-            src={minhaImagem}
-            alt="Imagem"
-            className="py-1 rounded-xl w-[150px] h-[100px]"
-          /> */}
-         <div className="flex flex-col justify-start">
-            <h1 className=" text-lg font-semibold pb-3  text-md text-primary flex flex-wrap items-center justify-center">
-              <Sparkles className="text-primary mx-2" />
-              Agenda
-              <span className="text-secondary font-bold">On</span>
-              <Sparkles className="text-primary mx-2" />
-              <span className="text-sm text-primary font-normal">
-                mais que agenda, sua parceira de confiança.
-              </span>
-            </h1>
-          </div>
+          <p className="text-sm text-primary">
+            mais que agenda, sua parceira de confiança.
+          </p>
         </div>
 
-        {/* Botão de Agenda com submenu */}
-      {<div className="w-full">
-        <Link to="/agenda"
-          onClick={toggleSubmenu}
-          className="botao-menu w-full"
-        >
-          
-          <span className="material-icons text-secondary text-4xl">event</span>
-          <div className="flex flex-col justify-center text-left">
-            <h2 className="font-bold text-lg">Agenda</h2>
-            <p className="text-sm">Horários, serviços realizados e valores.</p>
-          </div>
-        </Link>
+        {/* ATENDIMENTOS */}
+        <h2 className="mb-2 text-sm font-semibold text-gray-500">
+          Atendimentos
+        </h2>
 
-        
-      </div>}
+        <div className="mb-6 flex flex-col gap-4">
+          <Link
+            to="/agenda"
+            className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              event
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Agenda</h2>
+              <p className="text-sm">Gerencie horários, serviços e valores</p>
+            </div>
+          </Link>
 
-        {/* Outros botões */}
-        <Link to="/busca-cliente" className="botao-menu w-full">
-          <span className="material-icons text-secondary text-4xl">search</span>
-          <div>
-            <h2 className="font-bold text-lg">Busca cliente</h2>
-            <p className="text-sm">Pesquisa o histórico do cliente cadastrado  </p>
-          </div>
-        </Link>
+          <Link
+            to="/agenda-semanal"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              event_repeat
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Agenda Semanal</h2>
+              <p className="text-sm">Visualize seus atendimentos da semana</p>
+            </div>
+          </Link>
 
-         <Link to="/agenda-semanal" className="botao-menu w-full">
-          <CalendarCog className=" text-secondary text-4xl"/>
-        
-          <div>
-            <h2 className="font-bold text-lg">Agenda Semanal</h2>
-            <p className="text-sm">Pesquisa os atendimentos cadastrados  </p>
-          </div>
-        </Link>
+          <Link
+            to="/historico-semanal"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              history
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Histórico Semanal</h2>
+              <p className="text-sm">
+                Consulte atendimentos e valores recebidos
+              </p>
+            </div>
+          </Link>
+        </div>
 
-        <Link to="/historico-semanal" className="botao-menu w-full">
-          <span className="material-icons text-secondary text-4xl">history</span>
-          <div>
-            <h2 className="font-bold text-lg">Histórico Semanal de Agendamentos</h2>
-            <p className="text-sm">Busca agendamentos semanais e valores recebidos</p>
-          </div>
-        </Link>
+        {/* CLIENTES */}
+        <h2 className="mb-2 text-sm font-semibold text-gray-500">Clientes</h2>
 
-        <Link to="/cadastrar-cliente" className="botao-menu w-full">
-          <span className="material-icons text-secondary text-4xl">person_add</span>
-          <div>
-            <h2 className="font-bold text-lg">Cadastro</h2>
-            <p className="text-sm">Cadastro completo ou essencial</p>
-          </div>
-        </Link>
+        <div className="mb-6 flex flex-col gap-4">
+          <Link
+            to="/busca-cliente"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              search
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Busca cliente</h2>
+              <p className="text-sm">Pesquise o histórico de um cliente</p>
+            </div>
+          </Link>
 
-        <Link to="/lista-clientes" className="botao-menu w-full">
-          <span className="material-icons text-secondary text-4xl">group</span>
-          <div>
-            <h2 className="font-bold text-lg">Lista de Clientes</h2>
-            <p className="text-sm">Aqui encontra-se todos os clientes cadastrados</p>
-          </div>
+          <Link
+            to="/cadastrar-cliente"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              person_add
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Cadastro</h2>
+              <p className="text-sm">Cadastre novos clientes</p>
+            </div>
+          </Link>
 
-        </Link>
-        <Link to="/cobrancas" className="botao-menu w-full">
-          <span className="material-icons text-secondary text-4xl">group</span>
-          <div>
-            <h2 className="font-bold text-lg">Pendencias</h2>
-            <p className="text-sm"> Aqui podemos enviar msg para contas Pendentes </p>
-          </div>
-        </Link>
+          <Link
+            to="/lista-clientes"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              groups
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Lista de Clientes</h2>
+              <p className="text-sm">Veja todos os clientes cadastrados</p>
+            </div>
+          </Link>
+        </div>
 
-        {/* Botão de sair */}
-        <div className="flex justify-center">
-          <BotaoSair />
+        {/* COMUNICAÇÃO */}
+        <h2 className="mb-2 text-sm font-semibold text-gray-500">
+          Comunicação
+        </h2>
+
+        <div className="mb-6 flex flex-col gap-4">
+          <Link
+            to="/historico-lembretes"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              notifications
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Histórico de lembretes</h2>
+              <p className="text-sm">
+                Visualize lembretes enviados aos clientes
+              </p>
+            </div>
+          </Link>
+        </div>
+
+        {/* FINANCEIRO */}
+        <h2 className="mb-2 text-sm font-semibold text-gray-500">Financeiro</h2>
+
+        <div className="flex flex-col gap-4">
+          <Link
+            to="/cobrancas"
+            className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
+          >
+            <span className="material-icons text-4xl text-secondary">
+              payments
+            </span>
+            <div>
+              <h2 className="text-lg font-bold">Pendências</h2>
+              <p className="text-sm">
+                Envie cobranças para clientes com débito
+              </p>
+            </div>
+          </Link>
         </div>
       </div>
     </div>
