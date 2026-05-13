@@ -52,11 +52,11 @@ export function buildWaUrl(numero, textoPuro) {
   const digitos = soDigitos(numero);
   const numeroE164 = digitos.startsWith('55') ? digitos : `55${digitos}`;
   const texto = encodeURIComponent(textoPuro ?? '');
-  
-  return
-  // `https://wa.me/${numeroE164}?text=${encodeURIComponent(textoPuro ?? '')}`;
- `https://web.whatsapp.com/send?phone=${numeroE164}&text=${texto}`;
 
+  return `https://web.whatsapp.com/send?phone=${numeroE164}&text=${texto}`;
+
+  // `https://wa.me/${numeroE164}?text=${encodeURIComponent(textoPuro ?? '')}`;
+}
 
 export function abrirWhatsApp(numero, textoPuro) {
   const url = buildWaUrl(numero, textoPuro);
