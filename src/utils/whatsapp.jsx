@@ -53,6 +53,12 @@ export function buildWaUrl(numero, textoPuro) {
   const numeroE164 = digitos.startsWith('55') ? digitos : `55${digitos}`;
   const texto = encodeURIComponent(textoPuro ?? '');
 
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    return `https://wa.me/${numeroE164}?text=${texto}`;
+  }
+
   return `https://web.whatsapp.com/send?phone=${numeroE164}&text=${texto}`;
 }
 
@@ -73,10 +79,6 @@ export function abrirWhatsApp(numero, textoPuro) {
     logger.error('Erro ao abrir WhatsApp:', error);
     return null;
   }
-
-  window.open(url, '_blank', 'noopener,noreferrer');
-
-  return true;
 }
 
 export function criarLinksDeAcoes({ nome, data, hora }) {
