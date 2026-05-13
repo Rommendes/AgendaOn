@@ -56,24 +56,6 @@ export default function BotaoEnviarCobranca({
       const textoEncoded = montarMensagemCobranca(payload);
       abrirWhatsApp(numeroE164, textoEncoded);
 
-      const { error: erroHistorico } = await supabase
-        .from('lembretes_enviados')
-        .insert([
-          {
-            agendamento_id: agendamento.id,
-            cliente_id: agendamento.cliente_id,
-            cliente_nome: nome,
-            telefone: numeroE164,
-            mensagem: textoEncoded,
-            tipo: 'cobranca_pendente',
-            status: 'aberto_whatsapp',
-          },
-        ]);
-
-      if (erroHistorico) {
-        console.error('Erro ao salvar histórico da cobrança:', erroHistorico);
-      }
-
       atualizarStatus?.(agendamento.id, 'enviado');
       setMensagem('Abrimos o WhatsApp com a mensagem pronta.');
     } catch (e) {
