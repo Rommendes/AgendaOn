@@ -59,20 +59,21 @@ export function buildWaUrl(numero, textoPuro) {
 export function abrirWhatsApp(numero, textoPuro) {
   const url = buildWaUrl(numero, textoPuro);
 
-  // try {
-  //   const janela = window.open(url, '_blank');
+  try {
+    const janela = window.open(url, '_blank');
 
-  //   if (!janela) {
-  //     logger.warn('Popup bloqueado pelo navegador.');
-  //     return null;
-  //   }
+    if (!janela) {
+      logger.warn('Popup bloqueado pelo navegador.');
+      return null;
+    }
 
-  //   janela.focus();
-  //   return janela;
-  // } catch (error) {
-  //   logger.error('Erro ao abrir WhatsApp:', error);
-  //   return null;
-  // }
+    janela.focus();
+    return janela;
+  } catch (error) {
+    logger.error('Erro ao abrir WhatsApp:', error);
+    return null;
+  }
+
   window.open(url, '_blank', 'noopener,noreferrer');
 
   return true;
