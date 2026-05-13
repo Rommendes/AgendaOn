@@ -4,7 +4,7 @@ import {
   abrirWhatsApp,
 } from '../../utils/whatsapp.jsx';
 import { apenasNumeros } from '../Utilitarios/formadores.js';
-import { supase } from '../../api/supabaseClient.js';
+//import { supase } from '../../api/supabaseClient.js';
 export default function BotaoEnviarCobranca({
   agendamento,
   atualizarStatus,
