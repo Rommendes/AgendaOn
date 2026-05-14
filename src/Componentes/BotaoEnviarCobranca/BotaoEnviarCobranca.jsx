@@ -4,7 +4,7 @@ import {
   abrirWhatsApp,
 } from '../../utils/whatsapp.jsx';
 import { apenasNumeros } from '../Utilitarios/formadores.js';
-//import { supase } from '../../api/supabaseClient.js';
+import { supabase } from '../../api/supabaseClient.js';
 export default function BotaoEnviarCobranca({
   agendamento,
   atualizarStatus,
@@ -56,8 +56,29 @@ export default function BotaoEnviarCobranca({
       const textoEncoded = montarMensagemCobranca(payload);
       abrirWhatsApp(numeroE164, textoEncoded);
 
+      const { data: historicoSalvo, error: erroHistorico } = await supabase
+        .from('lembretes_enviados')
+        .insert([
+          {
+            agendamento_id: agendamento.id,
+            cliente_id: agendamento.cliente_id,
+            cliente_nome: nome,
+            telefone: numeroE164,
+            mensagem: textoEncoded,
+            tipo: 'cobranca_pendente',
+            status: 'aberto_whatsapp',
+          },
+        ])
+        .select();
+
+      if (erroHistorico) {
+        console.error('Erro ao salvar histórico da cobrança:', erroHistorico);
+      } else {
+        console.log('Histórico da cobrança salvo:', historicoSalvo);
+      }
+
       atualizarStatus?.(agendamento.id, 'enviado');
-      setMensagem('Abrimos o WhatsApp com a mensagem pronta.');
+      setMensagem('');
     } catch (e) {
       console.error(e);
       setErro(true);
