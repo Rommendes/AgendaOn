@@ -119,6 +119,19 @@ export default function EnviarCobrancasPendentes() {
                         </span>
                       </td>
                       <td className="p-2">
+                        <div className="mt-2 space-y-1 text-sm text-gray-500">
+                          {/* <p className="mt-2 space-y-1 text-sm text-gray-500">
+                            Atendimento em{' '}
+                            {new Date(cobrancasEnviadas[a.id]).toLocaleString(
+                              'pt-BR',
+                              {
+                                dateStyle: 'short',
+                                timeStyle: 'short',
+                              }
+                            )}
+                          </p> */}
+                        </div>
+
                         <BotaoEnviarCobranca
                           agendamento={a}
                           atualizarStatus={atualizarStatus}
@@ -181,6 +194,13 @@ export default function EnviarCobrancasPendentes() {
                       Atendimento em {a.data}, às {a.horario}
                     </p>
                   </div>
+                  <p className="text-green-600">
+                    Atendimento em{' '}
+                    {new Date(cobrancasEnviadas[a.id]).toLocaleString('pt-BR', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </p>
 
                   <BotaoEnviarCobranca
                     agendamento={a}

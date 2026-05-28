@@ -68,15 +68,37 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
     );
   };
 
+  const pagamentoRealizado = (pagamento) => {
+    const texto = normalizarTexto(pagamento);
+
+    return texto === 'pix' || texto === 'cartao' || texto === 'dinheiro';
+  };
+
+  const agendamentosValidosFinanceiro = agendamentos.filter(
+    (item) => item.status_agendamento !== 'cancelado'
+  );
+
   const totalPago = agendamentos
-    .filter((item) => !pagamentoPendente(item.pagamento))
+    .filter(
+      (item) =>
+        item.status_agendamento !== 'cancelado' &&
+        pagamentoRealizado(item.pagamento)
+    )
     .reduce((acc, item) => acc + parseValor(item.valor), 0);
 
   const totalPendente = agendamentos
-    .filter((item) => pagamentoPendente(item.pagamento))
+    .filter(
+      (item) =>
+        item.status_agendamento !== 'cancelado' &&
+        pagamentoPendente(item.pagamento)
+    )
     .reduce((acc, item) => acc + parseValor(item.valor), 0);
 
-  const totalAtendimentos = agendamentos.length;
+  // const totalAtendimentos = agendamentos.length;
+
+  const totalAtendimentos = agendamentos.filter(
+    (item) => item.status_agendamento !== 'cancelado'
+  ).length;
 
   const ultimoAtendimento = agendamentos[0]?.data
     ? new Date(agendamentos[0].data + 'T12:00:00').toLocaleDateString('pt-BR')
@@ -108,7 +130,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                   <th className="border px-4 py-2">Horário</th>
                   <th className="border px-4 py-2">Serviço</th>
                   <th className="border px-4 py-2">Valor</th>
-                  <th className="border px-4 py-2">Pagamento</th>
+                  <th className="border px-4 py-2">Situação</th>
 
                   <th className="border px-4 py-2">Observações</th>
                 </tr>
@@ -116,73 +138,67 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
               <tbody>
                 {agendamentos.map((item, index) => (
                   <tr key={index} className="text-center hover:bg-gray-100">
-                    <td className="border px-4 py-2">{item.data}</td>
+                    <td className="border px-4 py-2">
+                      {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                        'pt-BR'
+                      )}
+                    </td>
                     <td className="border px-4 py-2">{item.horario}</td>
                     <td className="border px-4 py-2">{item.servico}</td>
                     <td className="border px-4 py-2">
                       R$ {parseValor(item.valor).toFixed(2)}
                     </td>
-                    <td className="border px-4 py-2">{item.pagamento}</td>
+                    {/* <td className="border px-4 py-2">{item.pagamento}</td> */}
+                    <td className="border px-4 py-2">
+                      {(() => {
+                        const status = item.status_agendamento;
+                        const pagamento = normalizarTexto(item.pagamento);
 
+                        if (status === 'cancelado') {
+                          return (
+                            <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+                              Cancelado
+                            </span>
+                          );
+                        }
+
+                        if (status === 'agendado') {
+                          return (
+                            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                              Agendado
+                            </span>
+                          );
+                        }
+
+                        if (pagamentoPendente(item.pagamento)) {
+                          return (
+                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+                              Pendente
+                            </span>
+                          );
+                        }
+
+                        if (pagamentoRealizado(item.pagamento)) {
+                          return (
+                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                              {item.pagamento}
+                            </span>
+                          );
+                        }
+
+                        return (
+                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                            -
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="border px-4 py-2">{item.obs}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             {/* Resumo Financeiro */}
-            {/* <div className="mt-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h2 className="mb-4 text-lg font-semibold uppercase text-secondary">
-                Resumo Financeiro
-              </h2>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-lg border border-green-100 bg-green-50 p-3">
-                  <p className="text-xs uppercase text-gray-500">Total Pago</p>
-
-                  <p className="text-lg font-bold text-green-600">
-                    R$ {totalPago.toFixed(2).replace('.', ',')}
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-red-100 bg-red-50 p-3">
-                  <p className="text-xs uppercase text-gray-500">
-                    Total Pendente
-                  </p>
-
-                  <p className="text-lg font-bold text-red-600">
-                    R$ {totalPendente.toFixed(2).replace('.', ',')}
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
-                  <p className="text-xs uppercase text-gray-500">
-                    Atendimentos
-                  </p>
-
-                  <p className="text-lg font-bold text-primary">
-                    {totalAtendimentos}
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <p className="text-xs uppercase text-gray-500">
-                    Último Atendimento
-                  </p>
-
-                  <p className="text-lg font-bold text-cinza">
-                    {ultimoAtendimento}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 flex justify-between border-t border-primary pt-3">
-                <span className="font-bold text-primary">Total Geral</span>
-
-                <span className="text-lg font-bold">
-                  R$ {(totalPago + totalPendente).toFixed(2).replace('.', ',')}
-                </span>
-              </div>
-            </div> */}
           </>
         ) : (
           <p className="mt-4 text-center text-gray-500">

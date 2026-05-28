@@ -31,6 +31,7 @@ export async function getAgendamentosPendentes() {
       cliente_id,
       servico,
       obs,
+      status_agendamento,
       clientes (
         id,
         nome,
@@ -39,6 +40,7 @@ export async function getAgendamentosPendentes() {
     `
     )
     .in('pagamento', ['PENDENTE', 'Pendente', 'Não pagou', 'NAO PAGOU'])
+    .neq('status_agendamento', 'cancelado')
     .order('data', { ascending: true })
     .order('horario', { ascending: true });
 

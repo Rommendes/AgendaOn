@@ -2,7 +2,21 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 //import minhaImagem from "../assets/LogoCarmemAgenda.png"
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
-import { CalendarCog, Minus, Sparkles } from 'lucide-react';
+import {
+  CalendarCog,
+  Minus,
+  Sparkles,
+  Search,
+  CalendarRange,
+  CalendarDays,
+  ReceiptText,
+  UserPlus,
+  Users,
+  BellRing,
+  History,
+  WalletCards,
+} from 'lucide-react';
+
 import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
@@ -39,9 +53,8 @@ export default function Home() {
             to="/agenda"
             className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              event
-            </span>
+            <CalendarRange className="text-4xl text-secondary" size={32} />
+
             <div>
               <h2 className="text-lg font-bold">Agenda</h2>
               <p className="text-sm">Gerencie horários, serviços e valores</p>
@@ -52,12 +65,13 @@ export default function Home() {
             to="/agenda-semanal"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              event_repeat
-            </span>
+            <ReceiptText className="text-4xl text-secondary" size={32} />
+
             <div>
-              <h2 className="text-lg font-bold">Agenda Semanal</h2>
-              <p className="text-sm">Visualize seus atendimentos da semana</p>
+              <h2 className="text-lg font-bold">Semana Atual</h2>
+              <p className="text-sm">
+                Visualize seus atendimentos desta semana
+              </p>
             </div>
           </Link>
 
@@ -65,13 +79,15 @@ export default function Home() {
             to="/historico-semanal"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              history
-            </span>
+            <History
+              className="material-icons text-4xl text-secondary"
+              size={32}
+            />
+
             <div>
-              <h2 className="text-lg font-bold">Histórico Semanal</h2>
+              <h2 className="text-lg font-bold">Histórico Financeiro</h2>
               <p className="text-sm">
-                Consulte atendimentos e valores recebidos
+                Consulte atendimentos concluídos e valores recebidos
               </p>
             </div>
           </Link>
@@ -85,12 +101,13 @@ export default function Home() {
             to="/busca-cliente"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              search
-            </span>
+            <Search className="text-4xl text-secondary" size={32} />
+
             <div>
               <h2 className="text-lg font-bold">Busca cliente</h2>
-              <p className="text-sm">Pesquise o histórico de um cliente</p>
+              <p className="text-sm">
+                Pesquise o histórico e fianceiro do cliente
+              </p>
             </div>
           </Link>
 
@@ -98,9 +115,11 @@ export default function Home() {
             to="/cadastrar-cliente"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              person_add
-            </span>
+            <UserPlus
+              className="material-icons text-4xl text-secondary"
+              size={35}
+            />
+
             <div>
               <h2 className="text-lg font-bold">Cadastro</h2>
               <p className="text-sm">Cadastre novos clientes</p>
@@ -111,9 +130,11 @@ export default function Home() {
             to="/lista-clientes"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              groups
-            </span>
+            <Users
+              className="material-icons text-4xl text-secondary"
+              size={35}
+            />
+
             <div>
               <h2 className="text-lg font-bold">Lista de Clientes</h2>
               <p className="text-sm">Veja todos os clientes cadastrados</p>
@@ -131,13 +152,15 @@ export default function Home() {
             to="/historico-lembretes"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              notifications
-            </span>
+            <BellRing
+              size={35}
+              className="material-icons text-4xl text-secondary"
+            />
+
             <div>
               <h2 className="text-lg font-bold">Histórico de lembretes</h2>
               <p className="text-sm">
-                Visualize lembretes enviados aos clientes
+                Visualize lembretes mensagens aos clientes
               </p>
             </div>
           </Link>
@@ -151,9 +174,11 @@ export default function Home() {
             to="/cobrancas"
             className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
           >
-            <span className="material-icons text-4xl text-secondary">
-              payments
-            </span>
+            <WalletCards
+              className="material-icons text-4xl text-secondary"
+              size={35}
+            />
+
             <div>
               <h2 className="text-lg font-bold">Pendências</h2>
               <p className="text-sm">

@@ -1,5 +1,7 @@
-import { useEffect, useState, Fragment } from "react";
-import { supabase } from "../api/supabaseClient";
+import StatusBadge from '../Componentes/StatusBadge/StatusBadge';
+import getStatusBadge from '../Componentes/Utilitarios/getStatusBadge';
+import { useEffect, useState, Fragment } from 'react';
+import { supabase } from '../api/supabaseClient';
 import {
   X,
   BadgeDollarSign,
@@ -10,23 +12,23 @@ import {
   Clock,
   CircleOff,
   ClipboardPlusIcon,
-} from "lucide-react";
+} from 'lucide-react';
 
-import InputData from "../Componentes/CamposReutilizaveis/InputData";
-import InputHorario from "../Componentes/CamposReutilizaveis/InputHorario";
-import Header from "../Componentes/Header/Header";
+import InputData from '../Componentes/CamposReutilizaveis/InputData';
+import InputHorario from '../Componentes/CamposReutilizaveis/InputHorario';
+import Header from '../Componentes/Header/Header';
 import {
   enviarLembreteDeAgendamento,
   montarTextoLembreteDeAgendamento,
-} from "../utils/whatsapp";
+} from '../utils/whatsapp';
 
-import { createLogger } from "../lib/logger";
-const logger = createLogger("Agendamentos");
+import { createLogger } from '../lib/logger';
+const logger = createLogger('Agendamentos');
 
 function formatarValor(valor) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
   }).format(valor);
 }
 
@@ -36,34 +38,34 @@ const AgendaAtendimento = () => {
   const [linhaPagamentoAberta, setLinhaPagamentoAberta] = useState(null);
   const [confirmacao, setConfirmacao] = useState({
     aberto: false,
-    mensagem: "",
+    mensagem: '',
     onConfirm: null,
   });
   const [pagamentoSelecionado, setPagamentoSelecionado] = useState({});
   const [novoAgendamento, setNovoAgendamento] = useState({
-    data: "",
-    horario: "",
-    cliente_id: "",
-    servico: "",
-    valor: "",
-    obs: "",
+    data: '',
+    horario: '',
+    cliente_id: '',
+    servico: '',
+    valor: '',
+    obs: '',
   });
   const [abrindoLembrete, setAbrindoLembrete] = useState(false);
   const [agendamentos, setAgendamentos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [formEdicao, setFormEdicao] = useState({
-    data: "",
-    cliente_id: "",
-    horario: "",
-    servico: "",
-    valor: "",
-    pagamento: "",
-    obs: "",
+    data: '',
+    cliente_id: '',
+    horario: '',
+    servico: '',
+    valor: '',
+    pagamento: '',
+    obs: '',
   });
   const [mensagemSistema, setMensagemSistema] = useState({
     aberta: false,
-    tipo: "",
-    texto: "",
+    tipo: '',
+    texto: '',
   });
   const [filaLembretes, setFilaLembretes] = useState({
     aberta: false,
@@ -73,22 +75,22 @@ const AgendaAtendimento = () => {
 
   const alterarStatus = async (id, novoStatus) => {
     const mapaStatus = {
-      Agendado: "agendado",
-      Concluído: "concluido",
-      Cancelado: "cancelado",
+      Agendado: 'agendado',
+      Concluído: 'concluido',
+      Cancelado: 'cancelado',
     };
 
-    const statusParaSalvar = mapaStatus[novoStatus] || "agendado";
+    const statusParaSalvar = mapaStatus[novoStatus] || 'agendado';
 
     const { data, error } = await supabase
-      .from("agendamentos")
+      .from('agendamentos')
       .update({ status_agendamento: statusParaSalvar })
-      .eq("id", id)
+      .eq('id', id)
       .select();
 
     if (error) {
-      logger.error("Erro ao atualizar status:", error);
-      mostrarMensagem("Erro ao atualizar status do atendimento.");
+      logger.error('Erro ao atualizar status:', error);
+      mostrarMensagem('Erro ao atualizar status do atendimento.');
       return;
     }
     setStatusLocal((prev) => ({
@@ -98,10 +100,10 @@ const AgendaAtendimento = () => {
 
     const agendamentoAtual = agendamentos.find((item) => item.id === id);
 
-    if (novoStatus === "Concluído") {
+    if (novoStatus === 'Concluído') {
       const pagamentoAtual = agendamentoAtual?.pagamento;
       const precisaAbrirPagamento =
-        !pagamentoAtual || pagamentoAtual === "PENDENTE";
+        !pagamentoAtual || pagamentoAtual === 'PENDENTE';
 
       if (precisaAbrirPagamento) {
         setLinhaPagamentoAberta(id);
@@ -109,26 +111,26 @@ const AgendaAtendimento = () => {
         setLinhaPagamentoAberta(null);
       }
 
-      mostrarMensagem("sucesso", "Atendimento concluído.");
-    } else if (novoStatus === "Cancelado") {
+      mostrarMensagem('sucesso', 'Atendimento concluído.');
+    } else if (novoStatus === 'Cancelado') {
       setLinhaPagamentoAberta(null);
-      mostrarMensagem("sucesso", "Atendimento cancelado com sucesso.");
+      mostrarMensagem('sucesso', 'Atendimento cancelado com sucesso.');
     }
   };
 
   const buscarAgendamentos = async () => {
     const { data, error } = await supabase
-      .from("agendamentos")
+      .from('agendamentos')
       .select(
         `
         id, data, horario, servico, valor, pagamento, obs, cliente_id, status_agendamento,
         clientes ( id, nome, telefone )
-      `,
+      `
       )
-      .order("data", { ascending: false })
-      .order("horario", { ascending: true });
+      .order('data', { ascending: false })
+      .order('horario', { ascending: true });
     if (error) {
-      logger.error("Erro ao buscar agendamentos:", error);
+      logger.error('Erro ao buscar agendamentos:', error);
     } else {
       setAgendamentos(data || []);
     }
@@ -141,11 +143,11 @@ const AgendaAtendimento = () => {
   useEffect(() => {
     const buscarClientes = async () => {
       const { data, error } = await supabase
-        .from("clientes")
-        .select("id, nome, telefone");
+        .from('clientes')
+        .select('id, nome, telefone');
 
       if (error) {
-        logger.error("Erro ao buscar clientes:", error);
+        logger.error('Erro ao buscar clientes:', error);
       } else {
         // Verifique se os dados estão corretos
         setClientes(data || []);
@@ -156,7 +158,7 @@ const AgendaAtendimento = () => {
   }, []);
 
   function converterDataParaISO(dataBr) {
-    const [dia, mes, ano] = dataBr.split("/");
+    const [dia, mes, ano] = dataBr.split('/');
     return `${ano}-${mes}-${dia}`;
   }
 
@@ -165,17 +167,17 @@ const AgendaAtendimento = () => {
 
     if (!data || !horario || !cliente_id || !servico || !valor) {
       mostrarMensagem(
-        "erro",
-        "Preencha data, horário, cliente, serviço e valor.",
+        'erro',
+        'Preencha data, horário, cliente, serviço e valor.'
       );
       return;
     }
 
-    const valorComPonto = String(valor).replace(",", ".");
+    const valorComPonto = String(valor).replace(',', '.');
     const valorConvertido = parseFloat(valorComPonto);
 
     if (isNaN(valorConvertido) || valorConvertido <= 0) {
-      mostrarMensagem("erro", "Valor inválido.");
+      mostrarMensagem('erro', 'Valor inválido.');
       return;
     }
 
@@ -187,87 +189,87 @@ const AgendaAtendimento = () => {
       cliente_id,
       servico,
       valor: valorConvertido,
-      pagamento: "",
-      obs: novoAgendamento.obs || "",
-      status_agendamento: "agendado",
+      pagamento: '',
+      obs: novoAgendamento.obs || '',
+      status_agendamento: 'agendado',
     };
 
     const { data: novoRegistro, error } = await supabase
-      .from("agendamentos")
+      .from('agendamentos')
       .insert([agendamentoFinal]);
 
     if (error) {
-      logger.error("Erro ao salvar agendamento:", error);
-      mostrarMensagem("erro", "Erro ao salvar agendamento.");
+      logger.error('Erro ao salvar agendamento:', error);
+      mostrarMensagem('erro', 'Erro ao salvar agendamento.');
       return;
     }
 
     await buscarAgendamentos();
 
     setNovoAgendamento({
-      data: "",
-      horario: "",
-      cliente_id: "",
-      servico: "",
-      valor: "",
-      obs: "",
+      data: '',
+      horario: '',
+      cliente_id: '',
+      servico: '',
+      valor: '',
+      obs: '',
     });
 
-    mostrarMensagem("sucesso", "Agendamento salvo com sucesso!");
+    mostrarMensagem('sucesso', 'Agendamento salvo com sucesso!');
   };
 
   const iniciarEdicao = (agendamento) => {
     setEditandoId(agendamento.id);
     setFormEdicao({
       data: agendamento.data
-        ? new Date(agendamento.data + "T12:00:00").toLocaleDateString("pt-BR")
-        : "",
-      cliente_id: String(agendamento.cliente_id ?? ""),
-      horario: agendamento.horario || "",
-      servico: agendamento.servico || "",
+        ? new Date(agendamento.data + 'T12:00:00').toLocaleDateString('pt-BR')
+        : '',
+      cliente_id: String(agendamento.cliente_id ?? ''),
+      horario: agendamento.horario || '',
+      servico: agendamento.servico || '',
       valor: String(agendamento.valor * 100),
       valorFormatado: formatarMoeda(String(agendamento.valor * 100)),
-      pagamento: agendamento.pagamento || "",
-      obs: agendamento.obs || "",
+      pagamento: agendamento.pagamento || '',
+      obs: agendamento.obs || '',
     });
   };
   const formatarMoeda = (valor) => {
-    const numero = valor.replace(/\D/g, "");
+    const numero = valor.replace(/\D/g, '');
 
     const numeroFloat = Number(numero) / 100;
 
-    return numeroFloat.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
+    return numeroFloat.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
     });
   };
 
   const salvarEdicao = async (id) => {
-    const valorEmCentavos = String(formEdicao.valor ?? "").replace(/\D/g, "");
+    const valorEmCentavos = String(formEdicao.valor ?? '').replace(/\D/g, '');
     const valorConvertido = Number(valorEmCentavos) / 100;
 
     if (!formEdicao.data) {
-      mostrarMensagem("erro", "Selecione a data.");
+      mostrarMensagem('erro', 'Selecione a data.');
       return;
     }
 
     if (!formEdicao.horario || !formEdicao.horario.trim()) {
-      mostrarMensagem("erro", "Selecione o horário.");
+      mostrarMensagem('erro', 'Selecione o horário.');
       return;
     }
 
     if (!formEdicao.cliente_id) {
-      mostrarMensagem("erro", "Selecione o cliente.");
+      mostrarMensagem('erro', 'Selecione o cliente.');
       return;
     }
 
     if (!formEdicao.servico || !formEdicao.servico.trim()) {
-      mostrarMensagem("erro", "Selecione o serviço.");
+      mostrarMensagem('erro', 'Selecione o serviço.');
       return;
     }
 
     if (Number.isNaN(valorConvertido) || valorConvertido <= 0) {
-      mostrarMensagem("erro", "Informe um valor válido.");
+      mostrarMensagem('erro', 'Informe um valor válido.');
       return;
     }
 
@@ -275,7 +277,7 @@ const AgendaAtendimento = () => {
     const dataIso = converterDataParaISO(formEdicao.data);
 
     const { error } = await supabase
-      .from("agendamentos")
+      .from('agendamentos')
       .update({
         data: dataIso,
         cliente_id: clienteIdValue,
@@ -285,11 +287,11 @@ const AgendaAtendimento = () => {
         pagamento: formEdicao.pagamento,
         obs: formEdicao.obs,
       })
-      .eq("id", id);
+      .eq('id', id);
 
     if (error) {
       logger.error(error);
-      mostrarMensagem("erro", "Erro ao atualizar agendamento.");
+      mostrarMensagem('erro', 'Erro ao atualizar agendamento.');
       return;
     }
 
@@ -317,28 +319,28 @@ const AgendaAtendimento = () => {
                   }
                 : a.clientes,
             }
-          : a,
-      ),
+          : a
+      )
     );
 
     setEditandoId(null);
-    mostrarMensagem("sucesso", "Agendamento atualizado com sucesso!");
+    mostrarMensagem('sucesso', 'Agendamento atualizado com sucesso!');
   };
   const atualizarCampoEdicao = (campo, valor) => {
     setFormEdicao((prev) => ({ ...prev, [campo]: valor }));
   };
 
   const excluirAgendamento = async (id) => {
-    const { error } = await supabase.from("agendamentos").delete().eq("id", id);
+    const { error } = await supabase.from('agendamentos').delete().eq('id', id);
 
     if (error) {
-      mostrarMensagem("erro", "Erro ao excluir agendamento.");
+      mostrarMensagem('erro', 'Erro ao excluir agendamento.');
       return;
     }
 
     setAgendamentos((prev) => prev.filter((item) => item.id !== id));
 
-    mostrarMensagem("sucesso", "Agendamento excluído com sucesso!");
+    mostrarMensagem('sucesso', 'Agendamento excluído com sucesso!');
   };
 
   const capitalizePrimeiraLetra = (string) => {
@@ -346,31 +348,38 @@ const AgendaAtendimento = () => {
   };
 
   const getDiaSemanaComData = (dataISO) => {
-    const data = new Date(dataISO + "T12:00:00");
-    const diaSemana = data.toLocaleDateString("pt-BR", {
-      weekday: "long",
+    const data = new Date(dataISO + 'T12:00:00');
+
+    const diaSemana = data.toLocaleDateString('pt-BR', {
+      weekday: 'long',
     });
-    const dataFormatada = data.toLocaleDateString("pt-BR");
-    return `${capitalizePrimeiraLetra(diaSemana)} - ${dataFormatada}`;
+
+    const dataFormatada = data.toLocaleDateString('pt-BR');
+
+    return {
+      diaSemana: capitalizePrimeiraLetra(diaSemana),
+      dataFormatada,
+    };
   };
 
   const agendamentosAgrupadosPorDiaSemana = agendamentos.reduce(
     (acc, agendamento) => {
-      const diaSemana = getDiaSemanaComData(agendamento.data);
-      if (!acc[diaSemana]) {
-        acc[diaSemana] = [];
+      const data = agendamento.data;
+
+      if (!acc[data]) {
+        acc[data] = [];
       }
-      acc[diaSemana].push(agendamento);
+
+      acc[data].push(agendamento);
       return acc;
     },
-    {},
+    {}
   );
-
   const salvarPagamento = async (id) => {
     const pagamento = pagamentoSelecionado[id];
 
     if (!pagamento) {
-      mostrarMensagem("erro", "Selecione a forma de pagamento.");
+      mostrarMensagem('erro', 'Selecione a forma de pagamento.');
       return;
     }
 
@@ -378,23 +387,23 @@ const AgendaAtendimento = () => {
       `Deseja salvar o pagamento como "${pagamento}"?`,
       async () => {
         const { error } = await supabase
-          .from("agendamentos")
+          .from('agendamentos')
           .update({ pagamento })
-          .eq("id", id);
+          .eq('id', id);
 
         if (error) {
-          logger.error("Erro ao salvar pagamento:", error);
-          mostrarMensagem("erro", "Erro ao salvar pagamento.");
+          logger.error('Erro ao salvar pagamento:', error);
+          mostrarMensagem('erro', 'Erro ao salvar pagamento.');
           return;
         }
 
         setAgendamentos((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, pagamento } : item)),
+          prev.map((item) => (item.id === id ? { ...item, pagamento } : item))
         );
 
         setLinhaPagamentoAberta(null);
-        mostrarMensagem("sucesso", "Pagamento atualizado!");
-      },
+        mostrarMensagem('sucesso', 'Pagamento atualizado!');
+      }
     );
   };
 
@@ -419,48 +428,19 @@ const AgendaAtendimento = () => {
   const editarPagamento = (agendamento) => {
     setPagamentoSelecionado((prev) => ({
       ...prev,
-      [agendamento.id]: agendamento.pagamento || "",
+      [agendamento.id]: agendamento.pagamento || '',
     }));
 
     setLinhaPagamentoAberta(agendamento.id);
   };
 
-  const getStatusBadge = (status, pagamento) => {
-    const pagamentoNormalizado = (pagamento || "").toUpperCase();
-
-    if (status === "Concluído" && pagamentoNormalizado === "PENDENTE") {
-      return {
-        label: "Pendente",
-        style: "bg-red-100 text-red-700",
-      };
-    }
-
-    if (status === "Concluído") {
-      return {
-        label: "Concluído",
-        style: "bg-green-100 text-green-700",
-      };
-    }
-
-    if (status === "Agendado") {
-      return {
-        label: "Agendado",
-        style: "bg-blue-100 text-blue-700",
-      };
-    }
-
-    return {
-      label: "Cancelado",
-      style: "bg-gray-200 text-gray-700",
-    };
-  };
   const iniciarFilaLembretes = async (lista) => {
     const listaComTelefone = lista.filter((ag) => ag?.clientes?.telefone);
 
     if (!listaComTelefone.length) {
       mostrarMensagem(
-        "erro",
-        "Nenhum cliente deste dia possui telefone cadastrado.",
+        'erro',
+        'Nenhum cliente deste dia possui telefone cadastrado.'
       );
       return;
     }
@@ -476,11 +456,11 @@ const AgendaAtendimento = () => {
   };
   const tocarSomLeve = () => {
     try {
-      const audio = new Audio("/sounds/click.mp3");
+      const audio = new Audio('/sounds/click.mp3');
       audio.volume = 2.5;
       audio.play();
     } catch (error) {
-      console.log("Som não pôde ser reproduzido.");
+      console.log('Som não pôde ser reproduzido.');
     }
   };
 
@@ -502,7 +482,7 @@ const AgendaAtendimento = () => {
       });
 
       setAbrindoLembrete(false);
-      mostrarMensagem("sucesso", "Todos os lembretes foram abertos.");
+      mostrarMensagem('sucesso', 'Todos os lembretes foram abertos.');
       return;
     }
 
@@ -521,16 +501,16 @@ const AgendaAtendimento = () => {
     const mensagem = montarTextoLembreteDeAgendamento(agendamento);
 
     const { data, error } = await supabase
-      .from("lembretes_enviados")
+      .from('lembretes_enviados')
       .insert([
         {
           agendamento_id: agendamento.id,
           cliente_id: agendamento.cliente_id,
-          cliente_nome: agendamento.clientes?.nome || "Cliente",
-          telefone: agendamento.clientes?.telefone || "",
+          cliente_nome: agendamento.clientes?.nome || 'Cliente',
+          telefone: agendamento.clientes?.telefone || '',
           mensagem,
-          tipo: "lembrete_agendamento",
-          status: "aberto_whatsapp",
+          tipo: 'lembrete_agendamento',
+          status: 'aberto_whatsapp',
         },
       ])
       .select(
@@ -548,17 +528,17 @@ const AgendaAtendimento = () => {
           servico,
           valor
         )
-      `,
+      `
       )
-      .order("enviado_em", { ascending: false });
+      .order('enviado_em', { ascending: false });
 
     if (error) {
-      console.error("Erro ao salvar histórico:", error);
-      mostrarMensagem("erro", "Erro ao salvar histórico do lembrete.");
+      console.error('Erro ao salvar histórico:', error);
+      mostrarMensagem('erro', 'Erro ao salvar histórico do lembrete.');
       return;
     }
 
-    console.log("Histórico salvo com sucesso:", data);
+    console.log('Histórico salvo com sucesso:', data);
   };
 
   return (
@@ -567,16 +547,16 @@ const AgendaAtendimento = () => {
 
       {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
-      <div className="w-full max-w-[100%] mx-auto border border-violet-200 p-4 rounded-lg bg-gray-50 shadow-lg">
-        <h3 className="text-lg font-normal text-primary mb-4 flex gap-2">
-          <ClipboardPlusIcon className="text-secondary " />
+      <div className="mx-auto w-full max-w-[100%] rounded-lg border border-violet-200 bg-gray-50 p-4 shadow-lg">
+        <h3 className="mb-4 flex gap-2 text-lg font-normal text-primary">
+          <ClipboardPlusIcon className="text-secondary" />
           Novo Agendamento
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {/* Data e Horário */}
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
+          <div className="flex w-full flex-col gap-4 sm:flex-row">
             {/* 🗓️ Data */}
             <div className="w-full">
               <label className="text-sm text-gray-700">Data</label>
@@ -597,14 +577,14 @@ const AgendaAtendimento = () => {
                 onChange={(val) =>
                   setNovoAgendamento({ ...novoAgendamento, horario: val })
                 }
-                className="w-full border px-3 py-2 rounded bg-white text-gray-600 text-sm"
+                className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
               />
             </div>
           </div>
 
           {/* Cliente */}
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Cliente</label>
+            <label className="mb-1 text-sm">Cliente</label>
 
             <select
               value={novoAgendamento.cliente_id}
@@ -628,7 +608,7 @@ const AgendaAtendimento = () => {
 
           {/* Serviço */}
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Serviço</label>
+            <label className="mb-1 text-sm">Serviço</label>
             <select
               value={novoAgendamento.servico}
               onChange={(e) =>
@@ -654,7 +634,7 @@ const AgendaAtendimento = () => {
 
           {/* Valor */}
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Valor</label>
+            <label className="mb-1 text-sm">Valor</label>
             <input
               type="text"
               placeholder="Valor"
@@ -670,8 +650,8 @@ const AgendaAtendimento = () => {
           </div>
 
           {/* Observações */}
-          <div className="flex flex-col ">
-            <label className="text-sm mb-1">Observações</label>
+          <div className="flex flex-col">
+            <label className="mb-1 text-sm">Observações</label>
             <textarea
               type="text"
               placeholder="Observações"
@@ -679,13 +659,13 @@ const AgendaAtendimento = () => {
               onChange={(e) =>
                 setNovoAgendamento({ ...novoAgendamento, obs: e.target.value })
               }
-              className="input-padrao resize-none h-[38px]"
+              className="input-padrao h-[38px] resize-none"
             />
           </div>
         </div>
         <button
           onClick={salvarAgendamento}
-          className="bg-secondary px-4 py-2 rounded hover:bg-alternativo text-primary shadow flex items-center gap-2 mt-5"
+          className="mt-5 flex items-center gap-2 rounded bg-secondary px-4 py-2 text-primary shadow hover:bg-alternativo"
         >
           <Save size={20} />
           <span className="hidden sm:inline">Salvar</span>
@@ -694,376 +674,395 @@ const AgendaAtendimento = () => {
 
       {/* 🔵 AGRUPAMENTO POR DIA DA SEMANA */}
 
-      <div className="w-full max-w-[100%] mx-auto pt-2 px-4  border border-[rgba(128,128,128,0.3)] p-4 rounded-lg bg-gray-50 shadow-lg mt-5">
+      <div className="mx-auto mt-5 w-full max-w-[100%] rounded-lg border border-[rgba(128,128,128,0.3)] bg-gray-50 p-4 px-4 pt-2 shadow-lg">
         {Object.entries(agendamentosAgrupadosPorDiaSemana).map(
-          ([diaSemana, agendamentosDoDia]) => (
-            <div key={diaSemana} className=" pt-5 pb-5 ">
-              {/**<h2 className="text-xl font-bold text-primary mb-0  relative pb-[-4px]  "> {diaSemana} </h2> */}
+          ([data, agendamentosDoDia]) => {
+            const { diaSemana, dataFormatada } = getDiaSemanaComData(data);
 
-              <div className="flex items-center justify-between ">
-                <h2 className="text-xl font-normal text-primary mb-0 relative">
-                  {diaSemana}
-                </h2>
+            return (
+              <div key={diaSemana} className="pb-5 pt-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="relative mb-0 text-xl font-normal text-primary">
+                      {diaSemana}
+                    </h2>
 
-                {/* 🟡 ENVIAR Lembrete */}
-                <button
-                  type="button"
-                  onClick={() => iniciarFilaLembretes(agendamentosDoDia)}
-                  className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-4 py-2 rounded-lg hover:bg-secondary transition"
-                  title="Enviar lembretes para todos deste dia"
-                >
-                  <Clock size={24} />
-                  Enviar lembrete
-                </button>
-              </div>
+                    <p className="text-sm text-gray-500">{dataFormatada}</p>
+                    {/* 🟡 ENVIAR Lembrete */}
+                  </div>
 
-              <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-                <table className="w-full min-w-[820px] border-separate border-spacing-0">
-                  <thead className="bg-violet-100 text-[11px] uppercase text-primary ">
-                    <tr className="overflow-x-auto">
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        Data
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        Horário
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-center font-semibold min-w-[180px]">
-                        Cliente
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        Serviço
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        Valor
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        status
-                      </th>
-                      {/* <th className="border p-2">Pagamento</th> */}
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-center font-semibold min-w-[180px]">
-                        Obs
-                      </th>
-                      <th className="border-b border-violet-200 px-2 py-2 md:px-4 md:py-3 text-left font-semibold">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
+                  <button
+                    type="button"
+                    onClick={() => iniciarFilaLembretes(agendamentosDoDia)}
+                    className="btn btn-lembrete-primary mb-2 gap-2 rounded-lg bg-primary px-4 py-2 font-normal text-white transition hover:bg-secondary"
+                    title="Enviar lembretes para todos deste dia"
+                  >
+                    <Clock size={24} />
+                    Enviar lembrete
+                  </button>
+                </div>
 
-                  <tbody>
-                    {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
-                    {agendamentosDoDia.map((agendamento) => {
-                      const statusAtual =
-                        statusLocal[agendamento.id] ||
-                        (agendamento.status_agendamento === "concluido"
-                          ? "Concluído"
-                          : agendamento.status_agendamento === "cancelado"
-                            ? "Cancelado"
-                            : "Agendado");
-                      const badge = getStatusBadge(
-                        statusAtual,
-                        agendamento.pagamento,
-                      );
+                <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-white">
+                  <table className="w-full min-w-[820px] border-separate border-spacing-0">
+                    <thead className="bg-violet-100 text-[11px] uppercase text-primary">
+                      <tr className="overflow-x-auto">
+                        <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          Data
+                        </th>
+                        <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          Horário
+                        </th>
+                        <th className="min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
+                          Cliente
+                        </th>
+                        <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          Serviço
+                        </th>
+                        <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          Valor
+                        </th>
+                        <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          status
+                        </th>
+                        {/* <th className="border p-2">Pagamento</th> */}
+                        <th className="min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
+                          Obs
+                        </th>
+                        <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
 
-                      return (
-                        <Fragment key={agendamento.id}>
-                          <tr className="border">
-                            {/* Data */}
+                    <tbody>
+                      {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
+                      {agendamentosDoDia.map((agendamento) => {
+                        const statusAtual =
+                          statusLocal[agendamento.id] ||
+                          (agendamento.status_agendamento === 'concluido'
+                            ? 'Concluído'
+                            : agendamento.status_agendamento === 'cancelado'
+                              ? 'Cancelado'
+                              : 'Agendado');
+                        const badge = getStatusBadge(
+                          statusAtual,
+                          agendamento.pagamento
+                        );
 
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              {editandoId === agendamento.id ? (
-                                <InputData
-                                  value={formEdicao.data || ""}
-                                  onChange={(val) =>
-                                    atualizarCampoEdicao("data", val)
-                                  }
-                                />
-                              ) : (
-                                new Date(
-                                  agendamento.data + "T12:00:00",
-                                ).toLocaleDateString("pt-BR")
-                              )}
-                            </td>
-                            {/* Horário */}
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              {editandoId === agendamento.id ? (
-                                <input
-                                  type="time"
-                                  value={formEdicao.horario || ""}
-                                  onChange={(e) => {
-                                    console.log(
-                                      "Novo horário:",
-                                      e.target.value,
-                                    );
-                                    setFormEdicao((prev) => ({
-                                      ...prev,
-                                      horario: e.target.value,
-                                    }));
-                                  }}
-                                  className="border p-1 rounded w-full"
-                                />
-                              ) : (
-                                agendamento.horario
-                              )}
-                            </td>
+                        return (
+                          <Fragment key={agendamento.id}>
+                            <tr className="border">
+                              {/* Data */}
 
-                            {/* Cliente */}
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm ">
-                              {editandoId === agendamento.id ? (
-                                <select
-                                  value={formEdicao.cliente_id || ""}
-                                  onChange={(e) =>
-                                    atualizarCampoEdicao(
-                                      "cliente_id",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="border p-1 rounded w-full"
-                                >
-                                  <option value="">Selecione um cliente</option>
-                                  {clientes.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                      {c.nome}
-                                    </option>
-                                  ))}
-                                </select>
-                              ) : (
-                                agendamento.clientes?.nome || "Sem nome"
-                              )}
-                            </td>
-
-                            {/* Serviço */}
-
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              {editandoId === agendamento.id ? (
-                                <select
-                                  value={formEdicao.servico || ""}
-                                  onChange={(e) =>
-                                    atualizarCampoEdicao(
-                                      "servico",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="border p-1 rounded w-full"
-                                >
-                                  <option value="">Selecione</option>
-                                  <option value="Tintura">Tintura</option>
-                                  <option value="Corte">Corte</option>
-                                  <option value="Escova progressiva">
-                                    Escova Progressiva
-                                  </option>
-                                  <option value="Butox">Butox</option>
-                                  <option value="Manicure">Manicure</option>
-                                  <option value="Maquiagem">Maquiagem</option>
-                                  <option value="Sobrancelha">
-                                    Sobrancelha
-                                  </option>
-                                  <option value="Depilação">Depilação</option>
-                                  <option value="Penteado festa">
-                                    Penteado festa
-                                  </option>
-                                </select>
-                              ) : (
-                                agendamento.servico
-                              )}
-                            </td>
-                            {/* Valor */}
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              {editandoId === agendamento.id ? (
-                                <input
-                                  value={formEdicao.valorFormatado || ""}
-                                  onChange={(e) => {
-                                    const somenteNumeros =
-                                      e.target.value.replace(/\D/g, "");
-
-                                    setFormEdicao((prev) => ({
-                                      ...prev,
-                                      valor: somenteNumeros,
-                                      valorFormatado:
-                                        formatarMoeda(somenteNumeros),
-                                    }));
-                                  }}
-                                  className="border p-1 rounded"
-                                />
-                              ) : (
-                                formatarValor(agendamento.valor)
-                              )}
-                            </td>
-
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.style}`}
-                              >
-                                {badge.label}
-                              </span>
-                            </td>
-
-                            {/* Observações */}
-                            <td className="border-b border-gray-200 px-2 py-2 md:px-4 md:py-3 min-w-[100px] text-left text-sm">
-                              {editandoId === agendamento.id ? (
-                                <input
-                                  value={formEdicao.obs}
-                                  onChange={(e) =>
-                                    atualizarCampoEdicao("obs", e.target.value)
-                                  }
-                                  className="border p-1 rounded"
-                                />
-                              ) : (
-                                agendamento.obs
-                              )}
-                            </td>
-
-                            {/* Ações */}
-
-                            <td className="border-b border-gray-200 px-3 py-2 md:px-4 md:py-3 min-w-[180px]">
-                              <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                 {editandoId === agendamento.id ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => salvarEdicao(agendamento.id)}
-                                    className="text-green-600"
-                                    title="Salvar"
-                                  >
-                                    <SquareCheckBig size={20} />
-                                  </button>
+                                  <InputData
+                                    value={formEdicao.data || ''}
+                                    onChange={(val) =>
+                                      atualizarCampoEdicao('data', val)
+                                    }
+                                  />
                                 ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => iniciarEdicao(agendamento)}
-                                    className="p-2 rounded-md hover:bg-yellow-100 text-yellow-600 transition"
-                                    title="Editar"
-                                  >
-                                    <Pencil size={20} />
-                                  </button>
+                                  new Date(
+                                    agendamento.data + 'T12:00:00'
+                                  ).toLocaleDateString('pt-BR')
                                 )}
-
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    abrirConfirmacao(
-                                      "Deseja realmente excluir este atendimento?",
-                                      () => excluirAgendamento(agendamento.id),
-                                    )
-                                  }
-                                  className="p-2 rounded-md hover:bg-red-100 text-red-600 transition"
-                                  title="Excluir atendimento"
-                                >
-                                  <Trash2 size={20} />
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    alterarStatus(agendamento.id, "Concluído")
-                                  }
-                                  className="p-2 rounded-md hover:bg-red-100 text-green-600 transition"
-                                  title="Concluir atendimento"
-                                >
-                                  <Save size={20} />
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    alterarStatus(agendamento.id, "Cancelado")
-                                  }
-                                  className="p-2 rounded-md hover:bg-red-100 text-orange-600 transition"
-                                  title="Cancelar atendimento"
-                                >
-                                  <CircleOff size={20} />
-                                </button>
-
-                                {statusAtual !== "Cancelado" && (
-                                  <button
-                                    type="button"
-                                    onClick={() => editarPagamento(agendamento)}
-                                    className="text-primary hover:text-alternativo"
-                                    title="Editar pagamento"
-                                  >
-                                    <BadgeDollarSign size={20} />
-                                  </button>
+                              </td>
+                              {/* Horário */}
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                {editandoId === agendamento.id ? (
+                                  <input
+                                    type="time"
+                                    value={formEdicao.horario || ''}
+                                    onChange={(e) => {
+                                      console.log(
+                                        'Novo horário:',
+                                        e.target.value
+                                      );
+                                      setFormEdicao((prev) => ({
+                                        ...prev,
+                                        horario: e.target.value,
+                                      }));
+                                    }}
+                                    className="w-full rounded border p-1"
+                                  />
+                                ) : (
+                                  agendamento.horario
                                 )}
-                              </div>
-                            </td>
-                          </tr>
+                              </td>
 
-                          {/**Pagamento */}
+                              {/* Cliente */}
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                {editandoId === agendamento.id ? (
+                                  <select
+                                    value={formEdicao.cliente_id || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'cliente_id',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full rounded border p-1"
+                                  >
+                                    <option value="">
+                                      Selecione um cliente
+                                    </option>
+                                    {clientes.map((c) => (
+                                      <option key={c.id} value={c.id}>
+                                        {c.nome}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  agendamento.clientes?.nome || 'Sem nome'
+                                )}
+                              </td>
 
-                          {linhaPagamentoAberta === agendamento.id && (
-                            <tr>
-                              <td
-                                colSpan="8"
-                                className="bg-blue-50 px-4 py-4 border-b"
-                              >
-                                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-base">💰</span>
-                                    <span className="font-medium text-primary">
-                                      Registrar pagamento
-                                    </span>
-                                  </div>
+                              {/* Serviço */}
 
-                                  <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full">
-                                    <select
-                                      className="input-padrao max-w-[180px]"
-                                      value={
-                                        pagamentoSelecionado[agendamento.id] ||
-                                        ""
-                                      }
-                                      onChange={(e) =>
-                                        setPagamentoSelecionado((prev) => ({
-                                          ...prev,
-                                          [agendamento.id]: e.target.value,
-                                        }))
-                                      }
-                                    >
-                                      <option value="">Selecione</option>
-                                      <option value="Pix">Pix</option>
-                                      <option value="Cartão">Cartão</option>
-                                      <option value="Dinheiro">Dinheiro</option>
-                                      <option value="Pendente">Pendente</option>
-                                    </select>
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                {editandoId === agendamento.id ? (
+                                  <select
+                                    value={formEdicao.servico || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'servico',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full rounded border p-1"
+                                  >
+                                    <option value="">Selecione</option>
+                                    <option value="Tintura">Tintura</option>
+                                    <option value="Corte">Corte</option>
+                                    <option value="Escova progressiva">
+                                      Escova Progressiva
+                                    </option>
+                                    <option value="Butox">Butox</option>
+                                    <option value="Manicure">Manicure</option>
+                                    <option value="Maquiagem">Maquiagem</option>
+                                    <option value="Sobrancelha">
+                                      Sobrancelha
+                                    </option>
+                                    <option value="Depilação">Depilação</option>
+                                    <option value="Penteado festa">
+                                      Penteado festa
+                                    </option>
+                                  </select>
+                                ) : (
+                                  agendamento.servico
+                                )}
+                              </td>
+                              {/* Valor */}
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                {editandoId === agendamento.id ? (
+                                  <input
+                                    value={formEdicao.valorFormatado || ''}
+                                    onChange={(e) => {
+                                      const somenteNumeros =
+                                        e.target.value.replace(/\D/g, '');
 
+                                      setFormEdicao((prev) => ({
+                                        ...prev,
+                                        valor: somenteNumeros,
+                                        valorFormatado:
+                                          formatarMoeda(somenteNumeros),
+                                      }));
+                                    }}
+                                    className="rounded border p-1"
+                                  />
+                                ) : (
+                                  formatarValor(agendamento.valor)
+                                )}
+                              </td>
+
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                <StatusBadge
+                                  status={badge.label}
+                                  style={badge.style}
+                                />
+                              </td>
+
+                              {/* Observações */}
+                              <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                {editandoId === agendamento.id ? (
+                                  <input
+                                    value={formEdicao.obs}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'obs',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="rounded border p-1"
+                                  />
+                                ) : (
+                                  agendamento.obs
+                                )}
+                              </td>
+
+                              {/* Ações */}
+
+                              <td className="min-w-[180px] border-b border-gray-200 px-3 py-2 md:px-4 md:py-3">
+                                <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                                  {editandoId === agendamento.id ? (
                                     <button
                                       type="button"
-                                      className={`btn ${
-                                        pagamentoSelecionado[agendamento.id]
-                                          ? "btn-green"
-                                          : "btn-gray cursor-not-allowed"
-                                      }`}
                                       onClick={() =>
-                                        salvarPagamento(agendamento.id)
+                                        salvarEdicao(agendamento.id)
                                       }
-                                      disabled={
-                                        !pagamentoSelecionado[agendamento.id]
-                                      }
+                                      className="text-green-600"
+                                      title="Salvar"
                                     >
-                                      Confirmar pagamento
+                                      <SquareCheckBig size={20} />
                                     </button>
-                                  </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => iniciarEdicao(agendamento)}
+                                      className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-100"
+                                      title="Editar"
+                                    >
+                                      <Pencil size={20} />
+                                    </button>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      abrirConfirmacao(
+                                        'Deseja realmente excluir este atendimento?',
+                                        () => excluirAgendamento(agendamento.id)
+                                      )
+                                    }
+                                    className="rounded-md p-2 text-red-600 transition hover:bg-red-100"
+                                    title="Excluir atendimento"
+                                  >
+                                    <Trash2 size={20} />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      alterarStatus(agendamento.id, 'Concluído')
+                                    }
+                                    className="rounded-md p-2 text-green-600 transition hover:bg-red-100"
+                                    title="Concluir atendimento"
+                                  >
+                                    <Save size={20} />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      alterarStatus(agendamento.id, 'Cancelado')
+                                    }
+                                    className="rounded-md p-2 text-orange-600 transition hover:bg-red-100"
+                                    title="Cancelar atendimento"
+                                  >
+                                    <CircleOff size={20} />
+                                  </button>
+
+                                  {statusAtual !== 'Cancelado' && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        editarPagamento(agendamento)
+                                      }
+                                      className="text-primary hover:text-alternativo"
+                                      title="Editar pagamento"
+                                    >
+                                      <BadgeDollarSign size={20} />
+                                    </button>
+                                  )}
                                 </div>
                               </td>
                             </tr>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
+
+                            {/**Pagamento */}
+
+                            {linhaPagamentoAberta === agendamento.id && (
+                              <tr>
+                                <td
+                                  colSpan="8"
+                                  className="border-b bg-blue-50 px-4 py-4"
+                                >
+                                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-base">💰</span>
+                                      <span className="font-medium text-primary">
+                                        Registrar pagamento
+                                      </span>
+                                    </div>
+
+                                    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+                                      <select
+                                        className="input-padrao max-w-[180px]"
+                                        value={
+                                          pagamentoSelecionado[
+                                            agendamento.id
+                                          ] || ''
+                                        }
+                                        onChange={(e) =>
+                                          setPagamentoSelecionado((prev) => ({
+                                            ...prev,
+                                            [agendamento.id]: e.target.value,
+                                          }))
+                                        }
+                                      >
+                                        <option value="">Selecione</option>
+                                        <option value="Pix">Pix</option>
+                                        <option value="Cartão">Cartão</option>
+                                        <option value="Dinheiro">
+                                          Dinheiro
+                                        </option>
+                                        <option value="Pendente">
+                                          Pendente
+                                        </option>
+                                      </select>
+
+                                      <button
+                                        type="button"
+                                        className={`btn ${
+                                          pagamentoSelecionado[agendamento.id]
+                                            ? 'btn-green'
+                                            : 'btn-gray cursor-not-allowed'
+                                        }`}
+                                        onClick={() =>
+                                          salvarPagamento(agendamento.id)
+                                        }
+                                        disabled={
+                                          !pagamentoSelecionado[agendamento.id]
+                                        }
+                                      >
+                                        Confirmar pagamento
+                                      </button>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          ),
+            );
+          }
         )}
       </div>
 
       {/*Confirmação*/}
       {confirmacao.aberto && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg">
-            <h2 className="text-lg font-semibold text-primary mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-4 text-lg font-semibold text-primary">
               Confirmação
             </h2>
 
-            <p className="text-gray-700 mb-6">{confirmacao.mensagem}</p>
+            <p className="mb-6 text-gray-700">{confirmacao.mensagem}</p>
 
             <div className="flex justify-end gap-3">
               <button
@@ -1071,7 +1070,7 @@ const AgendaAtendimento = () => {
                 onClick={() =>
                   setConfirmacao({
                     aberto: false,
-                    mensagem: "",
+                    mensagem: '',
                     onConfirm: null,
                   })
                 }
@@ -1085,7 +1084,7 @@ const AgendaAtendimento = () => {
                   confirmacao.onConfirm();
                   setConfirmacao({
                     aberto: false,
-                    mensagem: "",
+                    mensagem: '',
                     onConfirm: null,
                   });
                 }}
@@ -1099,32 +1098,32 @@ const AgendaAtendimento = () => {
 
       {/* 🔵 MENSAGEM DO SISTEMA */}
       {mensagemSistema.aberta && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[90%] max-w-sm shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="w-[90%] max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <h2
-              className={`text-lg font-semibold mb-3 ${
-                mensagemSistema.tipo === "erro"
-                  ? "text-red-600"
-                  : "text-green-600"
+              className={`mb-3 text-lg font-semibold ${
+                mensagemSistema.tipo === 'erro'
+                  ? 'text-red-600'
+                  : 'text-green-600'
               }`}
             >
-              {mensagemSistema.tipo === "erro" ? "Atenção" : "Sucesso"}
+              {mensagemSistema.tipo === 'erro' ? 'Atenção' : 'Sucesso'}
             </h2>
 
-            <p className="text-gray-700 mb-5">{mensagemSistema.texto}</p>
+            <p className="mb-5 text-gray-700">{mensagemSistema.texto}</p>
 
             <div className="flex justify-end">
               <button
                 className={
-                  mensagemSistema.tipo === "erro"
-                    ? "btn btn-red"
-                    : "btn btn-green"
+                  mensagemSistema.tipo === 'erro'
+                    ? 'btn btn-red'
+                    : 'btn btn-green'
                 }
                 onClick={() =>
                   setMensagemSistema({
                     aberta: false,
-                    tipo: "",
-                    texto: "",
+                    tipo: '',
+                    texto: '',
                   })
                 }
               >
@@ -1135,19 +1134,19 @@ const AgendaAtendimento = () => {
         </div>
       )}
       {filaLembretes.aberta && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-lg">
-            <h2 className="text-lg font-semibold text-primary mb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="mb-3 text-lg font-semibold text-primary">
               Fila de lembretes
             </h2>
 
-            <p className="text-gray-700 mb-4">
-              Lembrete <strong>{filaLembretes.indiceAtual + 1}</strong> de{" "}
+            <p className="mb-4 text-gray-700">
+              Lembrete <strong>{filaLembretes.indiceAtual + 1}</strong> de{' '}
               <strong>{filaLembretes.lista.length}</strong>
             </p>
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-5">
+            <div className="mb-5 h-2 w-full rounded-full bg-gray-200">
               <div
-                className="bg-primary h-2 rounded-full transition-all"
+                className="h-2 rounded-full bg-primary transition-all"
                 style={{
                   width: `${
                     ((filaLembretes.indiceAtual + 1) /
@@ -1158,27 +1157,27 @@ const AgendaAtendimento = () => {
               />
             </div>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 space-y-2">
+            <div className="mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
               <p className="text-gray-700">
-                <span className="font-medium text-primary">Cliente:</span>{" "}
+                <span className="font-medium text-primary">Cliente:</span>{' '}
                 {filaLembretes.lista[filaLembretes.indiceAtual]?.clientes?.nome}
               </p>
 
               <p className="text-gray-700">
-                <span className="font-medium text-primary">Serviço:</span>{" "}
+                <span className="font-medium text-primary">Serviço:</span>{' '}
                 {filaLembretes.lista[filaLembretes.indiceAtual]?.servico}
               </p>
 
               <p className="text-gray-700">
-                <span className="font-medium text-primary">Horário:</span>{" "}
+                <span className="font-medium text-primary">Horário:</span>{' '}
                 {filaLembretes.lista[filaLembretes.indiceAtual]?.horario}
               </p>
             </div>
 
-            <div className="flex justify-between items-center mt-4">
+            <div className="mt-4 flex items-center justify-between">
               <button
                 type="button"
-                className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+                className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition hover:bg-gray-200"
                 onClick={() =>
                   setFilaLembretes({
                     aberta: false,
@@ -1193,14 +1192,14 @@ const AgendaAtendimento = () => {
               <button
                 type="button"
                 disabled={abrindoLembrete}
-                className={`px-4 py-2 rounded-lg text-white transition flex items-center gap-2 ${
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-white transition ${
                   abrindoLembrete
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-primary hover:bg-secondary"
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-primary hover:bg-secondary'
                 }`}
                 onClick={enviarProximoLembrete}
               >
-                {abrindoLembrete ? "Abrindo..." : "Próximo"}
+                {abrindoLembrete ? 'Abrindo...' : 'Próximo'}
               </button>
             </div>
           </div>

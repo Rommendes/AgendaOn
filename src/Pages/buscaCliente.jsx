@@ -16,6 +16,7 @@ const PesquisandoClientes = () => {
   const [search, setSearch] = useState('');
   const [resultados, setResultados] = useState([]);
   const [resumoFinanceiro, setResumoFinanceiro] = useState({});
+  const [resumoCobrancas, setResumoCobrancas] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,6 +44,10 @@ const PesquisandoClientes = () => {
     );
 
     setResultados(filtrados);
+
+    filtrados.forEach((cliente) => {
+      buscarResumoCobrancas(cliente.id);
+    });
   }, [search, clientes]);
 
   {
@@ -116,6 +121,28 @@ const PesquisandoClientes = () => {
       </div>
     );
   }
+
+  const buscarResumoCobrancas = async (clienteId) => {
+    const { data, error } = await supabase
+      .from('lembretes_enviados')
+      .select('id, enviado_em')
+      .eq('cliente_id', clienteId)
+      .eq('tipo', 'cobranca_pendente')
+      .order('enviado_em', { ascending: false });
+
+    if (error) {
+      console.error('Erro ao buscar cobranças do cliente:', error);
+      return;
+    }
+
+    setResumoCobrancas((prev) => ({
+      ...prev,
+      [clienteId]: {
+        quantidade: data?.length || 0,
+        ultimaCobranca: data?.[0]?.enviado_em || null,
+      },
+    }));
+  };
 
   return (
     <div className="mx-auto mt-6 w-full max-w-xl rounded-xl border border-gray-200 bg-gray-50 px-4 py-8 shadow-lg sm:px-6 md:max-w-3xl md:px-10 lg:max-w-5xl">
@@ -295,9 +322,33 @@ const PesquisandoClientes = () => {
                             {resumoFinanceiro.ultimoAtendimento || '-'}
                           </p>
                         </div>
+                        <div className="rounded-lg border border-purple-100 bg-purple-50 p-3">
+                          <p className="text-xs text-gray-500">
+                            Cobranças enviadas
+                          </p>
+
+                          <p className="font-bold text-purple-700">
+                            {resumoCobrancas[cliente.id]?.quantidade || 0}
+                          </p>
+                        </div>
+
+                        <div className="rounded-lg border border-orange-100 bg-orange-50 p-3">
+                          <p className="text-xs text-gray-500">
+                            Última cobrança
+                          </p>
+
+                          <p className="font-bold text-orange-700">
+                            {resumoCobrancas[cliente.id]?.ultimaCobranca
+                              ? new Date(
+                                  resumoCobrancas[cliente.id].ultimaCobranca
+                                ).toLocaleDateString('pt-BR')
+                              : '-'}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
+
                   {/* COLUNA DIREITA - HISTÓRICO */}
                   <div className="lg:col-span-2">
                     <h3 className="mb-3 mt-3 text-xl font-bold text-primary">
