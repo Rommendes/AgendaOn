@@ -547,44 +547,48 @@ const AgendaAtendimento = () => {
 
       {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
-      <div className="mx-auto w-full max-w-[100%] rounded-lg border border-violet-200 bg-gray-50 p-4 shadow-lg">
-        <h3 className="mb-4 flex gap-2 text-lg font-normal text-primary">
+      <div className="mx-auto w-full max-w-[100%] rounded-2xl border border-violet-200 bg-white/80 p-5 shadow-sm">
+        <h3 className="mb-5 flex items-center gap-2 text-lg font-medium text-primary">
           <ClipboardPlusIcon className="text-secondary" />
           Novo Agendamento
         </h3>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* Data e Horário */}
 
-          <div className="flex w-full flex-col gap-4 sm:flex-row">
-            {/* 🗓️ Data */}
-            <div className="w-full">
-              <label className="text-sm text-gray-700">Data</label>
+          {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"> */}
+          {/* 🗓️ Data */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Data
+            </label>
 
-              <InputData
-                value={novoAgendamento.data}
-                onChange={(val) =>
-                  setNovoAgendamento({ ...novoAgendamento, data: val })
-                }
-              />
-            </div>
-
-            {/* ⏰ Horário */}
-            <div className="w-full">
-              <label className="text-sm text-gray-700">Horário</label>
-              <InputHorario
-                value={novoAgendamento.horario}
-                onChange={(val) =>
-                  setNovoAgendamento({ ...novoAgendamento, horario: val })
-                }
-                className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
-              />
-            </div>
+            <InputData
+              value={novoAgendamento.data}
+              onChange={(val) =>
+                setNovoAgendamento({ ...novoAgendamento, data: val })
+              }
+            />
+          </div>
+          {/* ⏰ Horário */}
+          <div className="flex flex-col">
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Horário
+            </label>
+            <InputHorario
+              value={novoAgendamento.horario}
+              onChange={(val) =>
+                setNovoAgendamento({ ...novoAgendamento, horario: val })
+              }
+              className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
+            />
           </div>
 
           {/* Cliente */}
           <div className="flex flex-col">
-            <label className="mb-1 text-sm">Cliente</label>
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Cliente
+            </label>
 
             <select
               value={novoAgendamento.cliente_id}
@@ -608,7 +612,9 @@ const AgendaAtendimento = () => {
 
           {/* Serviço */}
           <div className="flex flex-col">
-            <label className="mb-1 text-sm">Serviço</label>
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Serviço
+            </label>
             <select
               value={novoAgendamento.servico}
               onChange={(e) =>
@@ -634,7 +640,9 @@ const AgendaAtendimento = () => {
 
           {/* Valor */}
           <div className="flex flex-col">
-            <label className="mb-1 text-sm">Valor</label>
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Valor
+            </label>
             <input
               type="text"
               placeholder="Valor"
@@ -651,7 +659,9 @@ const AgendaAtendimento = () => {
 
           {/* Observações */}
           <div className="flex flex-col">
-            <label className="mb-1 text-sm">Observações</label>
+            <label className="mb-1 text-[13px] font-normal text-gray-700">
+              Observações
+            </label>
             <textarea
               type="text"
               placeholder="Observações"
@@ -663,13 +673,22 @@ const AgendaAtendimento = () => {
             />
           </div>
         </div>
-        <button
+        {/* <button
           onClick={salvarAgendamento}
-          className="mt-5 flex items-center gap-2 rounded bg-secondary px-4 py-2 text-primary shadow hover:bg-alternativo"
+          className="mt-5 flex items-center gap-2 rounded-full bg-secondary px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-alternativo"
         >
           <Save size={20} />
           <span className="hidden sm:inline">Salvar</span>
-        </button>
+        </button> */}
+        <div className="mt-5 flex justify-end">
+          <button
+            onClick={salvarAgendamento}
+            className="flex items-center gap-2 rounded-full bg-secondary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-alternativo"
+          >
+            <Save size={20} />
+            <span className="hidden sm:inline">Salvar</span>
+          </button>
+        </div>
       </div>
 
       {/* 🔵 AGRUPAMENTO POR DIA DA SEMANA */}
@@ -680,8 +699,11 @@ const AgendaAtendimento = () => {
             const { diaSemana, dataFormatada } = getDiaSemanaComData(data);
 
             return (
-              <div key={diaSemana} className="pb-5 pt-5">
-                <div className="flex items-center justify-between">
+              <div
+                key={diaSemana}
+                className="mb-6 rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm"
+              >
+                <div className="mb-3 flex items-center justify-between gap-4">
                   <div>
                     <h2 className="relative mb-0 text-xl font-normal text-primary">
                       {diaSemana}
@@ -694,17 +716,17 @@ const AgendaAtendimento = () => {
                   <button
                     type="button"
                     onClick={() => iniciarFilaLembretes(agendamentosDoDia)}
-                    className="btn btn-lembrete-primary mb-2 gap-2 rounded-lg bg-primary px-4 py-2 font-normal text-white transition hover:bg-secondary"
+                    className="mb-2 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-secondary"
                     title="Enviar lembretes para todos deste dia"
                   >
-                    <Clock size={24} />
+                    <Clock size={20} />
                     Enviar lembrete
                   </button>
                 </div>
 
-                <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-white">
+                <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
                   <table className="w-full min-w-[820px] border-separate border-spacing-0">
-                    <thead className="bg-violet-100 text-[11px] uppercase text-primary">
+                    <thead className="bg-violet-50 text-[11px] uppercase tracking-wide text-primary">
                       <tr className="overflow-x-auto">
                         <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
                           Data
@@ -712,7 +734,7 @@ const AgendaAtendimento = () => {
                         <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
                           Horário
                         </th>
-                        <th className="min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
+                        <th className="mb-5 min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
                           Cliente
                         </th>
                         <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
@@ -748,12 +770,10 @@ const AgendaAtendimento = () => {
                           statusAtual,
                           agendamento.pagamento
                         );
-
                         return (
                           <Fragment key={agendamento.id}>
-                            <tr className="border">
+                            <tr className="transition hover:bg-violet-50/60">
                               {/* Data */}
-
                               <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                 {editandoId === agendamento.id ? (
                                   <InputData
@@ -904,7 +924,7 @@ const AgendaAtendimento = () => {
                               {/* Ações */}
 
                               <td className="min-w-[180px] border-b border-gray-200 px-3 py-2 md:px-4 md:py-3">
-                                <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                                <div className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gray-50 px-2 py-1">
                                   {editandoId === agendamento.id ? (
                                     <button
                                       type="button"
@@ -920,7 +940,7 @@ const AgendaAtendimento = () => {
                                     <button
                                       type="button"
                                       onClick={() => iniciarEdicao(agendamento)}
-                                      className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-100"
+                                      className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-200"
                                       title="Editar"
                                     >
                                       <Pencil size={20} />
@@ -935,7 +955,7 @@ const AgendaAtendimento = () => {
                                         () => excluirAgendamento(agendamento.id)
                                       )
                                     }
-                                    className="rounded-md p-2 text-red-600 transition hover:bg-red-100"
+                                    className="rounded-md p-2 text-red-600 transition hover:bg-red-200"
                                     title="Excluir atendimento"
                                   >
                                     <Trash2 size={20} />
@@ -946,7 +966,7 @@ const AgendaAtendimento = () => {
                                     onClick={() =>
                                       alterarStatus(agendamento.id, 'Concluído')
                                     }
-                                    className="rounded-md p-2 text-green-600 transition hover:bg-red-100"
+                                    className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
                                     title="Concluir atendimento"
                                   >
                                     <Save size={20} />
@@ -957,7 +977,7 @@ const AgendaAtendimento = () => {
                                     onClick={() =>
                                       alterarStatus(agendamento.id, 'Cancelado')
                                     }
-                                    className="rounded-md p-2 text-orange-600 transition hover:bg-red-100"
+                                    className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
                                     title="Cancelar atendimento"
                                   >
                                     <CircleOff size={20} />
@@ -969,7 +989,7 @@ const AgendaAtendimento = () => {
                                       onClick={() =>
                                         editarPagamento(agendamento)
                                       }
-                                      className="text-primary hover:text-alternativo"
+                                      className="rounded-md p-2 text-primary transition hover:bg-blue-200"
                                       title="Editar pagamento"
                                     >
                                       <BadgeDollarSign size={20} />

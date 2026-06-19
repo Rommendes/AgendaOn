@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,11 +10,11 @@ body {
 /* Componentes (tudo em um lugar só) */
 @layer components {
   .botao-menu {
-    @apply bg-primary text-white p-4 rounded-2xl flex items-center gap-4 hover:bg-blue-800 transition;
+    @apply flex items-center gap-4 rounded-2xl bg-primary p-4 text-white transition hover:bg-blue-800;
   }
 
   .botao-submenu {
-    @apply block w-full text-white px-4 py-2 rounded-lg text-center;
+    @apply block w-full rounded-lg px-4 py-2 text-center text-white;
   }
 
   .botao-submenu-cor {
@@ -23,35 +22,45 @@ body {
   }
 
   .input-padrao {
-    @apply bg-blue-50 text-cinza rounded-sm w-full px-3 py-2 text-sm border border-gray-400
-    focus:ring-2 focus:ring-borderLigth focus:outline-none focus:border-b-secondary focus:border-b-2
-    appearance-none leading-tight;
+    @apply w-full appearance-none rounded-md border border-gray-300 bg-blue-50 px-3 py-2 text-sm font-normal leading-tight text-gray-700 focus:border-b-2 focus:border-b-secondary focus:outline-none focus:ring-2 focus:ring-borderLigth;
   }
 
   /* Botão base e variações de cor */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded text-white text-sm transition;
+    @apply inline-flex items-center justify-center gap-2 rounded px-3 py-1.5 text-sm text-white transition;
   }
-  .btn-green  { @apply bg-emerald-600 hover:bg-emerald-700; }
-  .btn-yellow { @apply bg-amber-500 hover:bg-amber-600; }
-  .btn-red    { @apply bg-red-600 hover:bg-red-700; }
-  .btn-gray   { @apply bg-gray-300 text-gray-800 hover:bg-gray-400; }
+  .btn-green {
+    @apply bg-emerald-600 hover:bg-emerald-700;
+  }
+  .btn-yellow {
+    @apply bg-amber-500 hover:bg-amber-600;
+  }
+  .btn-red {
+    @apply bg-red-600 hover:bg-red-700;
+  }
+  .btn-gray {
+    @apply bg-gray-300 text-gray-800 hover:bg-gray-400;
+  }
 
   /* Lembretes */
-  .btn-lembrete-primary   { @apply bg-primary text-white hover:bg-alternativo transition; }
-  .btn-lembrete-secondary { @apply bg-secondary text-white hover:bg-alternativo transition; }
+  .btn-lembrete-primary {
+    @apply bg-primary text-white transition hover:bg-alternativo;
+  }
+  .btn-lembrete-secondary {
+    @apply bg-secondary text-white transition hover:bg-alternativo;
+  }
 
   /* ✅ Cobranças Pendentes (cards / badges) */
   .card-pendente {
-    @apply border-l-4 border-l-red-500 border border-red-100 rounded-lg p-3 bg-white shadow-sm;
+    @apply rounded-lg border border-l-4 border-red-100 border-l-red-500 bg-white p-3 shadow-sm;
   }
 
   .badge-pendente {
-    @apply text-xs px-3 py-1 rounded-full bg-red-600 text-white font-semibold shadow-sm;
+    @apply rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white shadow-sm;
   }
 
   .badge-sem-numero {
-    @apply text-xs px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 font-semibold;
+    @apply rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800;
   }
 
   .valor-destaque {
@@ -59,11 +68,11 @@ body {
   }
 
   .status-enviado {
-    @apply inline-block text-xs px-3 py-1 rounded-full bg-emerald-600 text-white font-semibold;
+    @apply inline-block rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white;
   }
 
- .badge-status {
-    @apply inline-block px-3 py-1 rounded-full text-xs font-medium;
+  .badge-status {
+    @apply inline-block rounded-full px-3 py-1 text-xs font-medium;
   }
 
   .badge-agendado {
@@ -81,5 +90,4 @@ body {
   .badge-faltou {
     @apply bg-amber-100 text-amber-700;
   }
-
 }

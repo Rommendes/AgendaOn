@@ -70,7 +70,7 @@ export default function Home() {
             <div>
               <h2 className="text-lg font-bold">Semana Atual</h2>
               <p className="text-sm">
-                Visualize seus atendimentos desta semana
+                Visualize seus atendimentos desta semana e envie lembretes.
               </p>
             </div>
           </Link>
