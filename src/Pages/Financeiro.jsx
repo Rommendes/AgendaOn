@@ -1,0 +1,371 @@
+import Header from '../Componentes/Header/Header.jsx';
+import { useEffect, useState } from 'react';
+import { supabase } from '../api/supabaseClient';
+import {
+  Save,
+  SquareCheckBig,
+  SquareScissorsIcon,
+  CreditCard,
+  Scissors,
+  CalendarDays,
+  Wallet,
+  UserRound,
+} from 'lucide-react';
+function Financeiro() {
+  const [pendentes, setPendentes] = useState([]);
+  const [pagos, setPagos] = useState([]);
+
+  const [formaPagamento, setFormaPagamento] = useState({});
+
+  const [mostrarConfirmacao, setMostrarConfirmacao] = useState({});
+  useEffect(() => {
+    buscarPendentes();
+    buscarPagos();
+    buscarResumoFinanceiro();
+  }, []);
+
+  const [resumoFinanceiro, setResumoFinanceiro] = useState({
+    recebidoMes: 0,
+    pendente: 0,
+    clientesDevedores: 0,
+    concluidos: 0,
+  });
+
+  const recebidoNoMes = pagos.reduce((total, item) => {
+    return total + Number(item.valor || 0);
+  }, 0);
+
+  async function buscarPendentes() {
+    const { data, error } = await supabase
+      .from('agendamentos')
+      .select(
+        `
+      id,
+      data,
+      horario,
+      servico,
+      valor,
+      pagamento,
+      status_agendamento,
+      clientes (
+        nome,
+        telefone
+      )
+    `
+      )
+      .eq('pagamento', 'Pendente')
+      .neq('status_agendamento', 'cancelado')
+      .order('data', { ascending: true });
+
+    if (error) {
+      console.error('Erro ao buscar pendentes:', error);
+      return;
+    }
+
+    setPendentes(data || []);
+  }
+
+  async function buscarPagos() {
+    const { data, error } = await supabase
+      .from('agendamentos')
+      .select(
+        `
+      id,
+      data,
+      horario,
+      servico,
+      valor,
+      pagamento,
+      status_agendamento,
+      clientes (
+        nome,
+        telefone
+      )
+    `
+      )
+      .neq('status_agendamento', 'cancelado')
+      .neq('pagamento', 'Pendente')
+      .order('data', { ascending: false })
+      .limit(12);
+
+    if (error) {
+      console.error('Erro ao buscar pagamentos:', error);
+      return;
+    }
+
+    setPagos(data || []);
+  }
+
+  async function buscarResumoFinanceiro() {
+    const { data, error } = await supabase
+      .from('agendamentos')
+      .select('id, valor, pagamento, status_agendamento, cliente_id')
+      .neq('status_agendamento', 'cancelado');
+
+    if (error) {
+      console.error('Erro ao buscar resumo financeiro:', error);
+      return;
+    }
+
+    const registros = data || [];
+
+    const recebidos = registros.filter((item) => item.pagamento !== 'Pendente');
+
+    const pendentes = registros.filter((item) => item.pagamento === 'Pendente');
+
+    const recebidoMes = recebidos.reduce(
+      (total, item) => total + Number(item.valor || 0),
+      0
+    );
+
+    const pendente = pendentes.reduce(
+      (total, item) => total + Number(item.valor || 0),
+      0
+    );
+
+    const clientesDevedores = new Set(pendentes.map((item) => item.cliente_id))
+      .size;
+
+    const concluidos = registros.filter(
+      (item) => item.status_agendamento === 'concluido'
+    ).length;
+
+    setResumoFinanceiro({
+      recebidoMes,
+      pendente,
+      clientesDevedores,
+      concluidos,
+    });
+  }
+
+  async function registrarPagamento(agendamentoId, tipoPagamento) {
+    if (!agendamentoId || !tipoPagamento) return;
+
+    const { error } = await supabase
+      .from('agendamentos')
+      .update({ pagamento: tipoPagamento })
+      .eq('id', agendamentoId);
+
+    if (error) {
+      console.error('Erro ao registrar pagamento:', error);
+      return;
+    }
+
+    await buscarPendentes();
+    await buscarPagos();
+    await buscarResumoFinanceiro();
+
+    setFormaPagamento({});
+    setMostrarConfirmacao({});
+  }
+
+  return (
+    <>
+      <Header />
+      <div className="container mx-auto p-4">
+        <div className="mx-auto mt-6 w-full max-w-[1250px] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
+          <h1 className="mb-1 text-2xl font-medium uppercase text-primary">
+            Financeiro
+          </h1>
+
+          <p className="mb-6 text-sm text-gray-500">
+            Resumo de recebimentos, pendências e pagamentos dos atendimentos.
+          </p>
+
+          <div className="mx-auto w-full max-w-[1200px] p-4">
+            <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
+              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+                <p className="text-sm text-gray-500">Recebido no mês</p>
+                <h2 className="mt-2 text-2xl font-semibold text-green-700">
+                  {resumoFinanceiro.recebidoMes.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </h2>
+              </div>
+
+              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+                <p className="text-sm text-gray-500">Pendente</p>
+                <h2 className="mt-2 text-2xl font-semibold text-red-700">
+                  {resumoFinanceiro.pendente.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </h2>
+              </div>
+
+              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+                <p className="text-sm text-gray-500">Clientes com pendências</p>
+                <h2 className="mt-2 text-2xl font-semibold text-orange-600">
+                  {resumoFinanceiro.clientesDevedores}
+                </h2>
+              </div>
+
+              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+                <p className="text-sm text-gray-500">Pagamentos registrados</p>
+                <h2 className="mt-2 text-2xl font-semibold text-primary">
+                  {resumoFinanceiro.concluidos}
+                </h2>
+              </div>
+            </div>
+          </div>
+          <section className="mt-10">
+            <div className="mb-4">
+              <h2 className="text-xl font-medium text-primary">
+                Pendências de pagamento
+              </h2>
+            </div>
+
+            <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+              {/* <input
+                type="text"
+                placeholder="Buscar cliente..."
+                className="input-padrao mb-4 w-full max-w-[350px]"
+              /> */}
+              {/* COBRANÇAS PENDENTES */}
+
+              <p className="mb-4 text-sm text-gray-500">
+                Selecione a forma de pagamento para registrar o recebimento
+              </p>
+
+              {pendentes.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  Nenhuma cobrança pendente encontrada.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {pendentes.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-lg border border-gray-200 p-3"
+                    >
+                      <p className="font-medium text-primary">
+                        {item.clientes?.nome || 'Cliente sem nome'}
+                      </p>
+
+                      <div className="mt-2 space-y-1">
+                        <p className="flex items-center gap-2 text-xs text-gray-400">
+                          <CalendarDays size={14} />
+                          {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                            'pt-BR'
+                          )}
+                          {' • '}
+                          {item.horario}
+                        </p>
+
+                        <p className="flex items-center gap-2 text-sm text-gray-500">
+                          <Scissors size={15} className="text-gray-400" />
+                          {item.servico}
+                        </p>
+
+                        <p className="flex items-center gap-2 font-medium text-primary">
+                          <Wallet size={15} className="text-green-600" />
+                          {Number(item.valor || 0).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </p>
+                      </div>
+                      <select
+                        className="input-padrao mt-3 max-w-[220px]"
+                        value={formaPagamento[item.id] || ''}
+                        onChange={(e) => {
+                          setFormaPagamento((prev) => ({
+                            ...prev,
+                            [item.id]: e.target.value,
+                          }));
+
+                          setMostrarConfirmacao((prev) => ({
+                            ...prev,
+                            [item.id]: !!e.target.value,
+                          }));
+                        }}
+                      >
+                        <option value="">Selecione o pagamento</option>
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão">Cartão</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Pendente">Pendente</option>
+                      </select>
+                      {mostrarConfirmacao[item.id] && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            registrarPagamento(item.id, formaPagamento[item.id])
+                          }
+                          className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                          title="Confirme pagamento"
+                        >
+                          <SquareCheckBig size={20} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <div className="mx-auto w-full max-w-[1200px] p-4">
+            <h2 className="mb-4 mt-10 text-xl font-medium text-primary">
+              Últimos 10 pagamentos
+            </h2>
+
+            {pagos.length === 0 ? (
+              <div className="rounded-2xl border border-violet-200 bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">
+                  Nenhum pagamento encontrado.
+                </p>
+              </div>
+            ) : (
+              <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
+                {pagos.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-violet-200 bg-white p-6 shadow-sm"
+                  >
+                    <p className="flex items-center gap-2 font-medium text-primary">
+                      <UserRound size={16} className="text-secondary" />
+                      {item.clientes?.nome || 'Cliente sem nome'}
+                    </p>
+
+                    <div className="mt-2 space-y-1">
+                      <p className="flex items-center gap-2 text-sm text-gray-500">
+                        <CreditCard size={15} className="text-gray-400" />
+                        {item.pagamento}
+                      </p>
+
+                      <p className="flex items-center gap-2 text-sm text-gray-500">
+                        <Scissors size={15} className="text-gray-400" />
+                        {item.servico}
+                      </p>
+
+                      <p className="flex items-center gap-2 font-medium text-primary">
+                        <Wallet size={15} className="text-green-600" />
+                        {Number(item.valor || 0).toLocaleString('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        })}
+                      </p>
+
+                      <p className="flex items-center gap-2 text-xs text-gray-400">
+                        <CalendarDays size={14} />
+                        {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                          'pt-BR'
+                        )}
+                        {' • '}
+                        {item.horario}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Financeiro;

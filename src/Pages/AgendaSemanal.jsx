@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../api/supabaseClient";
-import Header from "../Componentes/Header/Header";
+import { useEffect, useMemo, useState } from 'react';
+import { supabase } from '../api/supabaseClient';
+import Header from '../Componentes/Header/Header';
 import {
   enviarLembretesEmLote,
   enviarLembreteDeAgendamento,
-} from "../utils/whatsapp.jsx";
-import { CalendarCog, Clock, AlarmClock } from "lucide-react";
-import { createLogger } from "../lib/logger.js";
-const logger = createLogger("AgendaSemanal");
+} from '../utils/whatsapp.jsx';
+import { CalendarCog, Clock, AlarmClock } from 'lucide-react';
+import { createLogger } from '../lib/logger.js';
+const logger = createLogger('AgendaSemanal');
 
 // --- helpers simples ---
 function hojeISO() {
@@ -17,13 +17,13 @@ function hojeISO() {
   return local.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 function formatarBRDataISO(iso) {
-  return new Date(iso + "T12:00:00").toLocaleDateString("pt-BR");
+  return new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR');
 }
 
 //🟣 telefone válido?
 function temTelefone(ag) {
-  const tel = (ag?.clientes?.telefone || ag?.telefone || "").toString();
-  return tel.replace(/\D/g, "").length >= 10;
+  const tel = (ag?.clientes?.telefone || ag?.telefone || '').toString();
+  return tel.replace(/\D/g, '').length >= 10;
 }
 
 // 🟣 conta total / com telefone / sem telefone / enviados (usaremos depois)
@@ -36,15 +36,15 @@ function contarDia(ags, enviadosSessao = new Set()) {
 }
 
 function formatarValorBR(v) {
-  if (v == null) return "";
+  if (v == null) return '';
   const n = Number(v);
   return Number.isFinite(n)
-    ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+    ? n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
     : String(v);
 }
 // retorna { ano, semana } no padrão ISO
 function getISOWeekInfo(dateISO) {
-  const d = new Date(dateISO + "T12:00:00");
+  const d = new Date(dateISO + 'T12:00:00');
   // ISO week: quinta-feira como referência
   const target = new Date(d.valueOf());
   const dayNr = (d.getDay() + 6) % 7; // 0=segunda
@@ -65,19 +65,19 @@ export default function AgendaSemanal() {
     (async () => {
       setCarregando(true);
       const { data, error } = await supabase
-        .from("agendamentos")
+        .from('agendamentos')
         .select(
           `
           id, data, horario, servico, valor, pagamento, obs, cliente_id,
           clientes ( id, nome, telefone )
-        `,
+        `
         )
-        .gte("data", hojeISO()) // somente hoje em diante
-        .order("data", { ascending: true })
-        .order("horario", { ascending: true });
+        .gte('data', hojeISO()) // somente hoje em diante
+        .order('data', { ascending: true })
+        .order('horario', { ascending: true });
 
       if (error) {
-        logger.error("Erro ao buscar agendamentos:", error);
+        logger.error('Erro ao buscar agendamentos:', error);
         setAgendamentos([]);
       } else {
         setAgendamentos(data || []);
@@ -91,7 +91,7 @@ export default function AgendaSemanal() {
     const mapa = new Map(); // chave: `${ano}-W${semana}`
     for (const ag of agendamentos) {
       const { ano, semana } = getISOWeekInfo(ag.data);
-      const chave = `${ano}-W${String(semana).padStart(2, "0")}`;
+      const chave = `${ano}-W${String(semana).padStart(2, '0')}`;
       if (!mapa.has(chave)) mapa.set(chave, { ano, semana, dias: new Map() });
       const grupo = mapa.get(chave);
 
@@ -103,7 +103,7 @@ export default function AgendaSemanal() {
     // ordenar dias dentro da semana
     const array = Array.from(mapa.values()).map((sem) => {
       const diasOrdenados = Array.from(sem.dias.entries()).sort((a, b) =>
-        a[0] < b[0] ? -1 : 1,
+        a[0] < b[0] ? -1 : 1
       ); // por data asc
       return { ...sem, dias: diasOrdenados };
     });
@@ -120,7 +120,7 @@ export default function AgendaSemanal() {
   return (
     <div className="container mx-auto p-4">
       <Header />
-      <h1 className="text-xl font-bold text-primary mb-4">
+      <h1 className="mb-4 text-xl font-bold text-primary">
         Agenda Semanal (atual e futura)
       </h1>
 
@@ -134,26 +134,26 @@ export default function AgendaSemanal() {
         semanas.map((sem) => (
           <div
             key={`${sem.ano}-${sem.semana}`}
-            className="mb-8 border rounded-lg bg-white shadow"
+            className="mb-8 rounded-lg border bg-white shadow"
           >
             {/* Cabeçalho da semana */}
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-t-lg">
+            <div className="flex items-center justify-between rounded-t-lg bg-blue-50 p-3">
               <h2 className="font-semibold text-primary">
                 Semana {sem.semana} de {sem.ano}
               </h2>
               {/* Botão: lembretes da semana inteira */}
               <button
                 type="button"
-                className="btn btn-lembrete-primary mb-2 gap-2 bg-primary text-white font-normal px-2 py-2 rounded-lg hover:bg-secondary transition"
+                className="btn btn-lembrete-primary mb-2 gap-2 rounded-lg bg-primary px-2 py-2 font-normal text-white transition hover:bg-secondary"
                 title="Enviar lembretes para todos desta semana"
                 onClick={async () => {
                   const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
                   const { enviados, copiados } = await enviarLembretesEmLote(
                     listaSemana,
-                    { intervalMs: 2000 },
+                    { intervalMs: 2000 }
                   );
                   alert(
-                    `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ""}.`,
+                    `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ''}.`
                   );
                 }}
               >
@@ -161,15 +161,15 @@ export default function AgendaSemanal() {
                 Lembretes da semana
               </button>
             </div>
-            A{/* Dias da semana */}
-            <div className="p-3 space-y-6">
+            {/* Dias da semana */}
+            <div className="space-y-6 p-3">
               {sem.dias.map(([dataISO, ags]) => (
                 <div
                   key={dataISO}
-                  className="border border-gray-200 rounded-md"
+                  className="rounded-md border border-gray-200"
                 >
                   {/* Cabeçalho do dia */}
-                  <div className="flex items-center justify-between bg-gray-50 p-2 rounded-t-md">
+                  <div className="flex items-center justify-between rounded-t-md bg-gray-50 p-2">
                     <div className="font-medium text-cinza">
                       {formatarBRDataISO(dataISO)}
                     </div>
@@ -182,7 +182,7 @@ export default function AgendaSemanal() {
                             intervalMs: 2000,
                           });
                         alert(
-                          `${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ""}.`,
+                          `${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ''}.`
                         );
                       }}
                     >
@@ -197,13 +197,10 @@ export default function AgendaSemanal() {
                       <thead>
                         <tr className="bg-gray-100 text-sm uppercase text-cinza">
                           <th className="p-2 text-left">Hora</th>
-                          <th className="p-2 text-left min-w-[180px]">
+                          <th className="min-w-[180px] p-2 text-left">
                             Cliente
                           </th>
                           <th className="p-2 text-left">Serviço</th>
-                          <th className="p-2 text-right">Valor</th>
-                          <th className="p-2 text-left">Obs</th>
-                          <th className="p-2 text-center">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -211,13 +208,10 @@ export default function AgendaSemanal() {
                           <tr key={ag.id} className="border-t">
                             <td className="p-2">{ag.horario}</td>
                             <td className="p-2">
-                              {ag.clientes?.nome || "Sem nome"}
+                              {ag.clientes?.nome || 'Sem nome'}
                             </td>
-                            <td className="p-2">{ag.servico || "-"}</td>
-                            <td className="p-2 text-right">
-                              {formatarValorBR(ag.valor)}
-                            </td>
-                            <td className="p-2">{ag.obs || "-"}</td>
+                            <td className="p-2">{ag.servico || '-'}</td>
+
                             <td className="p-2 text-center">
                               <button
                                 type="button"
@@ -225,9 +219,9 @@ export default function AgendaSemanal() {
                                 onClick={async () => {
                                   const r =
                                     await enviarLembreteDeAgendamento(ag);
-                                  if (r === "copiado")
+                                  if (r === 'copiado')
                                     alert(
-                                      "Sem telefone. Mensagem copiada para a área de transferência.",
+                                      'Sem telefone. Mensagem copiada para a área de transferência.'
                                     );
                                 }}
                               >

@@ -62,6 +62,17 @@ export default function Home() {
           </Link>
 
           <Link
+            to="/financeiro"
+            className="rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
+          >
+            <h2 className="text-lg font-medium text-primary">Financeiro</h2>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Resumo financeiro e pendências
+            </p>
+          </Link>
+
+          <Link
             to="/agenda-semanal"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
