@@ -10,6 +10,8 @@ import {
   CalendarDays,
   Wallet,
   UserRound,
+  BadgeCheck,
+  CircleAlert,
 } from 'lucide-react';
 function Financeiro() {
   const [pendentes, setPendentes] = useState([]);
@@ -86,7 +88,7 @@ function Financeiro() {
       .neq('status_agendamento', 'cancelado')
       .neq('pagamento', 'Pendente')
       .order('data', { ascending: false })
-      .limit(12);
+      .limit(10);
 
     if (error) {
       console.error('Erro ao buscar pagamentos:', error);
@@ -173,10 +175,18 @@ function Financeiro() {
           </p>
 
           <div className="mx-auto w-full max-w-[1200px] p-4">
-            <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
-              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
-                <p className="text-sm text-gray-500">Recebido no mês</p>
-                <h2 className="mt-2 text-2xl font-semibold text-green-700">
+            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {/* Card 1 com refinamento de UI/UX */}
+              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  {/* Ícone ganha um fundinho suave da cor do tema */}
+                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
+                    <Wallet className="text-primary" size={20} />
+                  </span>
+                  Recebido no mês
+                </p>
+                {/* O valor numérico fica em um tom escuro neutro e elegante */}
+                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
                   {resumoFinanceiro.recebidoMes.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -184,9 +194,15 @@ function Financeiro() {
                 </h2>
               </div>
 
-              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
-                <p className="text-sm text-gray-500">Pendente</p>
-                <h2 className="mt-2 text-2xl font-semibold text-red-700">
+              {/* Card 2: Pendente no mês */}
+              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
+                    <CircleAlert className="text-primary" size={20} />
+                  </span>
+                  Pendente no mês
+                </p>
+                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-red-600 md:mt-3 md:text-2xl">
                   {resumoFinanceiro.pendente.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -194,16 +210,28 @@ function Financeiro() {
                 </h2>
               </div>
 
-              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
-                <p className="text-sm text-gray-500">Clientes com pendências</p>
-                <h2 className="mt-2 text-2xl font-semibold text-orange-600">
+              {/* Card 3: Clientes com pendências */}
+              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
+                    <UserRound className="text-primary" size={20} />
+                  </span>
+                  Clientes com pendências
+                </p>
+                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
                   {resumoFinanceiro.clientesDevedores}
                 </h2>
               </div>
 
-              <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
-                <p className="text-sm text-gray-500">Pagamentos registrados</p>
-                <h2 className="mt-2 text-2xl font-semibold text-primary">
+              {/* Card 4: Pagamentos registrados */}
+              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
+                    <BadgeCheck className="text-primary" text-bold size={20} />
+                  </span>
+                  Pagamentos registrados
+                </p>
+                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
                   {resumoFinanceiro.concluidos}
                 </h2>
               </div>
@@ -216,7 +244,7 @@ function Financeiro() {
               </h2>
             </div>
 
-            <div className="rounded-2xl border border-violet-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-violet-400 bg-white p-5 shadow-sm">
               {/* <input
                 type="text"
                 placeholder="Buscar cliente..."
@@ -229,15 +257,15 @@ function Financeiro() {
               </p>
 
               {pendentes.length === 0 ? (
-                <p className="text-sm text-gray-500">
-                  Nenhuma cobrança pendente encontrada.
+                <p className="text-md rounded-lg bg-secondary p-3 text-center font-medium uppercase text-white">
+                  Todos os pagamentos estão em dia.
                 </p>
               ) : (
                 <div className="space-y-3">
                   {pendentes.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-lg border border-gray-200 p-3"
+                      className="rounded-lg border border-gray-300 p-3"
                     >
                       <p className="font-medium text-primary">
                         {item.clientes?.nome || 'Cliente sem nome'}
@@ -267,7 +295,7 @@ function Financeiro() {
                         </p>
                       </div>
                       <select
-                        className="input-padrao mt-3 max-w-[220px]"
+                        className="input-padrao mt-3 flex max-w-[220px] cursor-pointer hover:bg-secondary hover:text-white"
                         value={formaPagamento[item.id] || ''}
                         onChange={(e) => {
                           setFormaPagamento((prev) => ({
@@ -312,43 +340,43 @@ function Financeiro() {
             </h2>
 
             {pagos.length === 0 ? (
-              <div className="rounded-2xl border border-violet-200 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-secondary bg-white p-6 shadow-sm">
                 <p className="text-sm text-gray-500">
                   Nenhum pagamento encontrado.
                 </p>
               </div>
             ) : (
-              <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
+              <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-4">
                 {pagos.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-2xl border border-violet-200 bg-white p-6 shadow-sm"
+                    className="rounded-2xl border border-primary bg-white p-6 shadow-sm"
                   >
                     <p className="flex items-center gap-2 font-medium text-primary">
-                      <UserRound size={16} className="text-secondary" />
+                      <UserRound size={18} className="text-secondary" />
                       {item.clientes?.nome || 'Cliente sem nome'}
                     </p>
 
                     <div className="mt-2 space-y-1">
                       <p className="flex items-center gap-2 text-sm text-gray-500">
-                        <CreditCard size={15} className="text-gray-400" />
+                        <CreditCard size={15} className="text-primary" />
                         {item.pagamento}
                       </p>
 
                       <p className="flex items-center gap-2 text-sm text-gray-500">
-                        <Scissors size={15} className="text-gray-400" />
+                        <Scissors size={15} className="text-primary" />
                         {item.servico}
                       </p>
 
                       <p className="flex items-center gap-2 font-medium text-primary">
-                        <Wallet size={15} className="text-green-600" />
+                        <Wallet size={15} className="text-primary" />
                         {Number(item.valor || 0).toLocaleString('pt-BR', {
                           style: 'currency',
                           currency: 'BRL',
                         })}
                       </p>
 
-                      <p className="flex items-center gap-2 text-xs text-gray-400">
+                      <p className="flex items-center gap-2 text-xs text-primary">
                         <CalendarDays size={14} />
                         {new Date(item.data + 'T12:00:00').toLocaleDateString(
                           'pt-BR'
