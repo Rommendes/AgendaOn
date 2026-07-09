@@ -16,7 +16,7 @@ import ResetSenha from './Pages/ResetSenha.jsx';
 import ProtectedRoute from './Componentes/ProtectedRoute.jsx';
 import HistoricoLembretes from './Pages/HistoricoLembretes';
 import Financeiro from './Pages/Financeiro.jsx';
-
+import ExtratoFinanceiro from './Pages/ExtratoFinanceiro.jsx';
 function App() {
   const [setIsAuthenticated] = useState(false);
   return (
@@ -36,6 +36,7 @@ function App() {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/historico-semanal" element={<HistoricoSemanal />} />
+          <Route path="/extrato-financeiro" element={<ExtratoFinanceiro />} />
 
           <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
           <Route path="/lembretes" element={<LembreteAgendamentos />} />

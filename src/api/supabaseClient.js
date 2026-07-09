@@ -39,7 +39,7 @@ export async function getAgendamentosPendentes() {
       )
     `
     )
-    .in('pagamento', ['PENDENTE', 'Pendente', 'Não pagou', 'NAO PAGOU'])
+    .eq('pagamento', 'Pendente')
     .neq('status_agendamento', 'cancelado')
     .order('data', { ascending: true })
     .order('horario', { ascending: true });

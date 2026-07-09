@@ -12,7 +12,9 @@ import {
   UserRound,
   BadgeCheck,
   CircleAlert,
+  BadgeDollarSign,
 } from 'lucide-react';
+
 function Financeiro() {
   const [pendentes, setPendentes] = useState([]);
   const [pagos, setPagos] = useState([]);
@@ -97,12 +99,25 @@ function Financeiro() {
 
     setPagos(data || []);
   }
+  /*BUSCAR RESUMO FINANCEIRO*/
 
   async function buscarResumoFinanceiro() {
+    const hoje = new Date();
+
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+      .toISOString()
+      .split('T')[0];
+
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
+      .toISOString()
+      .split('T')[0];
+
     const { data, error } = await supabase
       .from('agendamentos')
       .select('id, valor, pagamento, status_agendamento, cliente_id')
-      .neq('status_agendamento', 'cancelado');
+      .neq('status_agendamento', 'cancelado')
+      .gte('data', primeiroDiaMes)
+      .lte('data', ultimoDiaMes);
 
     if (error) {
       console.error('Erro ao buscar resumo financeiro:', error);
@@ -124,6 +139,7 @@ function Financeiro() {
       (total, item) => total + Number(item.valor || 0),
       0
     );
+    const pagamentosRegistrados = recebidos.length;
 
     const clientesDevedores = new Set(pendentes.map((item) => item.cliente_id))
       .size;
@@ -136,7 +152,7 @@ function Financeiro() {
       recebidoMes,
       pendente,
       clientesDevedores,
-      concluidos,
+      concluidos: pagamentosRegistrados,
     });
   }
 
@@ -161,6 +177,11 @@ function Financeiro() {
     setMostrarConfirmacao({});
   }
 
+  const mesAtual = new Date().toLocaleDateString('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  });
+
   return (
     <>
       <Header />
@@ -169,7 +190,9 @@ function Financeiro() {
           <h1 className="mb-1 text-2xl font-medium uppercase text-primary">
             Financeiro
           </h1>
-
+          <p className="text-sm font-medium capitalize text-secondary">
+            {mesAtual}
+          </p>
           <p className="mb-6 text-sm text-gray-500">
             Resumo de recebimentos, pendências e pagamentos dos atendimentos.
           </p>
@@ -272,8 +295,8 @@ function Financeiro() {
                       </p>
 
                       <div className="mt-2 space-y-1">
-                        <p className="flex items-center gap-2 text-xs text-gray-400">
-                          <CalendarDays size={14} />
+                        <p className="flex items-center gap-2 text-xs text-gray-500">
+                          <CalendarDays size={14} className="text-primary" />
                           {new Date(item.data + 'T12:00:00').toLocaleDateString(
                             'pt-BR'
                           )}
@@ -282,12 +305,12 @@ function Financeiro() {
                         </p>
 
                         <p className="flex items-center gap-2 text-sm text-gray-500">
-                          <Scissors size={15} className="text-gray-400" />
+                          <Scissors size={15} className="text-primary" />
                           {item.servico}
                         </p>
 
                         <p className="flex items-center gap-2 font-medium text-primary">
-                          <Wallet size={15} className="text-green-600" />
+                          <BadgeDollarSign size={15} />
                           {Number(item.valor || 0).toLocaleString('pt-BR', {
                             style: 'currency',
                             currency: 'BRL',
