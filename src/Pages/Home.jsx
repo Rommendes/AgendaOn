@@ -4,6 +4,8 @@ import { useState } from 'react';
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
 import {
   CalendarCog,
+  BadgeDollarSignIcon,
+  MessagesSquare,
   Minus,
   Sparkles,
   Search,
@@ -62,17 +64,6 @@ export default function Home() {
           </Link>
 
           <Link
-            to="/financeiro"
-            className="rounded-2xl bg-white p-5 shadow-sm transition hover:shadow-md"
-          >
-            <h2 className="text-lg font-medium text-primary">Financeiro</h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Resumo financeiro e pendências
-            </p>
-          </Link>
-
-          <Link
             to="/agenda-semanal"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
@@ -86,7 +77,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link
+          {/* <Link
             to="/historico-semanal"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
@@ -101,7 +92,7 @@ export default function Home() {
                 Consulte atendimentos concluídos e valores recebidos
               </p>
             </div>
-          </Link>
+          </Link> */}
         </div>
 
         {/* CLIENTES */}
@@ -159,6 +150,7 @@ export default function Home() {
         </h2>
 
         <div className="mb-6 flex flex-col gap-4">
+          {/*           
           <Link
             to="/historico-lembretes"
             className="botao-menu w-full transition hover:scale-[1.02]"
@@ -174,6 +166,20 @@ export default function Home() {
                 Visualize lembretes mensagens aos clientes
               </p>
             </div>
+          </Link> */}
+          <Link
+            to="/historico-lembretes"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <MessagesSquare size={35} className="text-secondary" />
+
+            <div>
+              <h2 className="text-lg font-bold">Comunicação</h2>
+
+              <p className="text-sm">
+                Envie lembretes, felicitações e mensagens aos clientes.
+              </p>
+            </div>
           </Link>
         </div>
 
@@ -181,6 +187,35 @@ export default function Home() {
         <h2 className="mb-2 text-sm font-semibold text-gray-500">Financeiro</h2>
 
         <div className="flex flex-col gap-4">
+          <Link
+            to="/financeiro"
+            className="rounded-2xl bg-primary p-5 shadow-sm transition hover:shadow-md"
+          >
+            <ReceiptText className="text-secondary" size={32} />
+            <div>
+              <h2 className="text-lg font-medium text-white">Financeiro</h2>
+
+              <p className="mt-1 text-sm text-white/80">
+                Resumo financeiro e pendências
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/extrato-financeiro"
+            className="botao-menu w-full transition hover:scale-[1.02]"
+          >
+            <ReceiptText className="text-secondary" size={32} />
+
+            <div>
+              <h2 className="text-lg font-bold">Extrato Financeiro</h2>
+
+              <p className="text-sm">
+                Consulte pagamentos por mês, cliente e forma de pagamento
+              </p>
+            </div>
+          </Link>
+
           <Link
             to="/cobrancas"
             className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
