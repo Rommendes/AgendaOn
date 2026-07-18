@@ -76,23 +76,6 @@ export default function Home() {
               </p>
             </div>
           </Link>
-
-          {/* <Link
-            to="/historico-semanal"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <History
-              className="material-icons text-4xl text-secondary"
-              size={32}
-            />
-
-            <div>
-              <h2 className="text-lg font-bold">Histórico Financeiro</h2>
-              <p className="text-sm">
-                Consulte atendimentos concluídos e valores recebidos
-              </p>
-            </div>
-          </Link> */}
         </div>
 
         {/* CLIENTES */}
@@ -150,23 +133,6 @@ export default function Home() {
         </h2>
 
         <div className="mb-6 flex flex-col gap-4">
-          {/*           
-          <Link
-            to="/historico-lembretes"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <BellRing
-              size={35}
-              className="material-icons text-4xl text-secondary"
-            />
-
-            <div>
-              <h2 className="text-lg font-bold">Histórico de lembretes</h2>
-              <p className="text-sm">
-                Visualize lembretes mensagens aos clientes
-              </p>
-            </div>
-          </Link> */}
           <Link
             to="/historico-lembretes"
             className="botao-menu w-full transition hover:scale-[1.02]"
@@ -184,21 +150,19 @@ export default function Home() {
         </div>
 
         {/* FINANCEIRO */}
-        <h2 className="mb-2 text-sm font-semibold text-gray-500">Financeiro</h2>
 
         <div className="flex flex-col gap-4">
           <Link
-            to="/financeiro"
-            className="rounded-2xl bg-primary p-5 shadow-sm transition hover:shadow-md"
+            to="/financeiro-menu"
+            className="botao-menu w-full transition hover:scale-[1.02]"
           >
             <ReceiptText className="text-secondary" size={32} />
             <div>
-              <h2 className="text-lg font-medium text-white">Financeiro</h2>
-
-              <p className="mt-1 text-sm text-white/80">
-                Resumo financeiro e pendências
-              </p>
+              <h2 className="text-lg font-bold">Financeiro</h2>
             </div>
+            {/* <div>
+              <h2 className="text-lg font-medium text-white">Financeiro</h2>
+            </div> */}
           </Link>
 
           <Link
