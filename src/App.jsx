@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import 'material-icons/iconfont/material-icons.css';
-import Login from './Pages/Login';
+import Login from './Pages/Login/Login.jsx';
 import Home from './Pages/Home';
 import CadastrarCliente from './Pages/Clientes/CadastrarCliente.jsx';
 import ListaClientes from './Pages/Clientes/ListaClientes.jsx';
@@ -12,7 +12,7 @@ import BuscaCliente from './Pages/Clientes/buscaCliente.jsx';
 import EnviarCobrancasPendentes from './Pages/Comunicacao/EnviarCobrancasPendentes.jsx';
 import LembreteAgendamentos from './Pages/Comunicacao/LembreteAgendamentos.jsx';
 import AgendaSemanal from './Pages/Agenda/AgendaSemanal.jsx';
-import ResetSenha from './Pages/ResetSenha.jsx';
+import ResetSenha from './Pages/Login/ResetSenha.jsx';
 import ProtectedRoute from './Componentes/ProtectedRoute.jsx';
 import HistoricoLembretes from './Pages/Comunicacao/HistoricoLembretes.jsx';
 import Financeiro from './Pages/Financeiro/Financeiro.jsx';
