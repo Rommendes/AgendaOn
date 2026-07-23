@@ -1,7 +1,7 @@
-import StatusBadge from '../Componentes/StatusBadge/StatusBadge';
-import getStatusBadge from '../Componentes/Utilitarios/getStatusBadge';
+import StatusBadge from '../../Componentes/StatusBadge/StatusBadge';
+import getStatusBadge from '../../Componentes/Utilitarios/getStatusBadge';
 import { useEffect, useState, Fragment } from 'react';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../../api/supabaseClient';
 import {
   X,
   BadgeDollarSign,
@@ -14,15 +14,15 @@ import {
   ClipboardPlusIcon,
 } from 'lucide-react';
 
-import InputData from '../Componentes/CamposReutilizaveis/InputData';
-import InputHorario from '../Componentes/CamposReutilizaveis/InputHorario';
-import Header from '../Componentes/Header/Header';
+import InputData from '../../Componentes/CamposReutilizaveis/InputData';
+import InputHorario from '../../Componentes/CamposReutilizaveis/InputHorario';
+import Header from '../../Componentes/Header/Header';
 import {
   enviarLembreteDeAgendamento,
   montarTextoLembreteDeAgendamento,
-} from '../utils/whatsapp';
+} from '../../utils/whatsapp';
 
-import { createLogger } from '../lib/logger';
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('Agendamentos');
 
 function formatarValor(valor) {

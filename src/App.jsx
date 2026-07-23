@@ -6,19 +6,19 @@ import Home from './Pages/Home';
 import CadastrarCliente from './Pages/Clientes/CadastrarCliente.jsx';
 import ListaClientes from './Pages/Clientes/ListaClientes.jsx';
 import EditarCliente from './Componentes/EditarCliente/editarCliente.jsx';
-import Agenda from './Pages/Agenda.jsx';
+import Agenda from './Pages/Agenda/Agenda.jsx';
 import BuscaCliente from './Pages/Clientes/buscaCliente.jsx';
 //import HistoricoSemanal from './Pages/HistoricoSemanal.jsx';
-import EnviarCobrancasPendentes from './Pages/EnviarCobrancasPendentes.jsx';
-import LembreteAgendamentos from './Pages/LembreteAgendamentos.jsx';
-import AgendaSemanal from './Pages/AgendaSemanal.jsx';
+import EnviarCobrancasPendentes from './Pages/Comunicacao/EnviarCobrancasPendentes.jsx';
+import LembreteAgendamentos from './Pages/Comunicacao/LembreteAgendamentos.jsx';
+import AgendaSemanal from './Pages/Agenda/AgendaSemanal.jsx';
 import ResetSenha from './Pages/ResetSenha.jsx';
 import ProtectedRoute from './Componentes/ProtectedRoute.jsx';
-import HistoricoLembretes from './Pages/HistoricoLembretes';
-import Financeiro from './Pages/Financeiro.jsx';
-import ExtratoFinanceiro from './Pages/ExtratoFinanceiro.jsx';
-import FinanceiroMenu from './Pages/FinanceiroMenu.jsx';
-import Pagamentos from './Pages/Pagamentos.jsx';
+import HistoricoLembretes from './Pages/Comunicacao/HistoricoLembretes.jsx';
+import Financeiro from './Pages/Financeiro/Financeiro.jsx';
+import ExtratoFinanceiro from './Pages/Financeiro/ExtratoFinanceiro.jsx';
+import FinanceiroMenu from './Pages/Financeiro/FinanceiroMenu.jsx';
+import Pagamentos from './Pages/Financeiro/Pagamentos.jsx';
 function App() {
   const [setIsAuthenticated] = useState(false);
   return (

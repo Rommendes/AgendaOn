@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../api/supabaseClient';
-import Header from '../Componentes/Header/Header';
+import { supabase } from '../../api/supabaseClient.js';
+import Header from '../../Componentes/Header/Header.jsx';
 import {
   enviarLembretesEmLote,
   enviarLembreteDeAgendamento,
-} from '../utils/whatsapp.jsx';
+} from '../../utils/whatsapp.jsx';
 import { CalendarCog, Clock, AlarmClock } from 'lucide-react';
-import { createLogger } from '../lib/logger.js';
+import { createLogger } from '../../lib/logger.js';
 const logger = createLogger('AgendaSemanal');
 
 // --- helpers simples ---

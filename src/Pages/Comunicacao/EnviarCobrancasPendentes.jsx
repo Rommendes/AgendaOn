@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import BotaoEnviarCobranca from '../Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx';
-import { getAgendamentosPendentes, supabase } from '../api/supabaseClient.js';
+import BotaoEnviarCobranca from '../../Componentes/BotaoEnviarCobranca/BotaoEnviarCobranca.jsx';
+import {
+  getAgendamentosPendentes,
+  supabase,
+} from '../../api/supabaseClient.js';
 //import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
-import Header from '../Componentes/Header/Header.jsx';
+import Header from '../../Componentes/Header/Header.jsx';
 import {
   formatarTelefoneBR,
   whatsappLink,
   formatarDataBR,
-} from '../Componentes/Utilitarios/formadores.js';
+} from '../../Componentes/Utilitarios/formadores.js';
 
 function formatarValorBR(valor) {
   const n = Number(valor);

@@ -1,4 +1,4 @@
-import Header from '../Componentes/Header/Header';
+import Header from '../../Componentes/Header/Header';
 
 import { useState } from 'react';
 function ExtratoFinanceiro() {

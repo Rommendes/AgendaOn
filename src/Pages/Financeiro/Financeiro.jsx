@@ -1,6 +1,6 @@
-import Header from '../Componentes/Header/Header.jsx';
+import Header from '../../Componentes/Header/Header.jsx';
 import { useEffect, useState } from 'react';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../../api/supabaseClient.js';
 import {
   Save,
   SquareCheckBig,

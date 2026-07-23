@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Header from '../Componentes/Header/Header';
+import Header from '../../Componentes/Header/Header';
 import {
   ChartNoAxesCombined,
   CreditCard,
