@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { supabase } from '../api/supabaseClient'; // Importe seu Supabase
-import EnderecoForm from '../Componentes/EnderecoForm';
+import { supabase } from '../../api/supabaseClient'; // Importe seu Supabase
+import EnderecoForm from '../../Componentes/EnderecoForm';
 
-import Header from '../Componentes/Header/Header';
+import Header from '../../Componentes/Header/Header';
 
 import {
   apenasNumeros,
   formatarCEP,
   formatarTelefoneBR,
-} from '../Componentes/Utilitarios/formadores';
+} from '../../Componentes/Utilitarios/formadores';
 
-import { createLogger } from '../lib/logger';
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('CadastrarCliente');
 
 const CadastrarCliente = () => {

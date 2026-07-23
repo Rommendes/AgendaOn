@@ -48,11 +48,11 @@ src
 
 ├── PrivateLayout(É o layout usado pelas páginas privadas do sistema, reunindo o cabeçalho e a área onde as rotas internas são exibidas.)
 
-├── utils(Contém funções auxiliares reutilizáveis. Ex:
-                                                    - formatarTelefone
-                                                    - formatarValor
-                                                    - getDiaSemanaComData
-                                                    )
+    ├── utils(Contém funções auxiliares reutilizáveis. Ex:
+            - formatarTelefone
+            - formatarValor
+            - getDiaSemanaComData
+            )
 ├── PrivateLayout(Define a estrutura comum das páginas privadas da aplicação. Responsável por exibir:
             - Header
             - Área principal (`main`)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../../api/supabaseClient';
 
-import { createLogger } from '../lib/logger';
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('HistoricoDoCliente');
 
 const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {

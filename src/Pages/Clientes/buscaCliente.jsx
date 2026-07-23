@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../../api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import Header from '../Componentes/Header/Header';
+import Header from '../../Componentes/Header/Header';
 import HistoricoDoCliente from './HistoricoDoCliente';
 import {
   formatarDataBR,
   formatarCEP,
   formatarTelefoneBR,
-} from '../Componentes/Utilitarios/formadores';
-import { createLogger } from '../lib/logger';
+} from '../../Componentes/Utilitarios/formadores';
+import { createLogger } from '../../lib/logger';
 const logger = createLogger('PesquisandoClientes');
 
 const PesquisandoClientes = () => {
