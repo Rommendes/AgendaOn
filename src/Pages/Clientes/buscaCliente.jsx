@@ -146,7 +146,7 @@ const PesquisandoClientes = () => {
 
   return (
     <div className="mx-auto mt-6 w-full max-w-xl rounded-xl border border-gray-200 bg-gray-50 px-4 py-8 shadow-lg sm:px-6 md:max-w-3xl md:px-10 lg:max-w-5xl">
-      <Header title="Histórico do Cliente Cadastrado" />
+      <Header title="Pesquisar Clientes" />
       <div className="mt-6 rounded-lg border-2 bg-gray-50 p-4 shadow-lg">
         <h4 className="mb-3 px-2 text-center text-lg uppercase text-primary sm:text-xl md:mb-4 md:text-2xl">
           Pesquise um cliente para visualizar os dados

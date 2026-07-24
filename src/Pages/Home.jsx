@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-//import minhaImagem from "../assets/LogoCarmemAgenda.png"
+import logoAgendaOn from '../assets/logoAgendaOn.png';
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
 import {
   CalendarCog,
@@ -34,11 +34,11 @@ export default function Home() {
       <div className="mx-auto max-w-2xl">
         {/* LOGO */}
         <div className="mb-8 text-center">
-          <h1 className="flex items-center justify-center gap-2 text-xl font-bold text-primary">
-            <Sparkles className="text-primary" />
-            Agenda<span className="text-secondary">On</span>
-            <Sparkles className="text-primary" />
-          </h1>
+          <img
+            src={logoAgendaOn}
+            alt="AgendaOn"
+            className="mx-auto h-auto w-64"
+          />
 
           <p className="text-sm text-primary">
             mais que agenda, sua parceira de confiança.

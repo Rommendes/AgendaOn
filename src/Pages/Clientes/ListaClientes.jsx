@@ -65,7 +65,7 @@ const ListaClientes = () => {
         {/* Container principal */}
         <div className="container mx-auto p-4">
           {/* Cabeçalho */}
-          <Header title="Lista de Clientes Cadastrados" />
+          <Header title="Clientes Cadastrados" />
 
           {/* Tabela Responsiva */}
           <div className="mx-auto max-h-[500px] w-full max-w-[100%] overflow-auto rounded-lg p-4">
