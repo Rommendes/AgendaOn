@@ -44,10 +44,10 @@ body {
 
   /* Lembretes */
   .btn-lembrete-primary {
-    @apply bg-primary text-white transition hover:bg-alternativo;
+    @apply flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-secondary;
   }
-  .btn-lembrete-secondary {
-    @apply bg-secondary text-white transition hover:bg-alternativo;
+  .btn-secondary {
+    @apply flex items-center gap-2 rounded-full bg-secondary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-alternativo;
   }
 
   /* ✅ Cobranças Pendentes (cards / badges) */
@@ -89,5 +89,33 @@ body {
 
   .badge-faltou {
     @apply bg-amber-100 text-amber-700;
+  }
+  .title-personalizado {
+    @apply relative inline-flex;
+  }
+
+  .title-personalizado::after {
+    content: attr(data-title);
+    @apply pointer-events-none invisible absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-secondary bg-transparent px-3 py-1.5 text-xs text-secondary opacity-0 shadow-md transition-all duration-200;
+  }
+
+  .title-personalizado:hover::after,
+  .title-personalizado:focus-within::after {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .title-lembrete {
+    @apply relative inline-flex;
+  }
+
+  .title-lembrete::after {
+    content: attr(data-title);
+    @apply pointer-events-none invisible absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-alternativo bg-transparent px-3 py-1.5 text-xs text-primary opacity-0 shadow-md transition-all duration-200;
+  }
+
+  .title-lembrete:hover::after,
+  .title-lembrete:focus-within::after {
+    @apply visible opacity-100;
   }
 }

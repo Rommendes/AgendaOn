@@ -161,7 +161,9 @@ const AgendaAtendimento = () => {
     const [dia, mes, ano] = dataBr.split('/');
     return `${ano}-${mes}-${dia}`;
   }
-
+  {
+    /*Salvar agendamento */
+  }
   const salvarAgendamento = async () => {
     const { data, horario, cliente_id, servico, valor } = novoAgendamento;
 
@@ -425,14 +427,14 @@ const AgendaAtendimento = () => {
   {
     /*Editar pagamento*/
   }
-  const editarPagamento = (agendamento) => {
-    setPagamentoSelecionado((prev) => ({
-      ...prev,
-      [agendamento.id]: agendamento.pagamento || '',
-    }));
+  // const editarPagamento = (agendamento) => {
+  //   setPagamentoSelecionado((prev) => ({
+  //     ...prev,
+  //     [agendamento.id]: agendamento.pagamento || '',
+  //   }));
 
-    setLinhaPagamentoAberta(agendamento.id);
-  };
+  //   setLinhaPagamentoAberta(agendamento.id);
+  // };
 
   const iniciarFilaLembretes = async (lista) => {
     const listaComTelefone = lista.filter((ag) => ag?.clientes?.telefone);
@@ -677,14 +679,31 @@ const AgendaAtendimento = () => {
             </div>
           </div>
 
-          <div className="mt-5 flex justify-end">
+          {/* <div className="mt-5 flex justify-end">
             <button
               onClick={salvarAgendamento}
-              className="flex items-center gap-2 rounded-full bg-secondary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-alternativo"
+              className="btn-secondary"
+              title="Salvar agendamento"
             >
               <Save size={20} />
-              <span className="hidden sm:inline">Salvar</span>
+              Salvar
             </button>
+          </div> */}
+
+          <div className="mt-5 flex justify-end">
+            <div
+              className="title-personalizado"
+              data-title="Salvar agendamento"
+            >
+              <button
+                onClick={salvarAgendamento}
+                className="btn-secondary"
+                aria-label="Salvar agendamento"
+              >
+                <Save size={20} />
+                Salvar
+              </button>
+            </div>
           </div>
         </div>
 
@@ -697,7 +716,8 @@ const AgendaAtendimento = () => {
 
               return (
                 <div
-                  key={diaSemana}
+                  // key={diaSemana}
+                  key={`${diaSemana}-${dataFormatada}`}
                   className="mb-6 rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm"
                 >
                   <div className="mb-3 flex items-center justify-between gap-4">
@@ -707,18 +727,25 @@ const AgendaAtendimento = () => {
                       </h2>
 
                       <p className="text-sm text-gray-500">{dataFormatada}</p>
-                      {/* 🟡 ENVIAR Lembrete */}
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => iniciarFilaLembretes(agendamentosDoDia)}
-                      className="mb-2 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-secondary"
-                      title="Enviar lembretes para todos deste dia"
-                    >
-                      <Clock size={20} />
-                      Enviar lembrete
-                    </button>
+                    {/* 🟡 BOTÃO ENVIAR LEMBRETES */}
+                    <div className="mt-5 flex justify-end">
+                      <div
+                        className="title-lembrete"
+                        data-title="Enviar lembretes para todos deste dia"
+                      >
+                        <button
+                          onClick={() =>
+                            iniciarFilaLembretes(agendamentosDoDia)
+                          }
+                          className="btn-lembrete-primary"
+                          aria-label="Enviar lembretes para todos deste dia"
+                        >
+                          <Clock size={20} />
+                          Enviar lembretes
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
@@ -993,7 +1020,7 @@ const AgendaAtendimento = () => {
                                       <CircleOff size={20} />
                                     </button>
 
-                                    {statusAtual !== 'Cancelado' && (
+                                    {/* {statusAtual !== 'Cancelado' && (
                                       <button
                                         type="button"
                                         onClick={() =>
@@ -1004,7 +1031,7 @@ const AgendaAtendimento = () => {
                                       >
                                         <BadgeDollarSign size={20} />
                                       </button>
-                                    )}
+                                    )} */}
                                   </div>
                                 </td>
                               </tr>
