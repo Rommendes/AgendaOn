@@ -30,7 +30,6 @@ function App() {
 
         {/* privadas */}
         <Route element={<ProtectedRoute />}>
-          {/*<Route path="/"element= { <Login setIsAuthenticated={setIsAuthenticated}/> }/>*/}
           <Route path="/busca-cliente" element={<BuscaCliente />} />
           <Route path="/home" element={<Home />} />
           <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />

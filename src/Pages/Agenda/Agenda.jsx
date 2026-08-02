@@ -1,10 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import StatusBadge from '../../Componentes/StatusBadge/StatusBadge';
 import getStatusBadge from '../../Componentes/Utilitarios/getStatusBadge';
 import { useEffect, useState, Fragment } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import {
-  X,
-  BadgeDollarSign,
   SquareCheckBig,
   Pencil,
   Trash2,
@@ -33,15 +32,14 @@ function formatarValor(valor) {
 }
 
 const AgendaAtendimento = () => {
+  const navigate = useNavigate();
   const [statusLocal, setStatusLocal] = useState({});
   const [clientes, setClientes] = useState([]);
-  const [linhaPagamentoAberta, setLinhaPagamentoAberta] = useState(null);
   const [confirmacao, setConfirmacao] = useState({
     aberto: false,
     mensagem: '',
     onConfirm: null,
   });
-  const [pagamentoSelecionado, setPagamentoSelecionado] = useState({});
   const [novoAgendamento, setNovoAgendamento] = useState({
     data: '',
     horario: '',
@@ -82,38 +80,26 @@ const AgendaAtendimento = () => {
 
     const statusParaSalvar = mapaStatus[novoStatus] || 'agendado';
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('agendamentos')
       .update({ status_agendamento: statusParaSalvar })
-      .eq('id', id)
-      .select();
+      .eq('id', id);
 
     if (error) {
       logger.error('Erro ao atualizar status:', error);
       mostrarMensagem('Erro ao atualizar status do atendimento.');
       return;
     }
+
     setStatusLocal((prev) => ({
       ...prev,
       [id]: novoStatus,
     }));
 
-    const agendamentoAtual = agendamentos.find((item) => item.id === id);
-
     if (novoStatus === 'Concluído') {
-      const pagamentoAtual = agendamentoAtual?.pagamento;
-      const precisaAbrirPagamento =
-        !pagamentoAtual || pagamentoAtual === 'PENDENTE';
-
-      if (precisaAbrirPagamento) {
-        setLinhaPagamentoAberta(id);
-      } else {
-        setLinhaPagamentoAberta(null);
-      }
-
       mostrarMensagem('sucesso', 'Atendimento concluído.');
+      navigate('/pagamentos');
     } else if (novoStatus === 'Cancelado') {
-      setLinhaPagamentoAberta(null);
       mostrarMensagem('sucesso', 'Atendimento cancelado com sucesso.');
     }
   };
@@ -377,37 +363,6 @@ const AgendaAtendimento = () => {
     },
     {}
   );
-  const salvarPagamento = async (id) => {
-    const pagamento = pagamentoSelecionado[id];
-
-    if (!pagamento) {
-      mostrarMensagem('erro', 'Selecione a forma de pagamento.');
-      return;
-    }
-
-    abrirConfirmacao(
-      `Deseja salvar o pagamento como "${pagamento}"?`,
-      async () => {
-        const { error } = await supabase
-          .from('agendamentos')
-          .update({ pagamento })
-          .eq('id', id);
-
-        if (error) {
-          logger.error('Erro ao salvar pagamento:', error);
-          mostrarMensagem('erro', 'Erro ao salvar pagamento.');
-          return;
-        }
-
-        setAgendamentos((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, pagamento } : item))
-        );
-
-        setLinhaPagamentoAberta(null);
-        mostrarMensagem('sucesso', 'Pagamento atualizado!');
-      }
-    );
-  };
 
   const abrirConfirmacao = (mensagem, callback) => {
     setConfirmacao({
@@ -424,17 +379,6 @@ const AgendaAtendimento = () => {
       texto,
     });
   };
-  {
-    /*Editar pagamento*/
-  }
-  // const editarPagamento = (agendamento) => {
-  //   setPagamentoSelecionado((prev) => ({
-  //     ...prev,
-  //     [agendamento.id]: agendamento.pagamento || '',
-  //   }));
-
-  //   setLinhaPagamentoAberta(agendamento.id);
-  // };
 
   const iniciarFilaLembretes = async (lista) => {
     const listaComTelefone = lista.filter((ag) => ag?.clientes?.telefone);
@@ -678,17 +622,6 @@ const AgendaAtendimento = () => {
               />
             </div>
           </div>
-
-          {/* <div className="mt-5 flex justify-end">
-            <button
-              onClick={salvarAgendamento}
-              className="btn-secondary"
-              title="Salvar agendamento"
-            >
-              <Save size={20} />
-              Salvar
-            </button>
-          </div> */}
 
           <div className="mt-5 flex justify-end">
             <div
@@ -957,10 +890,13 @@ const AgendaAtendimento = () => {
                                       <button
                                         type="button"
                                         onClick={() =>
-                                          salvarEdicao(agendamento.id)
+                                          abrirConfirmacao(
+                                            'Deseja salvar as alterações deste agendamento?',
+                                            () => salvarEdicao(agendamento.id)
+                                          )
                                         }
-                                        className="text-green-600"
-                                        title="Salvar"
+                                        className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                                        title="Salvar alterações"
                                       >
                                         <SquareCheckBig size={20} />
                                       </button>
@@ -968,7 +904,10 @@ const AgendaAtendimento = () => {
                                       <button
                                         type="button"
                                         onClick={() =>
-                                          iniciarEdicao(agendamento)
+                                          abrirConfirmacao(
+                                            'Você deseja editar este agendamento?',
+                                            () => iniciarEdicao(agendamento)
+                                          )
                                         }
                                         className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-200"
                                         title="Editar"
@@ -976,7 +915,6 @@ const AgendaAtendimento = () => {
                                         <Pencil size={20} />
                                       </button>
                                     )}
-
                                     <button
                                       type="button"
                                       onClick={() =>
@@ -995,6 +933,24 @@ const AgendaAtendimento = () => {
                                     <button
                                       type="button"
                                       onClick={() =>
+                                        abrirConfirmacao(
+                                          'Deseja realmente cancelar este atendimento?',
+                                          () =>
+                                            alterarStatus(
+                                              agendamento.id,
+                                              'Cancelado'
+                                            )
+                                        )
+                                      }
+                                      className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
+                                      title="Cancelar atendimento"
+                                    >
+                                      <CircleOff size={20} />
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() =>
                                         alterarStatus(
                                           agendamento.id,
                                           'Concluído'
@@ -1005,102 +961,11 @@ const AgendaAtendimento = () => {
                                     >
                                       <Save size={20} />
                                     </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        alterarStatus(
-                                          agendamento.id,
-                                          'Cancelado'
-                                        )
-                                      }
-                                      className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
-                                      title="Cancelar atendimento"
-                                    >
-                                      <CircleOff size={20} />
-                                    </button>
-
-                                    {/* {statusAtual !== 'Cancelado' && (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          editarPagamento(agendamento)
-                                        }
-                                        className="rounded-md p-2 text-primary transition hover:bg-blue-200"
-                                        title="Editar pagamento"
-                                      >
-                                        <BadgeDollarSign size={20} />
-                                      </button>
-                                    )} */}
                                   </div>
                                 </td>
                               </tr>
 
                               {/**Pagamento */}
-
-                              {linhaPagamentoAberta === agendamento.id && (
-                                <tr>
-                                  <td
-                                    colSpan="8"
-                                    className="border-b bg-blue-50 px-4 py-4"
-                                  >
-                                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-base">💰</span>
-                                        <span className="font-medium text-primary">
-                                          Registrar pagamento
-                                        </span>
-                                      </div>
-
-                                      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
-                                        <select
-                                          className="input-padrao max-w-[180px]"
-                                          value={
-                                            pagamentoSelecionado[
-                                              agendamento.id
-                                            ] || ''
-                                          }
-                                          onChange={(e) =>
-                                            setPagamentoSelecionado((prev) => ({
-                                              ...prev,
-                                              [agendamento.id]: e.target.value,
-                                            }))
-                                          }
-                                        >
-                                          <option value="">Selecione</option>
-                                          <option value="Pix">Pix</option>
-                                          <option value="Cartão">Cartão</option>
-                                          <option value="Dinheiro">
-                                            Dinheiro
-                                          </option>
-                                          <option value="Pendente">
-                                            Pendente
-                                          </option>
-                                        </select>
-
-                                        <button
-                                          type="button"
-                                          className={`btn ${
-                                            pagamentoSelecionado[agendamento.id]
-                                              ? 'btn-green'
-                                              : 'btn-gray cursor-not-allowed'
-                                          }`}
-                                          onClick={() =>
-                                            salvarPagamento(agendamento.id)
-                                          }
-                                          disabled={
-                                            !pagamentoSelecionado[
-                                              agendamento.id
-                                            ]
-                                          }
-                                        >
-                                          Confirmar pagamento
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
                             </Fragment>
                           );
                         })}
