@@ -15,7 +15,7 @@ import {
   BadgeDollarSign,
 } from 'lucide-react';
 
-function Financeiro() {
+function ResumoFinanceiro() {
   const [pendentes, setPendentes] = useState([]);
   const [pagos, setPagos] = useState([]);
 
@@ -68,28 +68,29 @@ function Financeiro() {
 
     setPendentes(data || []);
   }
-
   async function buscarPagos() {
     const { data, error } = await supabase
       .from('agendamentos')
       .select(
         `
-      id,
-      data,
-      horario,
-      servico,
-      valor,
-      pagamento,
-      status_agendamento,
-      clientes (
-        nome,
-        telefone
-      )
-    `
+        id,
+        data,
+        horario,
+        servico,
+        valor,
+        pagamento,
+        data_pagamento,
+        status_agendamento,
+        clientes (
+          nome,
+          telefone
+        )
+      `
       )
       .neq('status_agendamento', 'cancelado')
       .neq('pagamento', 'Pendente')
-      .order('data', { ascending: false })
+      .not('data_pagamento', 'is', null)
+      .order('data_pagamento', { ascending: false })
       .limit(10);
 
     if (error) {
@@ -99,38 +100,62 @@ function Financeiro() {
 
     setPagos(data || []);
   }
+
   /*BUSCAR RESUMO FINANCEIRO*/
 
   async function buscarResumoFinanceiro() {
     const hoje = new Date();
 
-    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+
+    const primeiroDiaProximoMes = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth() + 1,
+      1
+    );
+
+    const dataInicialAgendamento = primeiroDiaMes.toISOString().split('T')[0];
+
+    const dataFinalAgendamento = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth() + 1,
+      0
+    )
       .toISOString()
       .split('T')[0];
 
-    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)
-      .toISOString()
-      .split('T')[0];
-
-    const { data, error } = await supabase
+    // Busca os agendamentos pendentes do mês
+    const { data: agendamentosMes, error: erroAgendamentos } = await supabase
       .from('agendamentos')
-      .select('id, valor, pagamento, status_agendamento, cliente_id')
+      .select('id, valor, pagamento, cliente_id')
       .neq('status_agendamento', 'cancelado')
-      .gte('data', primeiroDiaMes)
-      .lte('data', ultimoDiaMes);
+      .gte('data', dataInicialAgendamento)
+      .lte('data', dataFinalAgendamento);
 
-    if (error) {
-      console.error('Erro ao buscar resumo financeiro:', error);
+    if (erroAgendamentos) {
+      console.error('Erro ao buscar os agendamentos do mês:', erroAgendamentos);
       return;
     }
 
-    const registros = data || [];
+    // Busca os pagamentos efetivamente registrados no mês
+    const { data: pagamentosMes, error: erroPagamentos } = await supabase
+      .from('agendamentos')
+      .select('id, valor, pagamento, data_pagamento')
+      .neq('status_agendamento', 'cancelado')
+      .not('data_pagamento', 'is', null)
+      .gte('data_pagamento', primeiroDiaMes.toISOString())
+      .lt('data_pagamento', primeiroDiaProximoMes.toISOString());
 
-    const recebidos = registros.filter((item) => item.pagamento !== 'Pendente');
+    if (erroPagamentos) {
+      console.error('Erro ao buscar os pagamentos do mês:', erroPagamentos);
+      return;
+    }
 
-    const pendentes = registros.filter((item) => item.pagamento === 'Pendente');
+    const pendentes = (agendamentosMes || []).filter(
+      (item) => item.pagamento === 'Pendente'
+    );
 
-    const recebidoMes = recebidos.reduce(
+    const recebidoMes = (pagamentosMes || []).reduce(
       (total, item) => total + Number(item.valor || 0),
       0
     );
@@ -139,14 +164,11 @@ function Financeiro() {
       (total, item) => total + Number(item.valor || 0),
       0
     );
-    const pagamentosRegistrados = recebidos.length;
 
     const clientesDevedores = new Set(pendentes.map((item) => item.cliente_id))
       .size;
 
-    const concluidos = registros.filter(
-      (item) => item.status_agendamento === 'concluido'
-    ).length;
+    const pagamentosRegistrados = (pagamentosMes || []).length;
 
     setResumoFinanceiro({
       recebidoMes,
@@ -155,13 +177,15 @@ function Financeiro() {
       concluidos: pagamentosRegistrados,
     });
   }
-
   async function registrarPagamento(agendamentoId, tipoPagamento) {
     if (!agendamentoId || !tipoPagamento) return;
 
     const { error } = await supabase
       .from('agendamentos')
-      .update({ pagamento: tipoPagamento })
+      .update({
+        pagamento: tipoPagamento,
+        data_pagamento: new Date().toISOString(),
+      })
       .eq('id', agendamentoId);
 
     if (error) {
@@ -183,13 +207,11 @@ function Financeiro() {
   });
 
   return (
-    <>
-      <Header />
-      <div className="container mx-auto p-4">
-        <div className="mx-auto mt-6 w-full max-w-[1250px] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
-          <h1 className="mb-1 text-2xl font-medium uppercase text-primary">
-            Financeiro
-          </h1>
+    <div className="main">
+      <Header title="Resumo Financeiro" />
+      <div className="main-container">
+        <div className="container-formulario">
+          <h1 className="h1">Resumo Financeiro</h1>
           <p className="text-sm font-medium capitalize text-secondary">
             {mesAtual}
           </p>
@@ -197,7 +219,7 @@ function Financeiro() {
             Resumo de recebimentos, pendências e pagamentos dos atendimentos.
           </p>
 
-          <div className="mx-auto w-full max-w-[1200px] p-4">
+          <div className="conteudo-amplo">
             <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               {/* Card 1 com refinamento de UI/UX */}
               <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
@@ -250,7 +272,7 @@ function Financeiro() {
               <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                 <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
                   <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
-                    <BadgeCheck className="text-primary" text-bold size={20} />
+                    <BadgeCheck className="text-bold text-primary" size={20} />
                   </span>
                   Pagamentos registrados
                 </p>
@@ -260,7 +282,7 @@ function Financeiro() {
               </div>
             </div>
           </div>
-          <section className="mt-10">
+          <section className="conteudo-amplo">
             <div className="mb-4">
               <h2 className="text-xl font-medium text-primary">
                 Pendências de pagamento
@@ -297,11 +319,18 @@ function Financeiro() {
                       <div className="mt-2 space-y-1">
                         <p className="flex items-center gap-2 text-xs text-gray-500">
                           <CalendarDays size={14} className="text-primary" />
-                          {new Date(item.data + 'T12:00:00').toLocaleDateString(
+
+                          {new Date(item.data_pagamento).toLocaleDateString(
                             'pt-BR'
                           )}
                           {' • '}
-                          {item.horario}
+                          {new Date(item.data_pagamento).toLocaleTimeString(
+                            'pt-BR',
+                            {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )}
                         </p>
 
                         <p className="flex items-center gap-2 text-sm text-gray-500">
@@ -398,14 +427,19 @@ function Financeiro() {
                           currency: 'BRL',
                         })}
                       </p>
-
                       <p className="flex items-center gap-2 text-xs text-primary">
                         <CalendarDays size={14} />
-                        {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                        {new Date(item.data_pagamento).toLocaleDateString(
                           'pt-BR'
                         )}
                         {' • '}
-                        {item.horario}
+                        {new Date(item.data_pagamento).toLocaleTimeString(
+                          'pt-BR',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }
+                        )}
                       </p>
                     </div>
                   </div>
@@ -415,8 +449,8 @@ function Financeiro() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
-export default Financeiro;
+export default ResumoFinanceiro;

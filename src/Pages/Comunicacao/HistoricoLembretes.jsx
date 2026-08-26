@@ -63,137 +63,144 @@ const HistoricoLembretes = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Header />
+    <div className="main">
+      <Header title="Lembretes enviados" />
+      <div className="main-container">
+        <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 shadow">
+          <h1 className="mb-4 text-xl font-semibold text-primary">
+            Histórico de lembretes enviados
+          </h1>
 
-      <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 shadow">
-        <h1 className="mb-4 text-xl font-semibold text-primary">
-          Histórico de lembretes enviados
-        </h1>
+          {carregando ? (
+            <p className="text-gray-600">Carregando histórico...</p>
+          ) : lembretes.length === 0 ? (
+            <p className="text-gray-600">Nenhum lembrete registrado ainda.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+              <table className="w-full min-w-[900px] border-separate border-spacing-0">
+                <thead className="bg-violet-100 text-xs uppercase text-primary">
+                  <tr>
+                    <th className="border-b border-violet-200 px-3 py-3 text-left">
+                      Cliente
+                    </th>
+                    <th className="border-b border-violet-200 px-3 py-3 text-left">
+                      Serviço
+                    </th>
+                    <th className="border-b border-violet-200 px-3 py-3 text-left">
+                      Horário
+                    </th>
+                    <th className="border-b border-violet-200 px-3 py-3 text-left">
+                      Enviado em
+                    </th>
+                    <th className="border-b border-violet-200 px-3 py-3 text-center">
+                      Status
+                    </th>
+                    <th className="border-b border-violet-200 px-3 py-3 text-center">
+                      Ação
+                    </th>
+                  </tr>
+                </thead>
 
-        {carregando ? (
-          <p className="text-gray-600">Carregando histórico...</p>
-        ) : lembretes.length === 0 ? (
-          <p className="text-gray-600">Nenhum lembrete registrado ainda.</p>
-        ) : (
-          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-            <table className="w-full min-w-[900px] border-separate border-spacing-0">
-              <thead className="bg-violet-100 text-xs uppercase text-primary">
-                <tr>
-                  <th className="border-b border-violet-200 px-3 py-3 text-left">
-                    Cliente
-                  </th>
-                  <th className="border-b border-violet-200 px-3 py-3 text-left">
-                    Serviço
-                  </th>
-                  <th className="border-b border-violet-200 px-3 py-3 text-left">
-                    Horário
-                  </th>
-                  <th className="border-b border-violet-200 px-3 py-3 text-left">
-                    Enviado em
-                  </th>
-                  <th className="border-b border-violet-200 px-3 py-3 text-center">
-                    Status
-                  </th>
-                  <th className="border-b border-violet-200 px-3 py-3 text-center">
-                    Ação
-                  </th>
-                </tr>
-              </thead>
+                <tbody>
+                  {lembretes.map((item) => {
+                    const dataEnvio = new Date(item.enviado_em);
 
-              <tbody>
-                {lembretes.map((item) => {
-                  const dataEnvio = new Date(item.enviado_em);
+                    const formatarData = () => {
+                      const hoje = new Date();
+                      const ontem = new Date();
+                      ontem.setDate(ontem.getDate() - 1);
 
-                  const formatarData = () => {
-                    const hoje = new Date();
-                    const ontem = new Date();
-                    ontem.setDate(ontem.getDate() - 1);
+                      const isHoje =
+                        dataEnvio.toDateString() === hoje.toDateString();
 
-                    const isHoje =
-                      dataEnvio.toDateString() === hoje.toDateString();
+                      const isOntem =
+                        dataEnvio.toDateString() === ontem.toDateString();
 
-                    const isOntem =
-                      dataEnvio.toDateString() === ontem.toDateString();
+                      if (isHoje) {
+                        return `Hoje às ${dataEnvio.toLocaleTimeString(
+                          'pt-BR',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }
+                        )}`;
+                      }
 
-                    if (isHoje) {
-                      return `Hoje às ${dataEnvio.toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}`;
-                    }
+                      if (isOntem) {
+                        return `Ontem às ${dataEnvio.toLocaleTimeString(
+                          'pt-BR',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }
+                        )}`;
+                      }
 
-                    if (isOntem) {
-                      return `Ontem às ${dataEnvio.toLocaleTimeString('pt-BR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}`;
-                    }
+                      return dataEnvio.toLocaleString('pt-BR', {
+                        dateStyle: 'short',
+                        timeStyle: 'short',
+                      });
+                    };
 
-                    return dataEnvio.toLocaleString('pt-BR', {
-                      dateStyle: 'short',
-                      timeStyle: 'short',
-                    });
-                  };
+                    return (
+                      <tr
+                        key={item.id}
+                        className="bg-white transition-colors hover:bg-violet-50/60"
+                      >
+                        {/* Cliente */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-sm">
+                          {item.cliente_nome}
+                        </td>
 
-                  return (
-                    <tr
-                      key={item.id}
-                      className="bg-white transition-colors hover:bg-violet-50/60"
-                    >
-                      {/* Cliente */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-sm">
-                        {item.cliente_nome}
-                      </td>
+                        {/* Serviço */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-sm">
+                          {item.agendamentos?.servico || '-'}
+                        </td>
 
-                      {/* Serviço */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-sm">
-                        {item.agendamentos?.servico || '-'}
-                      </td>
+                        {/* Horário */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-sm">
+                          {item.agendamentos?.horario || '-'}
+                        </td>
 
-                      {/* Horário */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-sm">
-                        {item.agendamentos?.horario || '-'}
-                      </td>
+                        {/* Data envio */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-sm">
+                          {formatarData()}
+                        </td>
 
-                      {/* Data envio */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-sm">
-                        {formatarData()}
-                      </td>
+                        {/* Status */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-center">
+                          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                            Enviado
+                          </span>
+                        </td>
 
-                      {/* Status */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-center">
-                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                          Enviado
-                        </span>
-                      </td>
+                        {/* Ação */}
+                        <td className="border-b border-gray-200 px-3 py-3 text-center">
+                          <button
+                            className="rounded-md bg-primary px-3 py-1 text-sm text-white transition hover:bg-secondary"
+                            onClick={() => {
+                              const agendamento = {
+                                ...item.agendamentos,
+                                clientes: {
+                                  nome: item.cliente_nome,
+                                  telefone: item.telefone,
+                                },
+                              };
 
-                      {/* Ação */}
-                      <td className="border-b border-gray-200 px-3 py-3 text-center">
-                        <button
-                          className="rounded-md bg-primary px-3 py-1 text-sm text-white transition hover:bg-secondary"
-                          onClick={() => {
-                            const agendamento = {
-                              ...item.agendamentos,
-                              clientes: {
-                                nome: item.cliente_nome,
-                                telefone: item.telefone,
-                              },
-                            };
-
-                            enviarLembreteDeAgendamento(agendamento);
-                          }}
-                        >
-                          Reenviar
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+                              enviarLembreteDeAgendamento(agendamento);
+                            }}
+                          >
+                            Reenviar
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

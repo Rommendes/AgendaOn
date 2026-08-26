@@ -144,7 +144,7 @@ export function mensagemLembrete({ nome, servico, data, hora, observacoes }) {
     _servico ? `• Serviço: *${_servico}*` : '',
     _data ? `• Data: *${_data}*` : '',
     _hora ? `• Horário: *${_hora}*` : '',
-    _obs ? `📝 Observações: ${_obs}` : '',
+
     ``,
     blocoAcoes,
     `Aguardamos você! 💇‍♀️💅`,
@@ -172,7 +172,6 @@ export function montarTextoLembreteDeAgendamento(ag) {
     servico,
     data: dataBR,
     hora,
-    observacoes,
   });
 }
 

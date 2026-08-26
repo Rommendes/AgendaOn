@@ -9,10 +9,10 @@ import {
 
 function FinanceiroMenu() {
   return (
-    <>
+    <main>
       <Header title="Financeiro" />
 
-      <div className="container mx-auto p-4">
+      <div className="main-container">
         <div className="flex flex-col gap-4">
           <Link
             to="/pagamentos"
@@ -21,11 +21,9 @@ function FinanceiroMenu() {
             <CreditCard className="text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Pagamentos</h2>
+              <h1>Pagamentos</h1>
 
-              <p className="text-sm">
-                Confirme pagamentos e informe a forma de recebimento.
-              </p>
+              <p>Confirme pagamentos e informe a forma de recebimento.</p>
             </div>
           </Link>
 
@@ -36,46 +34,27 @@ function FinanceiroMenu() {
             <ReceiptText className="text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Extrato Financeiro</h2>
+              <h1>Extrato Financeiro</h1>
 
-              <p className="text-sm">
-                Consulte pagamentos por mês, cliente e forma de pagamento.
-              </p>
+              <p>Consulte pagamentos por mês, cliente e forma de pagamento.</p>
             </div>
           </Link>
 
           <Link
-            to="/financeiro"
+            to="/resumo-financeiro"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
             <ChartNoAxesCombined className="text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Resumo Financeiro</h2>
+              <h1>Resumo Financeiro</h1>
 
-              <p className="text-sm">
-                Veja o resumo do mês, pendências e gráficos financeiros.
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            to="/cobrancas"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <WalletCards className="text-secondary" size={32} />
-
-            <div>
-              <h2 className="text-lg font-bold">Pendências</h2>
-
-              <p className="text-sm">
-                Envie cobranças para clientes com pagamentos pendentes.
-              </p>
+              <p>Veja o resumo do mês, pendências e gráficos financeiros.</p>
             </div>
           </Link>
         </div>
       </div>
-    </>
+    </main>
   );
 }
 

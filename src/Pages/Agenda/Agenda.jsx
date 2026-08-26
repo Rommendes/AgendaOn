@@ -488,652 +488,653 @@ const AgendaAtendimento = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <div className="container mx-auto p-4">
-        {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
+    <>
+      <Header title="Agenda" />
+      <div className="main">
+        <div className="main-container">
+          {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
-        <div className="mx-auto w-full max-w-[100%] rounded-2xl border border-violet-200 bg-white/80 p-5 shadow-sm">
-          <h3 className="mb-5 flex items-center gap-2 text-lg font-medium text-primary">
-            <ClipboardPlusIcon className="text-secondary" />
-            Novo Agendamento
-          </h3>
+          <div className="container-formulario">
+            <h1 className="flex gap-2 text-primary">
+              <ClipboardPlusIcon className="text-secondary" size={25} />
+              Novo Agendamento
+            </h1>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {/* Data e Horário */}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {/* Data e Horário */}
 
-            {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"> */}
-            {/* 🗓️ Data */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Data
-              </label>
+              {/* 🗓️ Data */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Data
+                </label>
 
-              <InputData
-                value={novoAgendamento.data}
-                onChange={(val) =>
-                  setNovoAgendamento({ ...novoAgendamento, data: val })
-                }
-              />
-            </div>
-            {/* ⏰ Horário */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Horário
-              </label>
-              <InputHorario
-                value={novoAgendamento.horario}
-                onChange={(val) =>
-                  setNovoAgendamento({ ...novoAgendamento, horario: val })
-                }
-                className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
-              />
-            </div>
-
-            {/* Cliente */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Cliente
-              </label>
-
-              <select
-                value={novoAgendamento.cliente_id}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setNovoAgendamento((prev) => ({
-                    ...prev,
-                    cliente_id: value,
-                  }));
-                }}
-                className="input-padrao"
-              >
-                <option value="">Selecione um cliente</option>
-                {clientes.map((cliente) => (
-                  <option key={cliente.id} value={String(cliente.id)}>
-                    {cliente.nome}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Serviço */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Serviço
-              </label>
-              <select
-                value={novoAgendamento.servico}
-                onChange={(e) =>
-                  setNovoAgendamento({
-                    ...novoAgendamento,
-                    servico: e.target.value,
-                  })
-                }
-                className="input-padrao"
-              >
-                <option value="">Selecione</option>
-                <option value="Tintura">Tintura</option>
-                <option value="Corte">Corte</option>
-                <option value="Escova progressiva">Escova Progressiva</option>
-                <option value="Butox">Butox</option>
-                <option value="Manicure">Manicure</option>
-                <option value="Maquiagem">Maquiagem</option>
-                <option value="Sobrancelha">Sobrancelha</option>
-                <option value="Depilação">Depilação</option>
-                <option value="Penteado festa">Penteado festa</option>
-              </select>
-            </div>
-
-            {/* Valor */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Valor
-              </label>
-              <input
-                type="text"
-                placeholder="Valor"
-                value={novoAgendamento.valor}
-                onChange={(e) =>
-                  setNovoAgendamento({
-                    ...novoAgendamento,
-                    valor: e.target.value,
-                  })
-                }
-                className="input-padrao"
-              />
-            </div>
-
-            {/* Observações */}
-            <div className="flex flex-col">
-              <label className="mb-1 text-[13px] font-normal text-gray-700">
-                Observações
-              </label>
-              <textarea
-                type="text"
-                placeholder="Observações"
-                value={novoAgendamento.obs}
-                onChange={(e) =>
-                  setNovoAgendamento({
-                    ...novoAgendamento,
-                    obs: e.target.value,
-                  })
-                }
-                className="input-padrao h-[38px] resize-none"
-              />
-            </div>
-          </div>
-
-          <div className="mt-5 flex justify-end">
-            <div
-              className="title-personalizado"
-              data-title="Salvar agendamento"
-            >
-              <button
-                onClick={salvarAgendamento}
-                className="btn-secondary"
-                aria-label="Salvar agendamento"
-              >
-                <Save size={20} />
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 🔵 AGRUPAMENTO POR DIA DA SEMANA */}
-
-        <div className="mx-auto mt-5 w-full max-w-[100%] rounded-lg border border-[rgba(128,128,128,0.3)] bg-gray-50 p-4 px-4 pt-2 shadow-lg">
-          {Object.entries(agendamentosAgrupadosPorDiaSemana).map(
-            ([data, agendamentosDoDia]) => {
-              const { diaSemana, dataFormatada } = getDiaSemanaComData(data);
-
-              return (
-                <div
-                  // key={diaSemana}
-                  key={`${diaSemana}-${dataFormatada}`}
-                  className="mb-6 rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-4">
-                    <div>
-                      <h2 className="relative mb-0 text-xl font-normal text-primary">
-                        {diaSemana}
-                      </h2>
-
-                      <p className="text-sm text-gray-500">{dataFormatada}</p>
-                    </div>
-                    {/* 🟡 BOTÃO ENVIAR LEMBRETES */}
-                    <div className="mt-5 flex justify-end">
-                      <div
-                        className="title-lembrete"
-                        data-title="Enviar lembretes para todos deste dia"
-                      >
-                        <button
-                          onClick={() =>
-                            iniciarFilaLembretes(agendamentosDoDia)
-                          }
-                          className="btn-lembrete-primary"
-                          aria-label="Enviar lembretes para todos deste dia"
-                        >
-                          <Clock size={20} />
-                          Enviar lembretes
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
-                    <table className="w-full min-w-[820px] border-separate border-spacing-0">
-                      <thead className="bg-violet-50 text-[11px] uppercase tracking-wide text-primary">
-                        <tr className="overflow-x-auto">
-                          <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            Data
-                          </th>
-                          <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            Horário
-                          </th>
-                          <th className="mb-5 min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
-                            Cliente
-                          </th>
-                          <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            Serviço
-                          </th>
-                          <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            Valor
-                          </th>
-                          <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            status
-                          </th>
-                          {/* <th className="border p-2">Pagamento</th> */}
-                          <th className="min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
-                            Obs
-                          </th>
-                          <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
-                            Ações
-                          </th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
-                        {agendamentosDoDia.map((agendamento) => {
-                          const statusAtual =
-                            statusLocal[agendamento.id] ||
-                            (agendamento.status_agendamento === 'concluido'
-                              ? 'Concluído'
-                              : agendamento.status_agendamento === 'cancelado'
-                                ? 'Cancelado'
-                                : 'Agendado');
-                          const badge = getStatusBadge(
-                            statusAtual,
-                            agendamento.pagamento
-                          );
-                          return (
-                            <Fragment key={agendamento.id}>
-                              <tr className="transition hover:bg-violet-50/60">
-                                {/* Data */}
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <InputData
-                                      value={formEdicao.data || ''}
-                                      onChange={(val) =>
-                                        atualizarCampoEdicao('data', val)
-                                      }
-                                    />
-                                  ) : (
-                                    new Date(
-                                      agendamento.data + 'T12:00:00'
-                                    ).toLocaleDateString('pt-BR')
-                                  )}
-                                </td>
-                                {/* Horário */}
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <input
-                                      type="time"
-                                      value={formEdicao.horario || ''}
-                                      onChange={(e) => {
-                                        console.log(
-                                          'Novo horário:',
-                                          e.target.value
-                                        );
-                                        setFormEdicao((prev) => ({
-                                          ...prev,
-                                          horario: e.target.value,
-                                        }));
-                                      }}
-                                      className="w-full rounded border p-1"
-                                    />
-                                  ) : (
-                                    agendamento.horario
-                                  )}
-                                </td>
-
-                                {/* Cliente */}
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <select
-                                      value={formEdicao.cliente_id || ''}
-                                      onChange={(e) =>
-                                        atualizarCampoEdicao(
-                                          'cliente_id',
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full rounded border p-1"
-                                    >
-                                      <option value="">
-                                        Selecione um cliente
-                                      </option>
-                                      {clientes.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                          {c.nome}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  ) : (
-                                    agendamento.clientes?.nome || 'Sem nome'
-                                  )}
-                                </td>
-
-                                {/* Serviço */}
-
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <select
-                                      value={formEdicao.servico || ''}
-                                      onChange={(e) =>
-                                        atualizarCampoEdicao(
-                                          'servico',
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full rounded border p-1"
-                                    >
-                                      <option value="">Selecione</option>
-                                      <option value="Tintura">Tintura</option>
-                                      <option value="Corte">Corte</option>
-                                      <option value="Escova progressiva">
-                                        Escova Progressiva
-                                      </option>
-                                      <option value="Butox">Butox</option>
-                                      <option value="Manicure">Manicure</option>
-                                      <option value="Maquiagem">
-                                        Maquiagem
-                                      </option>
-                                      <option value="Sobrancelha">
-                                        Sobrancelha
-                                      </option>
-                                      <option value="Depilação">
-                                        Depilação
-                                      </option>
-                                      <option value="Penteado festa">
-                                        Penteado festa
-                                      </option>
-                                    </select>
-                                  ) : (
-                                    agendamento.servico
-                                  )}
-                                </td>
-                                {/* Valor */}
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <input
-                                      value={formEdicao.valorFormatado || ''}
-                                      onChange={(e) => {
-                                        const somenteNumeros =
-                                          e.target.value.replace(/\D/g, '');
-
-                                        setFormEdicao((prev) => ({
-                                          ...prev,
-                                          valor: somenteNumeros,
-                                          valorFormatado:
-                                            formatarMoeda(somenteNumeros),
-                                        }));
-                                      }}
-                                      className="rounded border p-1"
-                                    />
-                                  ) : (
-                                    formatarValor(agendamento.valor)
-                                  )}
-                                </td>
-
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  <StatusBadge
-                                    status={badge.label}
-                                    style={badge.style}
-                                  />
-                                </td>
-
-                                {/* Observações */}
-                                <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                  {editandoId === agendamento.id ? (
-                                    <input
-                                      value={formEdicao.obs}
-                                      onChange={(e) =>
-                                        atualizarCampoEdicao(
-                                          'obs',
-                                          e.target.value
-                                        )
-                                      }
-                                      className="rounded border p-1"
-                                    />
-                                  ) : (
-                                    agendamento.obs
-                                  )}
-                                </td>
-
-                                {/* Ações */}
-
-                                <td className="min-w-[180px] border-b border-gray-200 px-3 py-2 md:px-4 md:py-3">
-                                  <div className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gray-50 px-2 py-1">
-                                    {editandoId === agendamento.id ? (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          abrirConfirmacao(
-                                            'Deseja salvar as alterações deste agendamento?',
-                                            () => salvarEdicao(agendamento.id)
-                                          )
-                                        }
-                                        className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
-                                        title="Salvar alterações"
-                                      >
-                                        <SquareCheckBig size={20} />
-                                      </button>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          abrirConfirmacao(
-                                            'Você deseja editar este agendamento?',
-                                            () => iniciarEdicao(agendamento)
-                                          )
-                                        }
-                                        className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-200"
-                                        title="Editar"
-                                      >
-                                        <Pencil size={20} />
-                                      </button>
-                                    )}
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        abrirConfirmacao(
-                                          'Deseja realmente excluir este atendimento?',
-                                          () =>
-                                            excluirAgendamento(agendamento.id)
-                                        )
-                                      }
-                                      className="rounded-md p-2 text-red-600 transition hover:bg-red-200"
-                                      title="Excluir atendimento"
-                                    >
-                                      <Trash2 size={20} />
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        abrirConfirmacao(
-                                          'Deseja realmente cancelar este atendimento?',
-                                          () =>
-                                            alterarStatus(
-                                              agendamento.id,
-                                              'Cancelado'
-                                            )
-                                        )
-                                      }
-                                      className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
-                                      title="Cancelar atendimento"
-                                    >
-                                      <CircleOff size={20} />
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        alterarStatus(
-                                          agendamento.id,
-                                          'Concluído'
-                                        )
-                                      }
-                                      className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
-                                      title="Concluir atendimento"
-                                    >
-                                      <Save size={20} />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-
-                              {/**Pagamento */}
-                            </Fragment>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              );
-            }
-          )}
-        </div>
-
-        {/*Confirmação*/}
-        {confirmacao.aberto && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
-              <h2 className="mb-4 text-lg font-semibold text-primary">
-                Confirmação
-              </h2>
-
-              <p className="mb-6 text-gray-700">{confirmacao.mensagem}</p>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  className="btn btn-gray"
-                  onClick={() =>
-                    setConfirmacao({
-                      aberto: false,
-                      mensagem: '',
-                      onConfirm: null,
-                    })
+                <InputData
+                  value={novoAgendamento.data}
+                  onChange={(val) =>
+                    setNovoAgendamento({ ...novoAgendamento, data: val })
                   }
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  className="btn btn-green"
-                  onClick={() => {
-                    confirmacao.onConfirm();
-                    setConfirmacao({
-                      aberto: false,
-                      mensagem: '',
-                      onConfirm: null,
-                    });
-                  }}
-                >
-                  Confirmar
-                </button>
+                />
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* 🔵 MENSAGEM DO SISTEMA */}
-        {mensagemSistema.aberta && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <div className="w-[90%] max-w-sm rounded-lg bg-white p-6 shadow-lg">
-              <h2
-                className={`mb-3 text-lg font-semibold ${
-                  mensagemSistema.tipo === 'erro'
-                    ? 'text-red-600'
-                    : 'text-green-600'
-                }`}
-              >
-                {mensagemSistema.tipo === 'erro' ? 'Atenção' : 'Sucesso'}
-              </h2>
-
-              <p className="mb-5 text-gray-700">{mensagemSistema.texto}</p>
-
-              <div className="flex justify-end">
-                <button
-                  className={
-                    mensagemSistema.tipo === 'erro'
-                      ? 'btn btn-red'
-                      : 'btn btn-green'
+              {/* ⏰ Horário */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Horário
+                </label>
+                <InputHorario
+                  value={novoAgendamento.horario}
+                  onChange={(val) =>
+                    setNovoAgendamento({ ...novoAgendamento, horario: val })
                   }
-                  onClick={() =>
-                    setMensagemSistema({
-                      aberta: false,
-                      tipo: '',
-                      texto: '',
-                    })
-                  }
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {filaLembretes.aberta && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
-              <h2 className="mb-3 text-lg font-semibold text-primary">
-                Fila de lembretes
-              </h2>
-
-              <p className="mb-4 text-gray-700">
-                Lembrete <strong>{filaLembretes.indiceAtual + 1}</strong> de{' '}
-                <strong>{filaLembretes.lista.length}</strong>
-              </p>
-              <div className="mb-5 h-2 w-full rounded-full bg-gray-200">
-                <div
-                  className="h-2 rounded-full bg-primary transition-all"
-                  style={{
-                    width: `${
-                      ((filaLembretes.indiceAtual + 1) /
-                        filaLembretes.lista.length) *
-                      100
-                    }%`,
-                  }}
+                  className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
                 />
               </div>
 
-              <div className="mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <p className="text-gray-700">
-                  <span className="font-medium text-primary">Cliente:</span>{' '}
-                  {
-                    filaLembretes.lista[filaLembretes.indiceAtual]?.clientes
-                      ?.nome
-                  }
-                </p>
+              {/* Cliente */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Cliente
+                </label>
 
-                <p className="text-gray-700">
-                  <span className="font-medium text-primary">Serviço:</span>{' '}
-                  {filaLembretes.lista[filaLembretes.indiceAtual]?.servico}
-                </p>
-
-                <p className="text-gray-700">
-                  <span className="font-medium text-primary">Horário:</span>{' '}
-                  {filaLembretes.lista[filaLembretes.indiceAtual]?.horario}
-                </p>
+                <select
+                  value={novoAgendamento.cliente_id}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setNovoAgendamento((prev) => ({
+                      ...prev,
+                      cliente_id: value,
+                    }));
+                  }}
+                  className="input-padrao"
+                >
+                  <option value="">Selecione um cliente</option>
+                  {clientes.map((cliente) => (
+                    <option key={cliente.id} value={String(cliente.id)}>
+                      {cliente.nome}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="mt-4 flex items-center justify-between">
-                <button
-                  type="button"
-                  className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition hover:bg-gray-200"
-                  onClick={() =>
-                    setFilaLembretes({
-                      aberta: false,
-                      lista: [],
-                      indiceAtual: 0,
+              {/* Serviço */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Serviço
+                </label>
+                <select
+                  value={novoAgendamento.servico}
+                  onChange={(e) =>
+                    setNovoAgendamento({
+                      ...novoAgendamento,
+                      servico: e.target.value,
                     })
                   }
+                  className="input-padrao"
                 >
-                  Fechar
-                </button>
+                  <option value="">Selecione</option>
+                  <option value="Tintura">Tintura</option>
+                  <option value="Corte">Corte</option>
+                  <option value="Escova progressiva">Escova Progressiva</option>
+                  <option value="Butox">Butox</option>
+                  <option value="Manicure">Manicure</option>
+                  <option value="Maquiagem">Maquiagem</option>
+                  <option value="Sobrancelha">Sobrancelha</option>
+                  <option value="Depilação">Depilação</option>
+                  <option value="Penteado festa">Penteado festa</option>
+                </select>
+              </div>
 
+              {/* Valor */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Valor
+                </label>
+                <input
+                  type="text"
+                  placeholder="Valor"
+                  value={novoAgendamento.valor}
+                  onChange={(e) =>
+                    setNovoAgendamento({
+                      ...novoAgendamento,
+                      valor: e.target.value,
+                    })
+                  }
+                  className="input-padrao"
+                />
+              </div>
+
+              {/* Observações */}
+              <div className="flex flex-col">
+                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                  Observações
+                </label>
+                <textarea
+                  type="text"
+                  placeholder="Observações"
+                  value={novoAgendamento.obs}
+                  onChange={(e) =>
+                    setNovoAgendamento({
+                      ...novoAgendamento,
+                      obs: e.target.value,
+                    })
+                  }
+                  className="input-padrao h-[38px] resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end">
+              <div
+                className="title-personalizado"
+                data-title="Salvar agendamento"
+              >
                 <button
-                  type="button"
-                  disabled={abrindoLembrete}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2 text-white transition ${
-                    abrindoLembrete
-                      ? 'cursor-not-allowed bg-gray-400'
-                      : 'bg-primary hover:bg-secondary'
-                  }`}
-                  onClick={enviarProximoLembrete}
+                  onClick={salvarAgendamento}
+                  className="btn btn-secondary w-full sm:w-auto"
+                  aria-label="Salvar agendamento"
                 >
-                  {abrindoLembrete ? 'Abrindo...' : 'Próximo'}
+                  <Save size={20} />
+                  Salvar
                 </button>
               </div>
             </div>
           </div>
-        )}
+
+          {/* 🔵 AGRUPAMENTO POR DIA DA SEMANA */}
+
+          <div className="container-formulario mt-6">
+            {Object.entries(agendamentosAgrupadosPorDiaSemana).map(
+              ([data, agendamentosDoDia]) => {
+                const { diaSemana, dataFormatada } = getDiaSemanaComData(data);
+
+                return (
+                  <div
+                    // key={diaSemana}
+                    key={`${diaSemana}-${dataFormatada}`}
+                    className="mb-6 rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <div>
+                        {/* ‼️*/}
+                        <h1 className="font-bold text-primary">{diaSemana}</h1>
+                        <p className="text-sm text-cinza">{dataFormatada}</p>
+                      </div>
+                      {/* 🟡 BOTÃO ENVIAR LEMBRETES */}
+                      <div className="mt-5 flex justify-end">
+                        <div
+                          className="title-lembrete"
+                          data-title="Enviar lembretes para todos deste dia"
+                        >
+                          <button
+                            onClick={() =>
+                              iniciarFilaLembretes(agendamentosDoDia)
+                            }
+                            className="btn-lembrete-primary"
+                            aria-label="Enviar lembretes para todos deste dia"
+                          >
+                            <Clock size={20} />
+                            Enviar lembretes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
+                      <table className="w-full min-w-[820px] border-separate border-spacing-0">
+                        <thead className="bg-cinza/10 text-[11px] uppercase tracking-wide text-primary">
+                          <tr className="overflow-x-auto">
+                            <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              Data
+                            </th>
+                            <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              Horário
+                            </th>
+                            <th className="mb-5 min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
+                              Cliente
+                            </th>
+                            <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              Serviço
+                            </th>
+                            <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              Valor
+                            </th>
+                            <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              status
+                            </th>
+                            {/* <th className="border p-2">Pagamento</th> */}
+                            <th className="min-w-[180px] border-b border-violet-200 px-2 py-2 text-center font-semibold md:px-4 md:py-3">
+                              Obs
+                            </th>
+                            <th className="border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
+                              Ações
+                            </th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {/* 🔴 LISTAGEM DOS AGENDAMENTOS DO DIA */}
+                          {agendamentosDoDia.map((agendamento) => {
+                            const statusAtual =
+                              statusLocal[agendamento.id] ||
+                              (agendamento.status_agendamento === 'concluido'
+                                ? 'Concluído'
+                                : agendamento.status_agendamento === 'cancelado'
+                                  ? 'Cancelado'
+                                  : 'Agendado');
+                            const badge = getStatusBadge(
+                              statusAtual,
+                              agendamento.pagamento
+                            );
+                            return (
+                              <Fragment key={agendamento.id}>
+                                <tr className="text-cinza transition hover:bg-violet-50/60">
+                                  {/* Data */}
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <InputData
+                                        value={formEdicao.data || ''}
+                                        onChange={(val) =>
+                                          atualizarCampoEdicao('data', val)
+                                        }
+                                      />
+                                    ) : (
+                                      new Date(
+                                        agendamento.data + 'T12:00:00'
+                                      ).toLocaleDateString('pt-BR')
+                                    )}
+                                  </td>
+                                  {/* Horário */}
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <input
+                                        type="time"
+                                        value={formEdicao.horario || ''}
+                                        onChange={(e) => {
+                                          console.log(
+                                            'Novo horário:',
+                                            e.target.value
+                                          );
+                                          setFormEdicao((prev) => ({
+                                            ...prev,
+                                            horario: e.target.value,
+                                          }));
+                                        }}
+                                        className="w-full rounded border p-1"
+                                      />
+                                    ) : (
+                                      agendamento.horario
+                                    )}
+                                  </td>
+
+                                  {/* Cliente */}
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <select
+                                        value={formEdicao.cliente_id || ''}
+                                        onChange={(e) =>
+                                          atualizarCampoEdicao(
+                                            'cliente_id',
+                                            e.target.value
+                                          )
+                                        }
+                                        className="w-full rounded border p-1"
+                                      >
+                                        <option value="">
+                                          Selecione um cliente
+                                        </option>
+                                        {clientes.map((c) => (
+                                          <option key={c.id} value={c.id}>
+                                            {c.nome}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    ) : (
+                                      agendamento.clientes?.nome || 'Sem nome'
+                                    )}
+                                  </td>
+
+                                  {/* Serviço */}
+
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <select
+                                        value={formEdicao.servico || ''}
+                                        onChange={(e) =>
+                                          atualizarCampoEdicao(
+                                            'servico',
+                                            e.target.value
+                                          )
+                                        }
+                                        className="w-full rounded border p-1"
+                                      >
+                                        <option value="">Selecione</option>
+                                        <option value="Tintura">Tintura</option>
+                                        <option value="Corte">Corte</option>
+                                        <option value="Escova progressiva">
+                                          Escova Progressiva
+                                        </option>
+                                        <option value="Butox">Butox</option>
+                                        <option value="Manicure">
+                                          Manicure
+                                        </option>
+                                        <option value="Maquiagem">
+                                          Maquiagem
+                                        </option>
+                                        <option value="Sobrancelha">
+                                          Sobrancelha
+                                        </option>
+                                        <option value="Depilação">
+                                          Depilação
+                                        </option>
+                                        <option value="Penteado festa">
+                                          Penteado festa
+                                        </option>
+                                      </select>
+                                    ) : (
+                                      agendamento.servico
+                                    )}
+                                  </td>
+                                  {/* Valor */}
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <input
+                                        value={formEdicao.valorFormatado || ''}
+                                        onChange={(e) => {
+                                          const somenteNumeros =
+                                            e.target.value.replace(/\D/g, '');
+
+                                          setFormEdicao((prev) => ({
+                                            ...prev,
+                                            valor: somenteNumeros,
+                                            valorFormatado:
+                                              formatarMoeda(somenteNumeros),
+                                          }));
+                                        }}
+                                        className="rounded border p-1"
+                                      />
+                                    ) : (
+                                      formatarValor(agendamento.valor)
+                                    )}
+                                  </td>
+
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    <StatusBadge
+                                      status={badge.label}
+                                      style={badge.style}
+                                    />
+                                  </td>
+
+                                  {/* Observações */}
+                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    {editandoId === agendamento.id ? (
+                                      <input
+                                        value={formEdicao.obs}
+                                        onChange={(e) =>
+                                          atualizarCampoEdicao(
+                                            'obs',
+                                            e.target.value
+                                          )
+                                        }
+                                        className="rounded border p-1"
+                                      />
+                                    ) : (
+                                      agendamento.obs
+                                    )}
+                                  </td>
+
+                                  {/* Ações */}
+
+                                  <td className="min-w-[180px] border-b border-gray-200 px-3 py-2 md:px-4 md:py-3">
+                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gray-50 px-2 py-1">
+                                      {editandoId === agendamento.id ? (
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            abrirConfirmacao(
+                                              'Deseja salvar as alterações deste agendamento?',
+                                              () => salvarEdicao(agendamento.id)
+                                            )
+                                          }
+                                          className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                                          title="Salvar alterações"
+                                        >
+                                          <SquareCheckBig size={20} />
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            abrirConfirmacao(
+                                              'Você deseja editar este agendamento?',
+                                              () => iniciarEdicao(agendamento)
+                                            )
+                                          }
+                                          className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-200"
+                                          title="Editar"
+                                        >
+                                          <Pencil size={20} />
+                                        </button>
+                                      )}
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          abrirConfirmacao(
+                                            'Deseja realmente excluir este atendimento?',
+                                            () =>
+                                              excluirAgendamento(agendamento.id)
+                                          )
+                                        }
+                                        className="rounded-md p-2 text-red-600 transition hover:bg-red-200"
+                                        title="Excluir atendimento"
+                                      >
+                                        <Trash2 size={20} />
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          abrirConfirmacao(
+                                            'Deseja realmente cancelar este atendimento?',
+                                            () =>
+                                              alterarStatus(
+                                                agendamento.id,
+                                                'Cancelado'
+                                              )
+                                          )
+                                        }
+                                        className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
+                                        title="Cancelar atendimento"
+                                      >
+                                        <CircleOff size={20} />
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          alterarStatus(
+                                            agendamento.id,
+                                            'Concluído'
+                                          )
+                                        }
+                                        className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                                        title="Concluir atendimento"
+                                      >
+                                        <Save size={20} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+
+                                {/**Pagamento */}
+                              </Fragment>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+
+          {/*Confirmação*/}
+          {confirmacao.aberto && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
+                <h2 className="mb-4 text-lg font-semibold text-primary">
+                  Confirmação
+                </h2>
+
+                <p className="mb-6 text-gray-700">{confirmacao.mensagem}</p>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    className="btn btn-gray"
+                    onClick={() =>
+                      setConfirmacao({
+                        aberto: false,
+                        mensagem: '',
+                        onConfirm: null,
+                      })
+                    }
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    className="btn btn-green"
+                    onClick={() => {
+                      confirmacao.onConfirm();
+                      setConfirmacao({
+                        aberto: false,
+                        mensagem: '',
+                        onConfirm: null,
+                      });
+                    }}
+                  >
+                    Confirmar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 🔵 MENSAGEM DO SISTEMA */}
+          {mensagemSistema.aberta && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="w-[90%] max-w-sm rounded-lg bg-white p-6 shadow-lg">
+                <h2
+                  className={`mb-3 text-lg font-semibold ${
+                    mensagemSistema.tipo === 'erro'
+                      ? 'text-red-600'
+                      : 'text-green-600'
+                  }`}
+                >
+                  {mensagemSistema.tipo === 'erro' ? 'Atenção' : 'Sucesso'}
+                </h2>
+
+                <p className="mb-5 text-gray-700">{mensagemSistema.texto}</p>
+
+                <div className="flex justify-end">
+                  <button
+                    className={
+                      mensagemSistema.tipo === 'erro'
+                        ? 'btn btn-red'
+                        : 'btn btn-green'
+                    }
+                    onClick={() =>
+                      setMensagemSistema({
+                        aberta: false,
+                        tipo: '',
+                        texto: '',
+                      })
+                    }
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {filaLembretes.aberta && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
+                <h2 className="mb-3 text-lg font-semibold text-primary">
+                  Fila de lembretes
+                </h2>
+
+                <p className="mb-4 text-gray-700">
+                  Lembrete <strong>{filaLembretes.indiceAtual + 1}</strong> de{' '}
+                  <strong>{filaLembretes.lista.length}</strong>
+                </p>
+                <div className="mb-5 h-2 w-full rounded-full bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-primary transition-all"
+                    style={{
+                      width: `${
+                        ((filaLembretes.indiceAtual + 1) /
+                          filaLembretes.lista.length) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+
+                <div className="mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <p className="text-gray-700">
+                    <span className="font-medium text-primary">Cliente:</span>{' '}
+                    {
+                      filaLembretes.lista[filaLembretes.indiceAtual]?.clientes
+                        ?.nome
+                    }
+                  </p>
+
+                  <p className="text-gray-700">
+                    <span className="font-medium text-primary">Serviço:</span>{' '}
+                    {filaLembretes.lista[filaLembretes.indiceAtual]?.servico}
+                  </p>
+
+                  <p className="text-gray-700">
+                    <span className="font-medium text-primary">Horário:</span>{' '}
+                    {filaLembretes.lista[filaLembretes.indiceAtual]?.horario}
+                  </p>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <button
+                    type="button"
+                    className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition hover:bg-gray-200"
+                    onClick={() =>
+                      setFilaLembretes({
+                        aberta: false,
+                        lista: [],
+                        indiceAtual: 0,
+                      })
+                    }
+                  >
+                    Fechar
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={abrindoLembrete}
+                    className={`flex items-center gap-2 rounded-lg px-4 py-2 text-white transition ${
+                      abrindoLembrete
+                        ? 'cursor-not-allowed bg-gray-400'
+                        : 'bg-primary hover:bg-secondary'
+                    }`}
+                    onClick={enviarProximoLembrete}
+                  >
+                    {abrindoLembrete ? 'Abrindo...' : 'Próximo'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 export default AgendaAtendimento;

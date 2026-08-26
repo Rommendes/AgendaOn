@@ -7,8 +7,79 @@ body {
   @apply bg-blue-50 font-Poppins;
 }
 
-/* Componentes (tudo em um lugar só) */
+@layer base {
+  h1 {
+    @apply text-2xl font-medium leading-tight tracking-tight;
+  }
+
+  h2 {
+    @apply text-xl font-semibold leading-snug tracking-tight;
+  }
+
+  h3 {
+    @apply text-base font-semibold leading-snug;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
+}
+
 @layer components {
+  .home-titulo {
+    @apply text-2xl font-medium tracking-tight text-white sm:text-3xl;
+  }
+  .main {
+    @apply mx-auto min-h-screen w-full max-w-7xl bg-blue-50 px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
+  }
+  .main-container {
+    @apply mx-auto min-h-screen w-full max-w-7xl px-4 py-6 sm:px-5 md:px-6 lg:px-8;
+  }
+
+  .container-formulario {
+    @apply w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-xl sm:p-6 lg:p-8;
+  }
+  /* mx-auto w-full max-w-[100%] rounded-2xl border border-violet-200 bg-white/80 p-5 shadow-sm */
+
+  .conteudo-estreito {
+    @apply mx-auto w-full max-w-2xl;
+  }
+
+  .conteudo-amplo {
+    @apply mt-10 w-full;
+  }
+
+  .cards-resumo {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .tabela-responsiva {
+    @apply mt-6 w-full overflow-x-auto rounded-xl border border-slate-200;
+  }
+
+  /*  
+    EXEMPLO DE USO:
+    <main className="min-h-screen bg-blue-50">
+  <div className="main-container">
+    <section className="container-formulario">
+      <div className="conteudo-estreito">
+        <h1>Cadastro</h1>
+        <form>
+          CAMPOS DO FORMULÁRIO
+        </form>
+      </div>
+    </section>
+    
+    <section className="container-formulario">
+      <div className="conteudo-amplo">
+        <h1>Resumo Financeiro</h1>
+          CARDS, PENDÊNCIAS, TABELAS...
+      </div>
+    </section>
+  </div>
+</main>
+  
+  */
   .botao-menu {
     @apply flex items-center gap-4 rounded-2xl bg-primary p-4 text-white transition hover:bg-blue-800;
   }
@@ -35,19 +106,19 @@ body {
   .btn-yellow {
     @apply bg-amber-500 hover:bg-amber-600;
   }
-  .btn-red {
-    @apply bg-red-600 hover:bg-red-700;
-  }
+  /* .btn- {
+    @apply bg-secondary hover:bg-red-700;
+  } */
   .btn-gray {
     @apply bg-gray-300 text-gray-800 hover:bg-gray-400;
   }
 
   /* Lembretes */
   .btn-lembrete-primary {
-    @apply flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-secondary;
+    @apply flex items-center gap-2 rounded bg-primary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-secondary;
   }
   .btn-secondary {
-    @apply flex items-center gap-2 rounded-full bg-secondary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-alternativo;
+    @apply bg-secondary text-white hover:bg-alternativo;
   }
 
   /* ✅ Cobranças Pendentes (cards / badges) */
@@ -96,7 +167,7 @@ body {
 
   .title-personalizado::after {
     content: attr(data-title);
-    @apply pointer-events-none invisible absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-secondary bg-transparent px-3 py-1.5 text-xs text-secondary opacity-0 shadow-md transition-all duration-200;
+    @apply pointer-events-none invisible absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-secondary bg-secondary/90 px-3 py-1.5 text-xs text-white opacity-0 shadow-md transition-all duration-200;
   }
 
   .title-personalizado:hover::after,
@@ -111,11 +182,31 @@ body {
 
   .title-lembrete::after {
     content: attr(data-title);
-    @apply pointer-events-none invisible absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-alternativo bg-transparent px-3 py-1.5 text-xs text-primary opacity-0 shadow-md transition-all duration-200;
+    @apply pointer-events-none invisible absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border-2 border-alternativo bg-primary/90 px-3 py-1.5 text-xs text-white opacity-0 shadow-md backdrop-blur-sm transition-all duration-200;
   }
 
   .title-lembrete:hover::after,
   .title-lembrete:focus-within::after {
     @apply visible opacity-100;
+  }
+  /*  ✅ Ícones */
+  .btn-icone {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm transition-colors duration-200;
+
+    color: inherit;
+  }
+
+  .btn-icone:hover {
+    border-color: currentColor;
+    background-color: color-mix(in srgb, currentColor 8%, white);
+  }
+
+  .btn-icone:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .btn-icone:disabled {
+    @apply cursor-not-allowed opacity-50;
   }
 }

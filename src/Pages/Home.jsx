@@ -3,20 +3,10 @@ import { useState } from 'react';
 import logoAgendaOn from '../assets/logoAgendaOn.png';
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
 import {
-  CalendarCog,
-  BadgeDollarSignIcon,
   MessagesSquare,
-  Minus,
-  Sparkles,
-  Search,
   CalendarRange,
-  CalendarDays,
   ReceiptText,
-  UserPlus,
-  Users,
-  BellRing,
-  History,
-  WalletCards,
+  UserRoundArrowLeft,
 } from 'lucide-react';
 
 import { useNavigate } from 'react-router-dom';
@@ -30,8 +20,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 px-4 py-6">
-      <div className="mx-auto max-w-2xl">
+    <div className="main">
+      <div className="main-container">
         {/* LOGO */}
         <div className="mb-8 text-center">
           <img
@@ -40,115 +30,67 @@ export default function Home() {
             className="mx-auto h-auto w-64"
           />
 
-          <p className="text-sm text-primary">
+          <p className="text-primary">
             mais que agenda, sua parceira de confiança.
           </p>
         </div>
-
         {/* ATENDIMENTOS */}
-        <h2 className="mb-2 text-sm font-semibold text-gray-500">
-          Atendimentos
-        </h2>
 
         <div className="mb-6 flex flex-col gap-4">
-          <Link
+          {/* <Link
             to="/agenda"
             className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
           >
             <CalendarRange className="text-4xl text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Agenda</h2>
-              <p className="text-sm">Gerencie horários, serviços e valores</p>
+              <h1>Agenda</h1>
+              <p>Gerencie sua agenda e os atendimentos da semana.</p>
             </div>
-          </Link>
+          </Link> */}
 
           <Link
-            to="/agenda-semanal"
+            to="/agendamentos-menu"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
             <ReceiptText className="text-4xl text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Semana Atual</h2>
-              <p className="text-sm">
-                Visualize seus atendimentos desta semana e envie lembretes.
-              </p>
+              <h1>Agendamentos</h1>
+              <p>Gerencie sua agenda e os atendimentos da semana.</p>
             </div>
           </Link>
         </div>
-
-        {/* CLIENTES */}
-        <h2 className="mb-2 text-sm font-semibold text-gray-500">Clientes</h2>
 
         <div className="mb-6 flex flex-col gap-4">
           <Link
-            to="/busca-cliente"
+            to="/clientes-menu"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
-            <Search className="text-4xl text-secondary" size={32} />
+            <UserRoundArrowLeft className="text-4xl text-secondary" size={32} />
 
             <div>
-              <h2 className="text-lg font-bold">Busca cliente</h2>
-              <p className="text-sm">
-                Pesquise o histórico e fianceiro do cliente
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            to="/cadastrar-cliente"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <UserPlus
-              className="material-icons text-4xl text-secondary"
-              size={35}
-            />
-
-            <div>
-              <h2 className="text-lg font-bold">Cadastro</h2>
-              <p className="text-sm">Cadastre novos clientes</p>
-            </div>
-          </Link>
-
-          <Link
-            to="/lista-clientes"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <Users
-              className="material-icons text-4xl text-secondary"
-              size={35}
-            />
-
-            <div>
-              <h2 className="text-lg font-bold">Lista de Clientes</h2>
-              <p className="text-sm">Veja todos os clientes cadastrados</p>
+              <h1>Clientes</h1>
+              <p>Cadastre, consulte e acompanhe seus clientes.</p>
             </div>
           </Link>
         </div>
-
         {/* COMUNICAÇÃO */}
-        <h2 className="mb-2 text-sm font-semibold text-gray-500">
-          Comunicação
-        </h2>
 
         <div className="mb-6 flex flex-col gap-4">
           <Link
-            to="/historico-lembretes"
+            to="/comunicacao-menu"
             className="botao-menu w-full transition hover:scale-[1.02]"
           >
             <MessagesSquare size={35} className="text-secondary" />
 
             <div>
-              <h2 className="text-lg font-bold">Comunicação</h2>
+              <h1>Comunicação</h1>
 
-              <p className="text-sm">
-                Envie lembretes, felicitações e mensagens aos clientes.
-              </p>
+              <p>Envie lembretes, cobranças e mensagens aos clientes.</p>
             </div>
           </Link>
         </div>
-
         {/* FINANCEIRO */}
 
         <div className="flex flex-col gap-4">
@@ -158,13 +100,14 @@ export default function Home() {
           >
             <ReceiptText className="text-secondary" size={32} />
             <div>
-              <h2 className="text-lg font-bold">Financeiro</h2>
+              <h1>Financeiro</h1>
+              <p>Gerencie pagamentos, pendẽncias e extratos</p>
             </div>
             {/* <div>
               <h2 className="text-lg font-medium text-white">Financeiro</h2>
             </div> */}
           </Link>
-
+          {/* 
           <Link
             to="/extrato-financeiro"
             className="botao-menu w-full transition hover:scale-[1.02]"
@@ -178,9 +121,9 @@ export default function Home() {
                 Consulte pagamentos por mês, cliente e forma de pagamento
               </p>
             </div>
-          </Link>
+          </Link> */}
 
-          <Link
+          {/* <Link
             to="/cobrancas"
             className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
           >
@@ -195,7 +138,7 @@ export default function Home() {
                 Envie cobranças para clientes com débito
               </p>
             </div>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

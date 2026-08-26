@@ -5,7 +5,13 @@ import {
   enviarLembretesEmLote,
   enviarLembreteDeAgendamento,
 } from '../../utils/whatsapp.jsx';
-import { CalendarCog, Clock, AlarmClock } from 'lucide-react';
+import {
+  BellRing,
+  CalendarClock,
+  CalendarDays,
+  CalendarRange,
+  Printer,
+} from 'lucide-react';
 import { createLogger } from '../../lib/logger.js';
 const logger = createLogger('AgendaSemanal');
 
@@ -60,7 +66,108 @@ function getISOWeekInfo(dateISO) {
 export default function AgendaSemanal() {
   const [agendamentos, setAgendamentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [aviso, setAviso] = useState({
+    aberto: false,
+    mensagem: '',
+  });
 
+  const abrirAviso = (mensagem) => {
+    setAviso({
+      aberto: true,
+      mensagem,
+    });
+  };
+
+  const fecharAviso = () => {
+    setAviso({
+      aberto: false,
+      mensagem: '',
+    });
+  };
+
+  const imprimirSemana = (ano, numeroSemana) => {
+    const idSemana = `semana-${ano}-${numeroSemana}`;
+    const elementoSemana = document.getElementById(idSemana);
+
+    if (!elementoSemana) {
+      abrirAviso('Não foi possível localizar esta semana para impressão.');
+      return;
+    }
+
+    const janelaImpressao = window.open('', '_blank', 'width=900,height=700');
+
+    if (!janelaImpressao) {
+      abrirAviso(
+        'Não foi possível abrir a impressão. Verifique se o navegador bloqueou a nova janela.'
+      );
+      return;
+    }
+
+    const estilosDaPagina = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style')
+    )
+      .map((estilo) => estilo.outerHTML)
+      .join('');
+
+    janelaImpressao.document.write(`
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8" />
+
+        <title>Agenda — Semana ${numeroSemana} de ${ano}</title>
+
+        ${estilosDaPagina}
+
+        <style>
+          body {
+            margin: 0;
+            padding: 24px;
+            background: white;
+            color: #2f3136;
+            font-family: Poppins, Arial, sans-serif;
+          }
+
+          button {
+            display: none !important;
+          }
+
+          th:last-child,
+          td:last-child {
+            display: none !important;
+          }
+
+          section {
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+        </style>
+      </head>
+
+      <body>
+        <h1 style="margin-bottom: 20px; color: #0D4C85;">
+          Agenda Semanal
+        </h1>
+
+        ${elementoSemana.outerHTML}
+      </body>
+    </html>
+  `);
+
+    janelaImpressao.document.close();
+
+    janelaImpressao.onload = () => {
+      janelaImpressao.focus();
+      janelaImpressao.print();
+      janelaImpressao.close();
+    };
+  };
   useEffect(() => {
     (async () => {
       setCarregando(true);
@@ -118,127 +225,256 @@ export default function AgendaSemanal() {
   }, [agendamentos]);
 
   return (
-    <div className="container mx-auto p-4">
+    <>
       <Header />
-      <h1 className="mb-4 text-xl font-bold text-primary">
-        Agenda Semanal (atual e futura)
-      </h1>
+      <main className="main-container">
+        <div className="container-formulario">
+          <h1 className="mb-5 flex gap-2 p-4 text-primary">
+            <CalendarDays className="text-secondary" />
+            Agenda Semanal (atual e futura)
+          </h1>
 
-      {carregando && <div className="text-gray-600">Carregando…</div>}
+          {carregando && <div className="text-gray-600">Carregando…</div>}
 
-      {!carregando && semanas.length === 0 && (
-        <div className="text-gray-600">Não há agendamentos futuros.</div>
-      )}
+          {!carregando && semanas.length === 0 && (
+            <div className="text-gray-600">Não há agendamentos futuros.</div>
+          )}
 
-      {!carregando &&
-        semanas.map((sem) => (
-          <div
-            key={`${sem.ano}-${sem.semana}`}
-            className="mb-8 rounded-lg border bg-white shadow"
-          >
-            {/* Cabeçalho da semana */}
-            <div className="flex items-center justify-between rounded-t-lg bg-blue-50 p-3">
-              <h2 className="font-semibold text-primary">
-                Semana {sem.semana} de {sem.ano}
-              </h2>
-              {/* Botão: lembretes da semana inteira */}
-              <button
-                type="button"
-                className="btn btn-lembrete-primary mb-2 gap-2 rounded-lg bg-primary px-2 py-2 font-normal text-white transition hover:bg-secondary"
-                title="Enviar lembretes para todos desta semana"
-                onClick={async () => {
-                  const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
-                  const { enviados, copiados } = await enviarLembretesEmLote(
-                    listaSemana,
-                    { intervalMs: 2000 }
-                  );
-                  alert(
-                    `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${copiados ? `, ${copiados} copiados` : ''}.`
-                  );
-                }}
+          {!carregando &&
+            semanas.map((sem) => (
+              <section
+                id={`semana-${sem.ano}-${sem.semana}`}
+                key={`${sem.ano}-${sem.semana}`}
+                className="mb-5 rounded-xl border border-slate-200 bg-white shadow-sm"
               >
-                <Clock size={20} />
-                Lembretes da semana
-              </button>
-            </div>
-            {/* Dias da semana */}
-            <div className="space-y-6 p-3">
-              {sem.dias.map(([dataISO, ags]) => (
-                <div
-                  key={dataISO}
-                  className="rounded-md border border-gray-200"
-                >
-                  {/* Cabeçalho do dia */}
-                  <div className="flex items-center justify-between rounded-t-md bg-gray-50 p-2">
-                    <div className="font-medium text-cinza">
-                      {formatarBRDataISO(dataISO)}
-                    </div>
+                {/* Cabeçalho da semana */}
+                <div className="ml-3 flex items-center gap-10 p-4">
+                  <h2 className="flex items-center gap-1 text-primary">
+                    <span>Semana</span>
+
+                    <span className="font-bold text-secondary">
+                      {sem.semana}
+                    </span>
+
+                    <span>de {sem.ano}</span>
+                  </h2>
+
+                  {/* Ações da semana */}
+                  <div className="flex items-center gap-2">
+                    {/* Imprimir semana */}
                     <button
                       type="button"
-                      className="btn btn-lembrete-secondary"
+                      title={`Imprimir a semana ${sem.semana}`}
+                      className="btn-icone text-primary"
+                      onClick={() => imprimirSemana(sem.ano, sem.semana)}
+                      aria-label={`Imprimir a semana ${sem.semana} de ${sem.ano}`}
+                    >
+                      <Printer size={19} aria-hidden="true" />
+                    </button>
+
+                    {/* Enviar lembretes da semana */}
+                    <button
+                      type="button"
+                      title="Enviar lembretes para todos desta semana"
+                      className="btn-icone text-secondary"
                       onClick={async () => {
+                        const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
+
                         const { enviados, copiados } =
-                          await enviarLembretesEmLote(ags, {
+                          await enviarLembretesEmLote(listaSemana, {
                             intervalMs: 2000,
                           });
-                        alert(
-                          `${formatarBRDataISO(dataISO)}: ${enviados} enviados${copiados ? `, ${copiados} copiados` : ''}.`
+
+                        abrirAviso(
+                          `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${
+                            copiados ? `, ${copiados} copiados` : ''
+                          }.`
                         );
                       }}
+                      aria-label={`Enviar lembretes da semana ${sem.semana}`}
                     >
-                      <Clock size={20} />
-                      Lembretes do dia
+                      <CalendarRange size={19} aria-hidden="true" />
                     </button>
                   </div>
-
-                  {/* Lista do dia */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[760px]">
-                      <thead>
-                        <tr className="bg-gray-100 text-sm uppercase text-cinza">
-                          <th className="p-2 text-left">Hora</th>
-                          <th className="min-w-[180px] p-2 text-left">
-                            Cliente
-                          </th>
-                          <th className="p-2 text-left">Serviço</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ags.map((ag) => (
-                          <tr key={ag.id} className="border-t">
-                            <td className="p-2">{ag.horario}</td>
-                            <td className="p-2">
-                              {ag.clientes?.nome || 'Sem nome'}
-                            </td>
-                            <td className="p-2">{ag.servico || '-'}</td>
-
-                            <td className="p-2 text-center">
-                              <button
-                                type="button"
-                                className="btn btn-lembrete-primary"
-                                onClick={async () => {
-                                  const r =
-                                    await enviarLembreteDeAgendamento(ag);
-                                  if (r === 'copiado')
-                                    alert(
-                                      'Sem telefone. Mensagem copiada para a área de transferência.'
-                                    );
-                                }}
-                              >
-                                <AlarmClock />
-                                Lembrar cliente
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
-              ))}
+
+                {/* Dias da semana */}
+                <div className="space-y-4 p-3 sm:p-4">
+                  {sem.dias.map(([dataISO, ags]) => (
+                    <div
+                      key={dataISO}
+                      className="rounded-lg border border-slate-200"
+                    >
+                      {/* Cabeçalho do dia */}
+                      <div className="ml-3 flex items-center gap-10 p-2">
+                        <div className="font-semibold text-primary">
+                          {formatarBRDataISO(dataISO)}
+                        </div>
+
+                        {/* Enviar lembretes do dia */}
+                        <button
+                          type="button"
+                          title="Enviar lembretes para todos deste dia"
+                          className="btn-icone text-secondary"
+                          onClick={async () => {
+                            const { enviados, copiados } =
+                              await enviarLembretesEmLote(ags, {
+                                intervalMs: 2000,
+                              });
+
+                            abrirAviso(
+                              `${formatarBRDataISO(
+                                dataISO
+                              )}: ${enviados} enviados${
+                                copiados ? `, ${copiados} copiados` : ''
+                              }.`
+                            );
+                          }}
+                          aria-label={`Enviar lembretes do dia ${formatarBRDataISO(
+                            dataISO
+                          )}`}
+                        >
+                          <CalendarClock size={19} aria-hidden="true" />
+                        </button>
+                      </div>
+
+                      {/* Tabela de atendimentos do dia */}
+                      <div className="overflow-x-auto p-2">
+                        <table className="w-full table-fixed border-collapse">
+                          <colgroup>
+                            <col className="w-[14%]" />
+                            <col className="w-[30%]" />
+                            <col className="w-[38%]" />
+                            <col className="w-[18%]" />
+                          </colgroup>
+
+                          <thead>
+                            <tr className="border-b border-slate-200 bg-cinza/10 text-left">
+                              <th
+                                scope="col"
+                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                              >
+                                Hora
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                              >
+                                Cliente
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                              >
+                                Serviço
+                              </th>
+
+                              <th
+                                scope="col"
+                                className="px-2 py-2 text-center text-xs font-semibold uppercase text-slate-500"
+                              >
+                                Lembrete
+                              </th>
+                            </tr>
+                          </thead>
+
+                          <tbody className="divide-y divide-slate-100">
+                            {ags.map((ag) => (
+                              <tr
+                                key={ag.id}
+                                className="transition-colors hover:bg-slate-50"
+                              >
+                                {/* Hora */}
+                                <td className="px-4 py-3 align-middle font-semibold text-cinza">
+                                  {ag.horario}
+                                </td>
+
+                                {/* Cliente */}
+                                <td className="break-words px-4 py-3 align-middle text-cinza">
+                                  {ag.clientes?.nome || 'Sem nome'}
+                                </td>
+
+                                {/* Serviço */}
+                                <td className="break-words px-4 py-3 align-middle text-cinza">
+                                  {ag.servico || '-'}
+                                </td>
+
+                                {/* Lembrete individual */}
+                                <td className="px-2 py-3 text-center align-middle">
+                                  <button
+                                    type="button"
+                                    title={`Enviar lembrete para ${
+                                      ag.clientes?.nome || 'este cliente'
+                                    }`}
+                                    className="btn-icone text-secondary"
+                                    onClick={async () => {
+                                      const resultado =
+                                        await enviarLembreteDeAgendamento(ag);
+
+                                      if (resultado === 'copiado') {
+                                        abrirAviso(
+                                          'Sem telefone. Mensagem copiada para a área de transferência.'
+                                        );
+                                      }
+                                    }}
+                                    aria-label={`Enviar lembrete para ${
+                                      ag.clientes?.nome || 'este cliente'
+                                    }`}
+                                  >
+                                    <BellRing size={19} aria-hidden="true" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+        </div>
+
+        {/* Modal de aviso */}
+        {aviso.aberto && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-aviso"
+          >
+            <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white shadow-xl">
+              <div className="border-b border-slate-200 px-5 py-4">
+                <h2
+                  id="titulo-aviso"
+                  className="text-lg font-semibold text-primary"
+                >
+                  Lembretes
+                </h2>
+              </div>
+
+              <div className="px-5 py-5">
+                <p className="text-sm leading-relaxed text-cinza">
+                  {aviso.mensagem}
+                </p>
+              </div>
+
+              <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
+                <button
+                  type="button"
+                  className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                  onClick={fecharAviso}
+                >
+                  OK
+                </button>
+              </div>
             </div>
           </div>
-        ))}
-    </div>
+        )}
+      </main>
+    </>
   );
 }

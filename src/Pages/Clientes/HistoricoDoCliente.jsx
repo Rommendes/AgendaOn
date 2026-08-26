@@ -28,14 +28,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
   }, [clienteId]);
 
   useEffect(() => {
-    agendamentos.forEach((item) => {
-      console.log(
-        'VALOR ORIGINAL:',
-        item.valor,
-        ' -> PARSED:',
-        parseValor(item.valor)
-      );
-    });
+    agendamentos.forEach((item) => {});
   }, [agendamentos]);
 
   const parseValor = (valor) => {
@@ -94,14 +87,20 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
     )
     .reduce((acc, item) => acc + parseValor(item.valor), 0);
 
-  // const totalAtendimentos = agendamentos.length;
+  const atendimentosConcluidos = agendamentos.filter(
+    (item) => item.status_agendamento === 'concluido'
+  );
 
-  const totalAtendimentos = agendamentos.filter(
-    (item) => item.status_agendamento !== 'cancelado'
-  ).length;
+  const totalAtendimentos = atendimentosConcluidos.length;
 
-  const ultimoAtendimento = agendamentos[0]?.data
-    ? new Date(agendamentos[0].data + 'T12:00:00').toLocaleDateString('pt-BR')
+  const ultimoAtendimentoConcluido = [...atendimentosConcluidos].sort(
+    (a, b) => new Date(b.data) - new Date(a.data)
+  )[0];
+
+  const ultimoAtendimento = ultimoAtendimentoConcluido?.data
+    ? new Date(
+        ultimoAtendimentoConcluido.data + 'T12:00:00'
+      ).toLocaleDateString('pt-BR')
     : '-';
 
   useEffect(() => {

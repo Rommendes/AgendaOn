@@ -26,7 +26,7 @@ function Pagamentos() {
     buscarPendentes();
   }, []);
 
-  const [resumoFinanceiro, setResumoFinanceiro] = useState({
+  const [resumoFinanceiro, np] = useState({
     recebidoMes: 0,
     pendente: 0,
     clientesDevedores: 0,
@@ -72,7 +72,10 @@ function Pagamentos() {
 
     const { error } = await supabase
       .from('agendamentos')
-      .update({ pagamento: tipoPagamento })
+      .update({
+        pagamento: tipoPagamento,
+        data_pagamento: new Date().toISOString(),
+      })
       .eq('id', agendamentoId);
 
     if (error) {
@@ -104,11 +107,9 @@ function Pagamentos() {
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-gray-700">
-                Recebimentos pendentes
-              </h2>
+              <h2 className="text-lg font-semibold">Recebimentos pendentes</h2>
 
-              <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-700">
+              <span className="rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-red-700">
                 {pendentes.length}
               </span>
             </div>
@@ -137,12 +138,15 @@ function Pagamentos() {
                         </p>
 
                         <p className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-                          <Scissors size={15} className="text-primary" />
+                          <Scissors
+                            size={15}
+                            className="font-bold text-secondary"
+                          />
                           {item.servico}
                         </p>
                       </div>
 
-                      <p className="flex items-center gap-1 whitespace-nowrap font-semibold text-secondary">
+                      <p className="flex items-center gap-1 whitespace-nowrap font-semibold text-red-600">
                         <BadgeDollarSign size={17} />
 
                         {Number(item.valor || 0).toLocaleString('pt-BR', {
@@ -153,13 +157,16 @@ function Pagamentos() {
                     </div>
 
                     <p className="mt-3 flex items-center gap-2 text-sm text-gray-500">
-                      <CalendarDays size={15} className="text-primary" />
+                      <CalendarDays
+                        size={15}
+                        className="font-bold text-secondary"
+                      />
 
                       {new Date(item.data + 'T12:00:00').toLocaleDateString(
                         'pt-BR'
                       )}
 
-                      <span>•</span>
+                      <span className="font-bold text-secondary">•</span>
 
                       {item.horario}
                     </p>
@@ -184,7 +191,6 @@ function Pagamentos() {
                         <option value="Pix">Pix</option>
                         <option value="Cartão">Cartão</option>
                         <option value="Dinheiro">Dinheiro</option>
-                        <option value="Dinheiro">Pendente</option>
                       </select>
 
                       {mostrarConfirmacao[item.id] && (
@@ -193,10 +199,9 @@ function Pagamentos() {
                           onClick={() =>
                             registrarPagamento(item.id, formaPagamento[item.id])
                           }
-                          className="flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
+                          className="flex items-center justify-center gap-2 rounded-lg bg-cinza px-4 py-2 text-sm font-medium text-white transition hover:bg-success"
                         >
                           <SquareCheckBig size={18} />
-                          Confirmar
                         </button>
                       )}
                     </div>

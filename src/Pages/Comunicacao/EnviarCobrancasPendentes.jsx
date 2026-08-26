@@ -4,7 +4,6 @@ import {
   getAgendamentosPendentes,
   supabase,
 } from '../../api/supabaseClient.js';
-//import formatarTelefoneExibicao from "../Componentes/Utilitarios/formatarTelefone.js";
 import Header from '../../Componentes/Header/Header.jsx';
 import {
   formatarTelefoneBR,
@@ -73,8 +72,8 @@ export default function EnviarCobrancasPendentes() {
 
   return (
     <>
-      <Header />
-      <div className="container mx-auto space-y-4 p-4">
+      <Header title="Cobranças Pendentes" />
+      <div className="main-container">
         <div className="mx-auto w-full max-w-[100%] rounded-lg border border-[rgba(128,128,128,0.3)] bg-gray-50 p-4 shadow-lg">
           <h1 className="mb-3 text-lg font-bold text-primary">
             Cobranças Pendentes
