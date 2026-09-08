@@ -14,6 +14,7 @@ export default {
         primary: '#0D4C85',
         secondary: '#F36C21',
         alternativo: '#4A9CE0',
+        alternativoClaro: '#F6F6F6',
 
         success: '#16A34A',
         warning: '#EAB308',

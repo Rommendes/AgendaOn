@@ -624,10 +624,7 @@ const AgendaAtendimento = () => {
             </div>
 
             <div className="mt-5 flex justify-end">
-              <div
-                className="title-personalizado"
-                data-title="Salvar agendamento"
-              >
+              <div title="Salvar agendamento">
                 <button
                   onClick={salvarAgendamento}
                   className="btn btn-secondary w-full sm:w-auto"
@@ -660,20 +657,18 @@ const AgendaAtendimento = () => {
                         <p className="text-sm text-cinza">{dataFormatada}</p>
                       </div>
                       {/* 🟡 BOTÃO ENVIAR LEMBRETES */}
+
                       <div className="mt-5 flex justify-end">
-                        <div
-                          className="title-lembrete"
-                          data-title="Enviar lembretes para todos deste dia"
-                        >
+                        <div title="Enviar lembretes para todos da semana">
                           <button
                             onClick={() =>
                               iniciarFilaLembretes(agendamentosDoDia)
                             }
-                            className="btn-lembrete-primary"
-                            aria-label="Enviar lembretes para todos deste dia"
+                            className="btn btn-lembrete-primary w-full sm:w-auto"
+                            aria-label="Enviar lembretes para todos da semana"
                           >
-                            <Clock size={20} />
-                            Enviar lembretes
+                            <Save size={20} />
+                            Enviar Lembrete
                           </button>
                         </div>
                       </div>
@@ -681,7 +676,8 @@ const AgendaAtendimento = () => {
 
                     <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
                       <table className="w-full min-w-[820px] border-separate border-spacing-0">
-                        <thead className="bg-cinza/10 text-[11px] uppercase tracking-wide text-primary">
+                        <thead className="justify-normal border bg-cinza/10 text-center text-sm font-extrabold uppercase tracking-wide text-primary">
+                          {/* bg-cinza/10 text-[11px] uppercase text-primary */}
                           <tr className="overflow-x-auto">
                             <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
                               Data

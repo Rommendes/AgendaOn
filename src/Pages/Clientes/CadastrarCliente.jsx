@@ -3,7 +3,7 @@ import { supabase } from '../../api/supabaseClient'; // Importe seu Supabase
 import EnderecoForm from '../../Componentes/EnderecoForm';
 
 import Header from '../../Componentes/Header/Header';
-
+import { UserCog, UserRoundPlus } from 'lucide-react';
 import {
   apenasNumeros,
   formatarCEP,
@@ -147,97 +147,97 @@ const CadastrarCliente = () => {
     <>
       <Header title="Cadastro de Cliente" />
 
-      <div className="container mx-auto p-4">
-        <div className="mx-auto mt-6 w-full max-w-[1250px] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl">
-          <div>
-            <div className="flex-wrap">
-              <div className="rounded p-4">
-                <h2 className="text-center text-lg text-primary">
-                  Preencha os Campos Obrigatórios* e opcionais
-                </h2>
-              </div>
-            </div>
+      <div className="main">
+        <div className="container-formulario">
+          <div className="flex-wrapp-4 rounded">
+            <h1 className="mb-5 flex gap-2 p-4 text-primary">
+              <UserRoundPlus className="text-secondary" size={24} />
+              Preencha os Campos Obrigatórios
+              <span className="text-bold text-red-500">*</span> e opcionais
+            </h1>
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Nome */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Nome */}
+            <div>
+              <label className="block px-2 text-left font-medium">
+                Nome <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="nome"
+                value={formData.nome}
+                onChange={handleChange}
+                className={` ${errors.nome ? 'border-red-500' : 'border-gray-300'} input-padrao`}
+              />
+              {errors.nome && (
+                <p className="text-sm text-red-500">{errors.nome}</p>
+              )}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
+              {/* Telefone */}
               <div>
                 <label className="block px-2 text-left font-medium">
-                  Nome <span className="text-red-500">*</span>
+                  Telefone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  name="nome"
-                  value={formData.nome}
+                  name="telefone"
+                  value={formData.telefone}
                   onChange={handleChange}
-                  className={` ${errors.nome ? 'border-red-500' : 'border-gray-300'} input-padrao`}
+                  placeholder="(99) 99999-9999"
+                  className={`input-padrao ${errors.telefone ? 'border-red-500' : 'border-gray-300'} `}
                 />
-                {errors.nome && (
-                  <p className="text-sm text-red-500">{errors.nome}</p>
+                {errors.telefone && (
+                  <p className="text-sm text-red-500">{errors.telefone}</p>
                 )}
               </div>
-              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
-                {/* Telefone */}
-                <div>
-                  <label className="block px-2 text-left font-medium">
-                    Telefone <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="telefone"
-                    value={formData.telefone}
-                    onChange={handleChange}
-                    placeholder="(99) 99999-9999"
-                    className={`input-padrao ${errors.telefone ? 'border-red-500' : 'border-gray-300'} `}
-                  />
-                  {errors.telefone && (
-                    <p className="text-sm text-red-500">{errors.telefone}</p>
-                  )}
-                </div>
 
-                {/* Data de aniversário */}
-                <div>
-                  <label className="block px-2 text-left font-medium">
-                    Data de Aniversário:
-                  </label>
-                  <input
-                    type="date"
-                    name="dataAniversario"
-                    value={formData.dataAniversario}
-                    onChange={handleChange}
-                    className="input-padrao"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block px-2 text-left font-medium">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="input-padrao"
-                  />
-                </div>
+              {/* Data de aniversário */}
+              <div>
+                <label className="block px-2 text-left font-medium">
+                  Data de Aniversário<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dataAniversario"
+                  value={formData.dataAniversario}
+                  onChange={handleChange}
+                  className="input-padrao"
+                />
               </div>
-              {/* Endereço */}
-              <EnderecoForm
-                formData={formData.endereco}
-                handleChange={handleEnderecoChange}
-              />
 
-              {/* Botão de cadastrar */}
+              {/* Email */}
+              <div>
+                <label className="block px-2 text-left font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input-padrao"
+                />
+              </div>
+            </div>
+            {/* Endereço */}
+            <EnderecoForm
+              formData={formData.endereco}
+              handleChange={handleEnderecoChange}
+            />
+
+            {/* Botão de cadastrar */}
+            <div className="flex justify-end">
               <button
                 type="submit"
-                className="ml-40 w-fit justify-center rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
+                className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
                 disabled={loading}
               >
                 {loading ? 'Cadastrando...' : 'Cadastrar'}
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </>

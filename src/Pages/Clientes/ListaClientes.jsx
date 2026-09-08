@@ -6,6 +6,8 @@ import { supabase } from '../../api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Componentes/Header/Header';
 
+import { SquarePen, Trash2, UserSearch } from 'lucide-react';
+
 import { createLogger } from '../../lib/logger';
 const logger = createLogger('ListaClientes');
 
@@ -61,24 +63,90 @@ const ListaClientes = () => {
 
   return (
     <>
-      <div className="rounded-lg p-4">
+      {' '}
+      <Header title="Clientes Cadastrados" />
+      <div className="main">
         {/* Container principal */}
-        <div className="container mx-auto p-4">
+        <div className="container-formulario">
           {/* Cabeçalho */}
-          <Header title="Clientes Cadastrados" />
-
+          <h1 className="mb-5 flex gap-2 p-4 text-primary">
+            Clientes cadastrados
+          </h1>
           {/* Tabela Responsiva */}
-          <div className="mx-auto max-h-[500px] w-full max-w-[100%] overflow-auto rounded-lg p-4">
-            <div className="overflow-x-auto">
-              {showUpdated && (
-                <div className="mb-4 rounded-lg px-4 py-2 font-semibold text-green-800 shadow">
-                  ✅ Cliente atualizado com sucesso!
-                </div>
-              )}
 
+          <div className="overflow-x-auto">
+            {showUpdated && (
+              <div className="mb-4 rounded-lg px-4 py-2 font-semibold text-green-800 shadow">
+                ✅ Cliente atualizado com sucesso!
+              </div>
+            )}
+
+            {/* LISTA PARA CELULAR */}
+            <div className="space-y-3 md:hidden">
+              {clientes.map((cliente) => (
+                <div
+                  key={cliente.id}
+                  className="w-full rounded-lg border bg-white p-4 shadow-sm"
+                >
+                  <p className="mb-3 flex items-center justify-between gap-x-2 font-bold text-primary">
+                    {cliente.nome}
+                    <div className="gap-10">
+                      <button
+                        onClick={() => handleEditar(cliente.id)}
+                        className="text-primary"
+                        aria-label={`Editar ${cliente.nome}`}
+                      >
+                        <SquarePen />
+                      </button>
+
+                      <button
+                        onClick={() => handleExcluir(cliente.id, cliente.nome)}
+                        className="text-secondary"
+                        aria-label={`Excluir ${cliente.nome}`}
+                      >
+                        <Trash2 />
+                      </button>
+                    </div>
+                  </p>
+
+                  <p className="mt-2 text-sm">
+                    <span className="font-base text-cinza">Aniversário:</span>{' '}
+                    {formatarDataBR(cliente.data_aniversario)}
+                  </p>
+
+                  <p className="text-sm">
+                    <span className="font-base text-cinza">Telefone:</span>{' '}
+                    {formatarTelefoneBR(cliente.telefone)}
+                  </p>
+
+                  <p className="mt-2 text-sm">
+                    <span className="font-base text-cinza">Endereço:</span>{' '}
+                    {cliente.rua}, {cliente.numero}
+                  </p>
+
+                  {cliente.complemento && (
+                    <p className="text-sm">
+                      <span className="font- text-cinza">Complemento:</span>{' '}
+                      {cliente.complemento}
+                    </p>
+                  )}
+
+                  <p className="text-sm">
+                    <span className="font-base text-cinza">Cidade:</span>{' '}
+                    {cliente.cidade}
+                  </p>
+
+                  <p className="text-sm">
+                    <span className="font-base text-cinza">CEP:</span>{' '}
+                    {formatarCEP(cliente.cep)}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block">
               <table className="w-full border-collapse border bg-white">
                 <thead>
-                  <tr className="border bg-gray-100 text-center text-sm font-extrabold uppercase text-primary">
+                  <tr className="border bg-cinza/10 text-center text-sm font-extrabold uppercase text-primary">
                     <th className="min-w-[200px] border p-2">Nome</th>
                     <th className="min-w-[100px] border p-2">
                       Data de aniversário
@@ -117,7 +185,7 @@ const ListaClientes = () => {
                           onClick={() => handleEditar(cliente.id)}
                           className="text-xl text-yellow-500 hover:text-yellow-700"
                         >
-                          ✏️
+                          <SquarePen className="text-primary" />
                         </button>
                       </td>
                       <td className="border-roxo border-2 px-3 py-2 text-center">
@@ -125,9 +193,10 @@ const ListaClientes = () => {
                           onClick={() =>
                             handleExcluir(cliente.id, cliente.nome)
                           }
-                          className="text-xl text-red-500 hover:text-red-700"
+                          className="text-xl text-secondary hover:text-red-700"
                         >
-                          ❌
+                          {/* ❌ */}
+                          <Trash2 />
                         </button>
                       </td>
                     </tr>

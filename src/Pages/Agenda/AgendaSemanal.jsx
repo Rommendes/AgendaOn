@@ -299,7 +299,7 @@ export default function AgendaSemanal() {
                 </div>
 
                 {/* Dias da semana */}
-                <div className="space-y-4 p-3 sm:p-4">
+                <div className="ml-3 space-y-4 p-3 sm:p-4">
                   {sem.dias.map(([dataISO, ags]) => (
                     <div
                       key={dataISO}
@@ -349,7 +349,7 @@ export default function AgendaSemanal() {
                           </colgroup>
 
                           <thead>
-                            <tr className="border-b border-slate-200 bg-cinza/10 text-left">
+                            <tr className="border bg-cinza/10 text-center text-sm font-extrabold uppercase text-primary">
                               <th
                                 scope="col"
                                 className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"

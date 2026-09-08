@@ -3,7 +3,7 @@ import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../api/supabaseClient.js';
-import { FileText } from 'lucide-react';
+import { FileText, Receipt } from 'lucide-react';
 function ExtratoFinanceiro() {
   const hoje = new Date();
 
@@ -197,174 +197,201 @@ function ExtratoFinanceiro() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <>
       <Header title="Extrato Financeiro" />
+      <div className="main">
+        <div className="container-formulario">
+          <div className="mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b lg:border-cinza/30 lg:pb-4">
+            {/* Título e descrição */}
+            <div className="border-b border-cinza/30 pb-2 lg:border-b-0 lg:pb-0">
+              <h1 className="flex gap-2 text-primary">
+                <Receipt className="text-secondary" />
+                Extrato Financeiro
+              </h1>
 
-      <div className="mx-auto w-full max-w-[1200px] p-4">
-        <h1 className="text-primary">Extrato Financeiro</h1>
+              <p className="text-sm text-primary">
+                Consulte pagamentos e pendências de períodos anteriores.
+              </p>
+            </div>
 
-        <p className="mb-6 text-primary">
-          Consulte pagamentos e pendências de períodos anteriores.
-        </p>
+            {/* Mês e botão */}
+            <div className="mt-6 flex items-end gap-3 lg:mt-0">
+              <div>
+                <label className="mb-1 block text-sm text-primary">
+                  Selecione o mês
+                </label>
 
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="w-full sm:max-w-[240px]">
-            <label
-              htmlFor="mes-extrato"
-              className="mb-1 block text-sm font-medium text-cinza"
-            >
-              Selecione o mês
-            </label>
+                <input
+                  type="month"
+                  value={mesSelecionado}
+                  onChange={(e) => setMesSelecionado(e.target.value)}
+                  className="rounded-lg border border-primary bg-white px-3 py-2 text-sm text-cinza focus:border-secondary focus:outline-none"
+                />
+              </div>
 
-            <input
-              id="mes-extrato"
-              type="month"
-              className="input-padrao cursor-pointer"
-              value={mesSelecionado}
-              onChange={(event) => setMesSelecionado(event.target.value)}
-            />
+              <button
+                type="button"
+                title="Exportar PDF"
+                onClick={exportarPDF}
+                className="btn btn-secondary sm:w-auto"
+                aria-label="Exportar PDF"
+              >
+                <FileText />
+              </button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={exportarPDF}
-            className="btn btn-secondary w-full sm:w-auto"
-          >
-            Exportar PDF
-          </button>
-        </div>
-      </div>
-      <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-primary">Pagamentos encontrados</p>
-          <p className="text-2xl font-bold text-cinza">{pagamentos.length}</p>
-          <p className="text-cinza">
-            {totalRecebido.toLocaleString('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-            })}
-          </p>
-        </div>
+          <div className="mb-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-primary">Pagamentos encontrados</p>
+              <p className="text-2xl font-bold text-cinza">
+                {pagamentos.length}
+              </p>
+              <p className="text-cinza">
+                {totalRecebido.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })}
+              </p>
+            </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-primary">Pendências encontradas</p>
-          <p className="text-2xl font-bold text-red-600">{pendencias.length}</p>
-          <p className="mt-1 font-medium text-cinza">
-            {totalPendente.toLocaleString('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-            })}
-          </p>
-        </div>
-      </div>
-
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="text-primary">Pagamentos do período</h2>
-
-        {pagamentos.length === 0 ? (
-          <p>Nenhum pagamento encontrado neste período.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px]">
-              <thead>
-                <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                  <th className="px-3 py-2 font-medium">Pagamento</th>
-                  <th className="px-3 py-2 font-medium">Cliente</th>
-                  <th className="px-3 py-2 font-medium">Serviço</th>
-                  <th className="px-3 py-2 font-medium">Forma</th>
-                  <th className="px-3 py-2 text-right font-medium">Valor</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {pagamentos.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-gray-100 text-sm"
-                  >
-                    <td className="px-3 py-3 text-cinza">
-                      {new Date(item.data_pagamento).toLocaleString('pt-BR', {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                      })}
-                    </td>
-
-                    <td className="px-3 py-3 text-primary">
-                      {item.clientes?.nome || 'Cliente sem nome'}
-                    </td>
-
-                    <td className="px-3 py-3 text-cinza">{item.servico}</td>
-
-                    <td className="px-3 py-3 text-cinza">{item.pagamento}</td>
-
-                    <td className="px-3 py-3 text-right font-medium text-primary">
-                      {Number(item.valor || 0).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-primary">Pendências encontradas</p>
+              <p className="text-2xl font-bold text-red-600">
+                {pendencias.length}
+              </p>
+              <p className="mt-1 font-medium text-cinza">
+                {totalPendente.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="text-primary">Pendências do período</h2>
 
-        {pendencias.length === 0 ? (
-          <p className="text-sm text-cinza">
-            Nenhuma pendência encontrada neste período.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px]">
-              <thead>
-                <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                  <th className="px-3 py-2 font-medium">Agendamento</th>
-                  <th className="px-3 py-2 font-medium">Cliente</th>
-                  <th className="px-3 py-2 font-medium">Serviço</th>
-                  <th className="px-3 py-2 font-medium">Situação</th>
-                  <th className="px-3 py-2 text-right font-medium">Valor</th>
-                </tr>
-              </thead>
+          <div className="container-formulario mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h2 className="text-primary">Pagamentos do período</h2>
 
-              <tbody>
-                {pendencias.map((item) => (
-                  <tr key={item.id} className="border-gray- border-b text-sm">
-                    <td className="px-3 py-3 text-cinza">
-                      {new Date(item.data + 'T12:00:00').toLocaleDateString(
-                        'pt-BR'
-                      )}
-                      {' • '}
-                      {item.horario}
-                    </td>
+            {pagamentos.length === 0 ? (
+              <p className="text-cinza">
+                Nenhum pagamento encontrado neste período.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px]">
+                  <thead>
+                    <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
+                      <th className="px-3 py-2 font-medium">Pagamento</th>
+                      <th className="px-3 py-2 font-medium">Cliente</th>
+                      <th className="px-3 py-2 font-medium">Serviço</th>
+                      <th className="px-3 py-2 font-medium">Forma</th>
+                      <th className="px-3 py-2 text-right font-medium">
+                        Valor
+                      </th>
+                    </tr>
+                  </thead>
 
-                    <td className="px-3 py-3 text-primary">
-                      {item.clientes?.nome || 'Cliente sem nome'}
-                    </td>
+                  <tbody>
+                    {pagamentos.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="border-b border-gray-100 text-sm"
+                      >
+                        <td className="px-3 py-3 text-cinza">
+                          {new Date(item.data_pagamento).toLocaleString(
+                            'pt-BR',
+                            {
+                              dateStyle: 'short',
+                              timeStyle: 'short',
+                            }
+                          )}
+                        </td>
 
-                    <td className="px-3 py-3 text-cinza">{item.servico}</td>
+                        <td className="px-3 py-3 text-primary">
+                          {item.clientes?.nome || 'Cliente sem nome'}
+                        </td>
 
-                    <td className="px-3 py-3 font-medium uppercase text-red-600">
-                      {item.pagamento}
-                    </td>
+                        <td className="px-3 py-3 text-cinza">{item.servico}</td>
 
-                    <td className="px-3 py-3 text-right font-medium text-primary">
-                      {Number(item.valor || 0).toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <td className="px-3 py-3 text-cinza">
+                          {item.pagamento}
+                        </td>
+
+                        <td className="px-3 py-3 text-right font-medium text-primary">
+                          {Number(item.valor || 0).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h2 className="text-primary">Pendências do período</h2>
+
+            {pendencias.length === 0 ? (
+              <p className="text-sm text-cinza">
+                Nenhuma pendência encontrada neste período.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[700px]">
+                  <thead>
+                    <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
+                      <th className="px-3 py-2 font-medium">Agendamento</th>
+                      <th className="px-3 py-2 font-medium">Cliente</th>
+                      <th className="px-3 py-2 font-medium">Serviço</th>
+                      <th className="px-3 py-2 font-medium">Situação</th>
+                      <th className="px-3 py-2 text-right font-medium">
+                        Valor
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {pendencias.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="border-gray- border-b text-sm"
+                      >
+                        <td className="px-3 py-3 text-cinza">
+                          {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                            'pt-BR'
+                          )}
+                          {' • '}
+                          {item.horario}
+                        </td>
+
+                        <td className="px-3 py-3 text-primary">
+                          {item.clientes?.nome || 'Cliente sem nome'}
+                        </td>
+
+                        <td className="px-3 py-3 text-cinza">{item.servico}</td>
+
+                        <td className="px-3 py-3 font-medium uppercase text-red-600">
+                          {item.pagamento}
+                        </td>
+
+                        <td className="px-3 py-3 text-right font-medium text-primary">
+                          {Number(item.valor || 0).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

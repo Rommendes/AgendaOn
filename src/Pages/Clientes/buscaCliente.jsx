@@ -9,6 +9,7 @@ import {
   formatarTelefoneBR,
 } from '../../Componentes/Utilitarios/formadores';
 import { createLogger } from '../../lib/logger';
+import { UserSearch } from 'lucide-react';
 const logger = createLogger('PesquisandoClientes');
 
 const PesquisandoClientes = () => {
@@ -148,9 +149,10 @@ const PesquisandoClientes = () => {
     <>
       <Header title="Pesquisar Clientes" />
       <div className="main">
-        <div className="container-formulario">
-          <div className="main-formulario pt-2">
-            <h1 className="pb-4 text-center text-primary">
+        <div className="main-container">
+          <div className="container-formulario">
+            <h1 className="flex gap-2 pb-4 text-primary">
+              <UserSearch className="text-lg text-secondary" size={25} />
               Pesquise um cliente para visualizar os dados
             </h1>
 

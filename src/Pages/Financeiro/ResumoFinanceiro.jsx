@@ -13,6 +13,7 @@ import {
   BadgeCheck,
   CircleAlert,
   BadgeDollarSign,
+  ChartNoAxesCombined,
 } from 'lucide-react';
 
 function ResumoFinanceiro() {
@@ -207,119 +208,246 @@ function ResumoFinanceiro() {
   });
 
   return (
-    <div className="main">
+    <>
       <Header title="Resumo Financeiro" />
-      <div className="main-container">
-        <div className="container-formulario">
-          <h1 className="h1">Resumo Financeiro</h1>
-          <p className="text-sm font-medium capitalize text-secondary">
-            {mesAtual}
-          </p>
-          <p className="mb-6 text-sm text-gray-500">
-            Resumo de recebimentos, pendências e pagamentos dos atendimentos.
-          </p>
+      <div className="main">
+        <div className="main-container">
+          <div className="container-formulario">
+            <h1 className="flex items-center gap-2 text-primary">
+              <ChartNoAxesCombined className="text-secondary" />
+              Resumo Financeiro
+            </h1>
 
-          <div className="conteudo-amplo">
-            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {/* Card 1 com refinamento de UI/UX */}
-              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
-                  {/* Ícone ganha um fundinho suave da cor do tema */}
-                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
-                    <Wallet className="text-primary" size={20} />
-                  </span>
-                  Recebido no mês
-                </p>
-                {/* O valor numérico fica em um tom escuro neutro e elegante */}
-                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
-                  {resumoFinanceiro.recebidoMes.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
-                </h2>
-              </div>
+            <p className="mb-6 text-sm text-gray-500">
+              Resumo de recebimentos, pendências e pagamentos dos atendimentos.
+            </p>
+            <p className="border-b text-sm font-bold uppercase text-secondary">
+              {mesAtual}
+            </p>
+            <div className="conteudo-amplo">
+              <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {/* Card 1 com refinamento de UI/UX */}
+                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                    {/* Ícone ganha um fundinho suave da cor do tema */}
+                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
+                      <Wallet className="text-secondary" size={20} />
+                    </span>
+                    Recebido no mês
+                  </p>
+                  {/* O valor numérico fica em um tom escuro neutro e elegante */}
+                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
+                    {resumoFinanceiro.recebidoMes.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h2>
+                </div>
 
-              {/* Card 2: Pendente no mês */}
-              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
-                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
-                    <CircleAlert className="text-primary" size={20} />
-                  </span>
-                  Pendente no mês
-                </p>
-                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-red-600 md:mt-3 md:text-2xl">
-                  {resumoFinanceiro.pendente.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
-                </h2>
-              </div>
+                {/* Card 2: Pendente no mês */}
+                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
+                      <CircleAlert className="text-secondary" size={20} />
+                    </span>
+                    Pendente no mês
+                  </p>
+                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-danger md:mt-3 md:text-2xl">
+                    {resumoFinanceiro.pendente.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h2>
+                </div>
 
-              {/* Card 3: Clientes com pendências */}
-              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
-                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
-                    <UserRound className="text-primary" size={20} />
-                  </span>
-                  Clientes com pendências
-                </p>
-                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
-                  {resumoFinanceiro.clientesDevedores}
-                </h2>
-              </div>
+                {/* Card 3: Clientes com pendências */}
+                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
+                      <UserRound className="text-secondary" size={20} />
+                    </span>
+                    Clientes com pendências
+                  </p>
+                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
+                    {resumoFinanceiro.clientesDevedores}
+                  </h2>
+                </div>
 
-              {/* Card 4: Pagamentos registrados */}
-              <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
-                  <span className="flex items-center justify-center rounded-lg bg-green-50 p-1.5">
-                    <BadgeCheck className="text-bold text-primary" size={20} />
-                  </span>
-                  Pagamentos registrados
-                </p>
-                <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
-                  {resumoFinanceiro.concluidos}
-                </h2>
+                {/* Card 4: Pagamentos registrados */}
+                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
+                      <BadgeCheck
+                        className="text-bold text-secondary"
+                        size={20}
+                      />
+                    </span>
+                    Pagamentos registrados
+                  </p>
+                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
+                    {resumoFinanceiro.concluidos}
+                  </h2>
+                </div>
               </div>
             </div>
-          </div>
-          <section className="conteudo-amplo">
-            <div className="mb-4">
-              <h2 className="text-xl font-medium text-primary">
-                Pendências de pagamento
-              </h2>
-            </div>
+            <section className="conteudo-amplo">
+              <div className="mb-4">
+                <h2 className="text-xl font-medium text-primary">
+                  Pendências de pagamento
+                </h2>
+              </div>
 
-            <div className="rounded-2xl border border-violet-400 bg-white p-5 shadow-sm">
-              {/* <input
+              <div className="rounded-2xl border border-violet-400 bg-white p-5 shadow-sm">
+                {/* <input
                 type="text"
                 placeholder="Buscar cliente..."
                 className="input-padrao mb-4 w-full max-w-[350px]"
               /> */}
-              {/* COBRANÇAS PENDENTES */}
+                {/* COBRANÇAS PENDENTES */}
 
-              <p className="mb-4 text-sm text-gray-500">
-                Selecione a forma de pagamento para registrar o recebimento
-              </p>
-
-              {pendentes.length === 0 ? (
-                <p className="text-md rounded-lg bg-secondary p-3 text-center font-medium uppercase text-white">
-                  Todos os pagamentos estão em dia.
+                <p className="mb-4 text-sm text-gray-500">
+                  Selecione a forma de pagamento para registrar o recebimento
                 </p>
+
+                {pendentes.length === 0 ? (
+                  <p className="text-md rounded-lg p-3 text-center font-medium uppercase text-white">
+                    Todos os pagamentos estão em dia.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {pendentes.map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-lg border border-gray-300 p-3"
+                      >
+                        <p className="font-medium text-primary">
+                          {item.clientes?.nome || 'Cliente sem nome'}
+                        </p>
+                        <div className="mt-2 space-y-1">
+                          <p className="flex items-center gap-2 text-xs text-cinza">
+                            <CalendarDays
+                              size={14}
+                              className="text-secondary"
+                            />
+
+                            {item.data
+                              ? new Date(
+                                  `${item.data}T12:00:00`
+                                ).toLocaleDateString('pt-BR')
+                              : 'Data não informada'}
+
+                            {' • '}
+
+                            {item.horario
+                              ? item.horario.slice(0, 5)
+                              : 'Horário não informado'}
+                          </p>
+
+                          <p className="flex items-center gap-2 text-xs text-cinza">
+                            <Scissors size={15} className="text-secondary" />
+                            {item.servico}
+                          </p>
+
+                          <p className="flex items-center gap-2 text-secondary">
+                            <BadgeDollarSign
+                              size={15}
+                              className="font-bold text-secondary"
+                            />
+                            <span className="text-sm font-bold text-danger">
+                              {Number(item.valor || 0).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              })}
+                            </span>
+                          </p>
+                        </div>
+
+                        <select
+                          className="input-padrao mt-3 flex max-w-[220px] cursor-pointer text-cinza"
+                          value={formaPagamento[item.id] || ''}
+                          onChange={(e) => {
+                            setFormaPagamento((prev) => ({
+                              ...prev,
+                              [item.id]: e.target.value,
+                            }));
+
+                            setMostrarConfirmacao((prev) => ({
+                              ...prev,
+                              [item.id]: !!e.target.value,
+                            }));
+                          }}
+                        >
+                          <option value="">Selecione o pagamento</option>
+                          <option value="Pix">Pix</option>
+                          <option value="Cartão">Cartão</option>
+                          <option value="Dinheiro">Dinheiro</option>
+                          <option value="Pendente">Pendente</option>
+                        </select>
+                        {mostrarConfirmacao[item.id] && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              registrarPagamento(
+                                item.id,
+                                formaPagamento[item.id]
+                              )
+                            }
+                            className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                            title="Confirme pagamento"
+                          >
+                            <SquareCheckBig size={20} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <div className="mx-auto w-full max-w-[1200px] p-4">
+              <h2 className="mb-4 mt-10 text-xl font-medium text-primary">
+                Últimos 10 pagamentos
+              </h2>
+
+              {pagos.length === 0 ? (
+                <div className="rounded-2xl border border-secondary bg-white p-6 shadow-sm">
+                  <p className="text-sm text-gray-500">
+                    Nenhum pagamento encontrado.
+                  </p>
+                </div>
               ) : (
-                <div className="space-y-3">
-                  {pendentes.map((item) => (
+                <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-4">
+                  {pagos.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-lg border border-gray-300 p-3"
+                      className="rounded-2xl border border-primary bg-white p-6 shadow-sm"
                     >
-                      <p className="font-medium text-primary">
+                      <p className="flex items-center gap-2 font-medium text-primary">
+                        <UserRound size={18} className="text-secondary" />
                         {item.clientes?.nome || 'Cliente sem nome'}
                       </p>
 
                       <div className="mt-2 space-y-1">
-                        <p className="flex items-center gap-2 text-xs text-gray-500">
-                          <CalendarDays size={14} className="text-primary" />
+                        <p className="flex items-center gap-2 text-sm text-gray-500">
+                          <CreditCard size={15} className="text-primary" />
+                          {item.pagamento}
+                        </p>
 
+                        <p className="flex items-center gap-2 text-sm text-gray-500">
+                          <Scissors size={15} className="text-primary" />
+                          {item.servico}
+                        </p>
+
+                        <p className="flex items-center gap-2 font-medium text-primary">
+                          <Wallet size={15} className="text-primary" />
+                          {Number(item.valor || 0).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </p>
+                        <p className="flex items-center gap-2 text-xs text-primary">
+                          <CalendarDays size={14} />
                           {new Date(item.data_pagamento).toLocaleDateString(
                             'pt-BR'
                           )}
@@ -332,124 +460,16 @@ function ResumoFinanceiro() {
                             }
                           )}
                         </p>
-
-                        <p className="flex items-center gap-2 text-sm text-gray-500">
-                          <Scissors size={15} className="text-primary" />
-                          {item.servico}
-                        </p>
-
-                        <p className="flex items-center gap-2 font-medium text-primary">
-                          <BadgeDollarSign size={15} />
-                          {Number(item.valor || 0).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          })}
-                        </p>
                       </div>
-                      <select
-                        className="input-padrao mt-3 flex max-w-[220px] cursor-pointer hover:bg-secondary hover:text-white"
-                        value={formaPagamento[item.id] || ''}
-                        onChange={(e) => {
-                          setFormaPagamento((prev) => ({
-                            ...prev,
-                            [item.id]: e.target.value,
-                          }));
-
-                          setMostrarConfirmacao((prev) => ({
-                            ...prev,
-                            [item.id]: !!e.target.value,
-                          }));
-                        }}
-                      >
-                        <option value="">Selecione o pagamento</option>
-                        <option value="Pix">Pix</option>
-                        <option value="Cartão">Cartão</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                        <option value="Pendente">Pendente</option>
-                      </select>
-                      {mostrarConfirmacao[item.id] && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            registrarPagamento(item.id, formaPagamento[item.id])
-                          }
-                          className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
-                          title="Confirme pagamento"
-                        >
-                          <SquareCheckBig size={20} />
-                        </button>
-                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          </section>
-
-          <div className="mx-auto w-full max-w-[1200px] p-4">
-            <h2 className="mb-4 mt-10 text-xl font-medium text-primary">
-              Últimos 10 pagamentos
-            </h2>
-
-            {pagos.length === 0 ? (
-              <div className="rounded-2xl border border-secondary bg-white p-6 shadow-sm">
-                <p className="text-sm text-gray-500">
-                  Nenhum pagamento encontrado.
-                </p>
-              </div>
-            ) : (
-              <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-4">
-                {pagos.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl border border-primary bg-white p-6 shadow-sm"
-                  >
-                    <p className="flex items-center gap-2 font-medium text-primary">
-                      <UserRound size={18} className="text-secondary" />
-                      {item.clientes?.nome || 'Cliente sem nome'}
-                    </p>
-
-                    <div className="mt-2 space-y-1">
-                      <p className="flex items-center gap-2 text-sm text-gray-500">
-                        <CreditCard size={15} className="text-primary" />
-                        {item.pagamento}
-                      </p>
-
-                      <p className="flex items-center gap-2 text-sm text-gray-500">
-                        <Scissors size={15} className="text-primary" />
-                        {item.servico}
-                      </p>
-
-                      <p className="flex items-center gap-2 font-medium text-primary">
-                        <Wallet size={15} className="text-primary" />
-                        {Number(item.valor || 0).toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </p>
-                      <p className="flex items-center gap-2 text-xs text-primary">
-                        <CalendarDays size={14} />
-                        {new Date(item.data_pagamento).toLocaleDateString(
-                          'pt-BR'
-                        )}
-                        {' • '}
-                        {new Date(item.data_pagamento).toLocaleTimeString(
-                          'pt-BR',
-                          {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          }
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
