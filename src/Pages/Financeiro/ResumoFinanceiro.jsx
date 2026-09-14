@@ -392,7 +392,7 @@ function ResumoFinanceiro() {
                                 formaPagamento[item.id]
                               )
                             }
-                            className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                            className="rounded-md p-2 text-success transition hover:bg-success/10"
                             title="Confirme pagamento"
                           >
                             <SquareCheckBig size={20} />

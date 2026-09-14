@@ -4,7 +4,7 @@
 
 /* Estilos globais */
 body {
-  @apply bg-blue-50 font-Poppins;
+  @apply bg-alternativo/10 font-Poppins;
 }
 
 @layer base {
@@ -30,7 +30,7 @@ body {
     @apply text-2xl font-medium tracking-tight text-white sm:text-3xl;
   }
   .main {
-    @apply mx-auto min-h-screen w-full max-w-7xl bg-blue-50 px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
+    @apply mx-auto min-h-screen w-full max-w-7xl bg-azulClaro/5 px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
   }
   .main-container {
     @apply mx-auto min-h-screen w-full max-w-7xl px-4 py-6 sm:px-5 md:px-6 lg:px-8;
@@ -70,7 +70,7 @@ body {
   }
 
   .input-padrao {
-    @apply w-full appearance-none rounded-md border border-gray-300 bg-blue-50 px-3 py-2 text-sm font-normal leading-tight text-gray-700 focus:border-b-2 focus:border-b-secondary focus:outline-none focus:ring-2 focus:ring-borderLigth;
+    @apply w-full appearance-none rounded-md border border-cinza/30 bg-cinza/5 px-3 py-2 text-sm font-normal leading-tight text-cinza focus:border-b-2 focus:border-b-secondary focus:outline-none focus:ring-2 focus:ring-borderLigth;
   }
 
   /* Botão base e variações de cor */

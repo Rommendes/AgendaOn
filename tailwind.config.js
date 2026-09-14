@@ -22,7 +22,7 @@ export default {
 
         cinza: '#2F3136',
         cinzaClaro: '#b4b4b6',
-        azulClaro: '#00BFFF',
+        azulClaro: '#A6E9FF',
         borderLigth: 'rgba(128, 128, 128, 0.3)',
 
         inputs: 'rgba(128, 128, 128, 0.3)',
