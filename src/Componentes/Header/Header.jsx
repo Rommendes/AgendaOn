@@ -1,4 +1,4 @@
-import { Menu, X, Home } from 'lucide-react';
+import { Menu, X, Home, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import BotaoSair from '../BotaoSair';
@@ -6,6 +6,13 @@ import { useState } from 'react';
 
 const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
   const [menuAberto, setMenuAberto] = useState(false);
+  const [submenuClientesAberto, setSubmenuClientesAberto] = useState(false);
+  const [submenuAgendamentosAberto, setSubmenuAgendamentosAberto] =
+    useState(false);
+  const [submenuComunicacaoAberto, setSubmenuComunicacaoAberto] =
+    useState(false);
+  const [submenuFinanceiroAberto, setSubmenuFinanceiroAberto] = useState(false);
+
   return (
     <header className="relative mb-1 bg-white shadow-sm">
       {/* Faixa superior */}
@@ -45,7 +52,7 @@ const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
         </div>
       </div>
       {menuAberto && (
-        <nav className="absolute right-4 top-full z-50 w-64 overflow-hidden rounded-b-lg border border-gray-200 bg-white shadow-lg">
+        <nav className="absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border border-gray-200 bg-white shadow-lg">
           <Link
             to="/home"
             onClick={() => setMenuAberto(false)}
@@ -55,37 +62,254 @@ const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
             Home
           </Link>
 
-          <Link
-            to="/agendamentos-menu"
-            onClick={() => setMenuAberto(false)}
-            className="block border-b border-cinza/10 px-5 py-3 text-primary transition hover:bg-alternativo/10"
-          >
-            Agendamentos
-          </Link>
+          <div className="border-b border-gray-100">
+            <div className="flex items-center">
+              <Link
+                to="/agendamentos-menu"
+                onClick={() => setMenuAberto(false)}
+                className="flex-1 px-5 py-3 text-primary transition hover:bg-blue-50"
+              >
+                Agendamentos
+              </Link>
 
-          <Link
-            to="/clientes-menu"
-            onClick={() => setMenuAberto(false)}
-            className="block border-b border-cinza/10 px-5 py-3 text-primary transition hover:bg-alternativo/10"
-          >
-            Clientes
-          </Link>
+              <button
+                type="button"
+                onClick={() =>
+                  setSubmenuAgendamentosAberto(!submenuAgendamentosAberto)
+                }
+                aria-label={
+                  submenuAgendamentosAberto
+                    ? 'Fechar submenu Agendamentos'
+                    : 'Abrir submenu Agendamentos'
+                }
+                aria-expanded={submenuAgendamentosAberto}
+                className="self-stretch px-4 text-secondary transition hover:bg-orange-50"
+              >
+                <ChevronDown
+                  size={20}
+                  className={`transition-transform ${
+                    submenuAgendamentosAberto ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+            </div>
 
-          <Link
-            to="/comunicacao-menu"
-            onClick={() => setMenuAberto(false)}
-            className="block border-b border-cinza/10 px-5 py-3 text-primary transition hover:bg-alternativo/10"
-          >
-            Comunicação
-          </Link>
+            {submenuAgendamentosAberto && (
+              <div className="bg-blue-50">
+                <Link
+                  to="/agenda"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Agenda
+                </Link>
 
-          <Link
-            to="/financeiro-menu"
-            onClick={() => setMenuAberto(false)}
-            className="block border-b border-cinza/20 px-5 py-3 text-primary transition hover:bg-alternativo/10"
-          >
-            Financeiro
-          </Link>
+                <Link
+                  to="/agenda-semanal"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Semana Atual
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="border-b border-gray-100">
+            <div className="flex items-center">
+              <Link
+                to="/clientes-menu"
+                onClick={() => setMenuAberto(false)}
+                className="flex-1 px-5 py-3 text-primary transition hover:bg-blue-50"
+              >
+                Clientes
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setSubmenuClientesAberto(!submenuClientesAberto)}
+                aria-label={
+                  submenuClientesAberto
+                    ? 'Fechar submenu Clientes'
+                    : 'Abrir submenu Clientes'
+                }
+                aria-expanded={submenuClientesAberto}
+                className="self-stretch px-4 text-secondary transition hover:bg-orange-50"
+              >
+                <ChevronDown
+                  size={20}
+                  className={`transition-transform ${
+                    submenuClientesAberto ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+            </div>
+
+            {submenuClientesAberto && (
+              <div className="bg-blue-50">
+                <Link
+                  to="/busca-cliente"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Busca cliente
+                </Link>
+
+                <Link
+                  to="/cadastrar-cliente"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Cadastro
+                </Link>
+
+                <Link
+                  to="/lista-clientes"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Lista de Clientes
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="border-b border-gray-100">
+            <div className="flex items-center">
+              <Link
+                to="/comunicacao-menu"
+                onClick={() => setMenuAberto(false)}
+                className="flex-1 px-5 py-3 text-primary transition hover:bg-blue-50"
+              >
+                Comunicação
+              </Link>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setSubmenuComunicacaoAberto(!submenuComunicacaoAberto)
+                }
+                aria-label={
+                  submenuComunicacaoAberto
+                    ? 'Fechar submenu Comunicação'
+                    : 'Abrir submenu Comunicação'
+                }
+                aria-expanded={submenuComunicacaoAberto}
+                className="self-stretch px-4 text-secondary transition hover:bg-orange-50"
+              >
+                <ChevronDown
+                  size={20}
+                  className={`transition-transform ${
+                    submenuComunicacaoAberto ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+            </div>
+
+            {submenuComunicacaoAberto && (
+              <div className="bg-blue-50">
+                <Link
+                  to="/lembretes"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Lembretes
+                </Link>
+
+                <Link
+                  to="/cobrancas"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Cobranças pendentes
+                </Link>
+
+                <Link
+                  to="/historico-lembretes"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Histórico de lembretes
+                </Link>
+
+                <Link
+                  to="/mensagem"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Mensagens
+                </Link>
+
+                <Link
+                  to="/avisos"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Avisos
+                </Link>
+              </div>
+            )}
+          </div>
+          <div className="border-b border-gray-200">
+            <div className="flex items-center">
+              <Link
+                to="/financeiro-menu"
+                onClick={() => setMenuAberto(false)}
+                className="flex-1 px-5 py-3 text-primary transition hover:bg-blue-50"
+              >
+                Financeiro
+              </Link>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setSubmenuFinanceiroAberto(!submenuFinanceiroAberto)
+                }
+                aria-label={
+                  submenuFinanceiroAberto
+                    ? 'Fechar submenu Financeiro'
+                    : 'Abrir submenu Financeiro'
+                }
+                aria-expanded={submenuFinanceiroAberto}
+                className="self-stretch px-4 text-secondary transition hover:bg-orange-50"
+              >
+                <ChevronDown
+                  size={20}
+                  className={`transition-transform ${
+                    submenuFinanceiroAberto ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+            </div>
+
+            {submenuFinanceiroAberto && (
+              <div className="bg-blue-50">
+                <Link
+                  to="/pagamentos"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Pagamentos
+                </Link>
+
+                <Link
+                  to="/extrato-financeiro"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Extrato Financeiro
+                </Link>
+
+                <Link
+                  to="/resumo-financeiro"
+                  onClick={() => setMenuAberto(false)}
+                  className="block px-8 py-2 text-sm text-primary hover:bg-blue-100"
+                >
+                  Resumo Financeiro
+                </Link>
+              </div>
+            )}
+          </div>
 
           <BotaoSair modoMenu />
         </nav>

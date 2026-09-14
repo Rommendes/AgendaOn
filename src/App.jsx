@@ -53,7 +53,6 @@ function App() {
           <Route path="/cadastrar-cliente" element={<CadastrarCliente />} />
           <Route path="/clientes-menu" element={<ClientesMenu />} />
           <Route path="/busca-cliente" element={<BuscaCliente />} />
-
           <Route path="/lista-clientes" element={<ListaClientes />} />
 
           <Route path="/financeiro-menu" element={<FinanceiroMenu />} />
