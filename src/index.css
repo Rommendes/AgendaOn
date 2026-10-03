@@ -23,15 +23,50 @@ body {
   p {
     @apply text-base leading-relaxed;
   }
+
+  /* scrollbar */
+
+  /* 1. Define a largura e altura da barra */
+  body::-webkit-scrollbar {
+    width: 8px; /* Largura da barra vertical */
+    height: 8px; /* Altura da barra horizontal */
+  }
+
+  /* 2. Pista/Fundo (onde a barra corre) */
+  body::-webkit-scrollbar-track {
+    background: transparent; /* Totalmente limpo e transparente */
+  }
+
+  /* 3. Indicador (o bloco que se move) */
+  body::-webkit-scrollbar-thumb {
+    background-color: theme('colors.secondary');
+    border-radius: 9999px; /* Cantos totalmente arredondados */
+  }
+
+  /* 4. Efeito de Hover ao passar o mouse */
+  body::-webkit-scrollbar-thumb:hover {
+    /* Aplica opacidade reduzida usando a função nativa de modificador do Tailwind */
+    background-color: theme('colors.secondary');
+  }
+
+  /* Suporte para Firefox e padrões modernos da W3C */
+  body {
+    scrollbar-color: theme('colors.primary') transparent;
+    scrollbar-width: thin;
+  }
 }
 
 @layer components {
   .home-titulo {
     @apply text-2xl font-medium tracking-tight text-white sm:text-3xl;
   }
-  .main {
+  /* .main {
     @apply mx-auto min-h-screen w-full max-w-7xl bg-azulClaro/5 px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
+  } */
+  .main {
+    @apply mx-auto min-h-screen w-full max-w-7xl bg-gradient-to-br from-azulClaro/10 to-white px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
   }
+
   .main-container {
     @apply mx-auto min-h-screen w-full max-w-7xl px-4 py-6 sm:px-5 md:px-6 lg:px-8;
   }

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Header from '../../Componentes/Header/Header.jsx';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../api/supabaseClient.js';
@@ -7,6 +8,7 @@ import {
   CalendarDays,
   ReceiptText,
   BadgeDollarSign,
+  ArrowLeft,
 } from 'lucide-react';
 
 function Pagamentos() {
@@ -99,6 +101,16 @@ function Pagamentos() {
               <p className="mt-1 text-sm text-cinza/80">
                 Selecione a forma de pagamento para registrar o recebimento.
               </p>
+            </div>
+            <div className="mb-5 flex justify-end">
+              <Link
+                to="/agenda"
+                className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
+                aria-label="Voltar para Agenda"
+              >
+                <ArrowLeft size={18} />
+                Voltar para Agenda
+              </Link>
             </div>
 
             <section className="">

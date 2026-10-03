@@ -486,7 +486,7 @@ const AgendaAtendimento = () => {
       return;
     }
 
-    console.log('Histórico salvo com sucesso:', data);
+    //console.log('Histórico salvo com sucesso:', data);
   };
 
   return (
@@ -1304,7 +1304,7 @@ const AgendaAtendimento = () => {
           {confirmacao.aberto && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
               <div className="w-[90%] max-w-md rounded-lg bg-white p-6 shadow-lg">
-                <h2 className="mb-4 text-lg font-semibold text-primary">
+                <h2 className="mb-4 text-lg font-semibold text-secondary">
                   Confirmação
                 </h2>
 
@@ -1325,7 +1325,7 @@ const AgendaAtendimento = () => {
                   </button>
 
                   <button
-                    className="btn btn-green"
+                    className="btn btn-secondary"
                     onClick={() => {
                       confirmacao.onConfirm();
                       setConfirmacao({
@@ -1350,7 +1350,7 @@ const AgendaAtendimento = () => {
                   className={`mb-3 text-lg font-semibold ${
                     mensagemSistema.tipo === 'erro'
                       ? 'text-red-600'
-                      : 'text-green-600'
+                      : 'text-secondary'
                   }`}
                 >
                   {mensagemSistema.tipo === 'erro' ? 'Atenção' : 'Sucesso'}
@@ -1363,7 +1363,7 @@ const AgendaAtendimento = () => {
                     className={
                       mensagemSistema.tipo === 'erro'
                         ? 'btn btn-red'
-                        : 'btn btn-green'
+                        : 'btn btn-icone border-secondary text-secondary hover:bg-primary/5 hover:text-primary'
                     }
                     onClick={() =>
                       setMensagemSistema({
