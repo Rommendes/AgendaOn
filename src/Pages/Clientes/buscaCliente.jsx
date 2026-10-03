@@ -9,7 +9,7 @@ import {
   formatarTelefoneBR,
 } from '../../Componentes/Utilitarios/formadores';
 import { createLogger } from '../../lib/logger';
-import { UserSearch } from 'lucide-react';
+import { UserSearch, SquarePen, Trash2 } from 'lucide-react';
 const logger = createLogger('PesquisandoClientes');
 
 const PesquisandoClientes = () => {
@@ -147,7 +147,7 @@ const PesquisandoClientes = () => {
 
   return (
     <>
-      <Header title="Pesquisar Clientes" />
+      <Header title="Pesquisar Clientes" voltarPara="/clientes-menu" />
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
@@ -183,7 +183,7 @@ const PesquisandoClientes = () => {
                           Dados do Cliente
                         </h3>
 
-                        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
+                        <div className="rounded-xl border border-cinza/30 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
                           <h3 className="mb-3 text-xl font-bold text-primary">
                             {cliente.nome}
                           </h3>
@@ -198,7 +198,7 @@ const PesquisandoClientes = () => {
                               ? '🔴 Cliente com pendência financeira'
                               : '🟢 Cliente sem pendências'}
                           </div>
-                          <div className="grid grid-cols-1 gap-3 text-sm text-gray-700 md:grid-cols-2">
+                          <div className="text-cinza/80md:grid-cols-2 grid grid-cols-1 gap-3 text-sm">
                             <p>
                               <span className="font-semibold text-primary">
                                 Aniversário:
@@ -246,16 +246,22 @@ const PesquisandoClientes = () => {
                           <div className="mt-5 flex gap-3">
                             <button
                               onClick={() => handleEditar(cliente.id)}
-                              className="rounded-lg bg-secondary px-4 py-2 font-semibold text-white shadow-sm transition hover:opacity-90"
+                              className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-success"
                             >
-                              Editar
+                              <SquarePen size={20} />
+                              <span className="text-sm font-medium">
+                                Editar
+                              </span>
                             </button>
 
                             <button
                               onClick={() => handleExcluir(cliente.id)}
-                              className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-red-600"
+                              className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-danger"
                             >
-                              Excluir
+                              <Trash2 size={20} />
+                              <span className="text-sm font-medium">
+                                Editar
+                              </span>
                             </button>
                           </div>
                         </div>
@@ -268,7 +274,7 @@ const PesquisandoClientes = () => {
                         <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-secondary">
                           Resumo Financeiro
                         </h3>
-                        <div className="mt-3 rounded-xl border border-gray-200 bg-white p-5 shadow-md">
+                        <div className="mt-3 rounded-xl border border-cinza/30 bg-white p-5 shadow-md">
                           <div className="grid grid-cols-2 gap-3">
                             <div className="rounded-lg border border-green-100 bg-green-50 p-3">
                               <p className="text-xs text-gray-500">
@@ -304,7 +310,7 @@ const PesquisandoClientes = () => {
                               </p>
                             </div>
 
-                            <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                            <div className="rounded-lg border border-cinza/30 bg-gray-50 p-3">
                               <p className="text-xs text-gray-500">
                                 Último Atendimento
                               </p>
@@ -345,7 +351,7 @@ const PesquisandoClientes = () => {
                         <h3 className="mb-3 mt-3 text-xl font-bold text-primary">
                           Histórico de Agendamentos
                         </h3>
-                        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-md">
+                        <div className="rounded-xl border border-cinza/30 bg-white p-4 shadow-md">
                           <HistoricoDoCliente
                             clienteId={cliente.id}
                             onResumoFinanceiro={setResumoFinanceiro}

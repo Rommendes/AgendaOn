@@ -198,196 +198,364 @@ function ExtratoFinanceiro() {
 
   return (
     <>
-      <Header title="Extrato Financeiro" />
+      <Header title="Extrato Financeiro" voltarPara="/financeiro-menu" />
       <div className="main">
-        <div className="container-formulario">
-          <div className="mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b lg:border-cinza/30 lg:pb-4">
-            {/* Título e descrição */}
-            <div className="border-b border-cinza/30 pb-2 lg:border-b-0 lg:pb-0">
-              <h1 className="flex gap-2 text-primary">
-                <Receipt className="text-secondary" />
-                Extrato Financeiro
-              </h1>
+        <div className="main-container">
+          <div className="container-formulario">
+            <div className="mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b lg:border-cinza/30 lg:pb-4">
+              {/* Título e descrição */}
+              <div className="border-b border-cinza/30 pb-2 lg:border-b-0 lg:pb-0">
+                <h1 className="flex gap-2 text-primary">
+                  <Receipt className="text-secondary" />
+                  Extrato Financeiro
+                </h1>
 
-              <p className="text-sm text-primary">
-                Consulte pagamentos e pendências de períodos anteriores.
-              </p>
-            </div>
-
-            {/* Mês e botão */}
-            <div className="mt-6 flex items-end gap-3 lg:mt-0">
-              <div>
-                <label className="mb-1 block text-sm text-primary">
-                  Selecione o mês
-                </label>
-
-                <input
-                  type="month"
-                  value={mesSelecionado}
-                  onChange={(e) => setMesSelecionado(e.target.value)}
-                  className="rounded-lg border border-primary bg-white px-3 py-2 text-sm text-cinza focus:border-secondary focus:outline-none"
-                />
+                <p className="text-sm text-primary">
+                  Consulte pagamentos e pendências de períodos anteriores.
+                </p>
               </div>
 
-              <button
-                type="button"
-                title="Exportar PDF"
-                onClick={exportarPDF}
-                className="btn btn-secondary sm:w-auto"
-                aria-label="Exportar PDF"
-              >
-                <FileText />
-              </button>
+              {/* Mês e botão */}
+              <div className="mt-6 flex items-end gap-3 lg:mt-0">
+                <div>
+                  <label className="mb-1 block text-sm text-primary">
+                    Selecione o mês
+                  </label>
+
+                  <input
+                    type="month"
+                    value={mesSelecionado}
+                    onChange={(e) => setMesSelecionado(e.target.value)}
+                    className="rounded-lg border border-primary bg-white px-3 py-2 text-sm text-cinza focus:border-secondary focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  title="Exportar PDF"
+                  onClick={exportarPDF}
+                  className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
+                  aria-label="Exportar PDF"
+                >
+                  <FileText />
+                  PDF
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-primary">Pagamentos encontrados</p>
-              <p className="text-2xl font-bold text-cinza">
-                {pagamentos.length}
-              </p>
-              <p className="text-cinza">
-                {totalRecebido.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-              </p>
+            <div className="mb-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+                <p className="text-primary">Pagamentos encontrados</p>
+                <p className="text-2xl font-bold text-cinza">
+                  {pagamentos.length}
+                </p>
+                <p className="text-cinza">
+                  {totalRecebido.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+                <p className="text-primary">Pendências encontradas</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {pendencias.length}
+                </p>
+                <p className="mt-1 font-medium text-cinza">
+                  {totalPendente.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-primary">Pendências encontradas</p>
-              <p className="text-2xl font-bold text-red-600">
-                {pendencias.length}
-              </p>
-              <p className="mt-1 font-medium text-cinza">
-                {totalPendente.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-              </p>
-            </div>
-          </div>
+            {/* PAGAMENTOS DO PERÍODO */}
+            <div className="mb-6 rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+              <h2 className="mb-3 text-primary">Pagamentos do período</h2>
 
-          <div className="container-formulario mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-primary">Pagamentos do período</h2>
+              {pagamentos.length === 0 ? (
+                <p className="text-sm text-cinza">
+                  Nenhum pagamento encontrado neste período.
+                </p>
+              ) : (
+                <>
+                  {/* TABELA DE PAGAMENTOS — TELAS GRANDES */}
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full min-w-[700px]">
+                      <thead>
+                        <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
+                          <th className="px-3 py-2 font-medium">Pagamento</th>
+                          <th className="px-3 py-2 font-medium">Cliente</th>
+                          <th className="px-3 py-2 font-medium">Serviço</th>
+                          <th className="px-3 py-2 font-medium">Forma</th>
+                          <th className="px-3 py-2 text-right font-medium">
+                            Valor
+                          </th>
+                        </tr>
+                      </thead>
 
-            {pagamentos.length === 0 ? (
-              <p className="text-cinza">
-                Nenhum pagamento encontrado neste período.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px]">
-                  <thead>
-                    <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                      <th className="px-3 py-2 font-medium">Pagamento</th>
-                      <th className="px-3 py-2 font-medium">Cliente</th>
-                      <th className="px-3 py-2 font-medium">Serviço</th>
-                      <th className="px-3 py-2 font-medium">Forma</th>
-                      <th className="px-3 py-2 text-right font-medium">
-                        Valor
-                      </th>
-                    </tr>
-                  </thead>
+                      <tbody>
+                        {pagamentos.map((item) => (
+                          <tr
+                            key={item.id}
+                            className="border-b border-cinza/20 text-sm"
+                          >
+                            <td className="px-3 py-3 text-cinza">
+                              {new Date(item.data_pagamento).toLocaleString(
+                                'pt-BR',
+                                {
+                                  dateStyle: 'short',
+                                  timeStyle: 'short',
+                                }
+                              )}
+                            </td>
 
-                  <tbody>
+                            <td className="px-3 py-3 text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </td>
+
+                            <td className="px-3 py-3 text-cinza">
+                              {item.servico || 'Não informado'}
+                            </td>
+
+                            <td className="px-3 py-3 text-cinza">
+                              {item.pagamento || 'Não informado'}
+                            </td>
+
+                            <td className="px-3 py-3 text-right font-medium text-primary">
+                              {Number(item.valor || 0).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* CARDS DE PAGAMENTOS — TELAS PEQUENAS */}
+                  <div className="grid gap-3 md:hidden">
                     {pagamentos.map((item) => (
-                      <tr
+                      <div
                         key={item.id}
-                        className="border-b border-gray-100 text-sm"
+                        className="rounded-xl border border-cinza/30 bg-white p-3 shadow-sm"
                       >
-                        <td className="px-3 py-3 text-cinza">
-                          {new Date(item.data_pagamento).toLocaleString(
-                            'pt-BR',
-                            {
-                              dateStyle: 'short',
-                              timeStyle: 'short',
-                            }
-                          )}
-                        </td>
+                        <div className="flex items-start justify-between gap-3">
+                          {/* <div className="min-w-0">
+                            <p className="text-xs text-cinza/70">Cliente</p>
 
-                        <td className="px-3 py-3 text-primary">
-                          {item.clientes?.nome || 'Cliente sem nome'}
-                        </td>
+                            <h3 className="break-words font-semibold text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </h3>
+                          </div> */}
+                          <div className="min-w-0">
+                            <p className="text-xs text-cinza/70">Cliente</p>
 
-                        <td className="px-3 py-3 text-cinza">{item.servico}</td>
+                            <h3 className="break-words font-semibold text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </h3>
 
-                        <td className="px-3 py-3 text-cinza">
-                          {item.pagamento}
-                        </td>
+                            <div className="mt-2">
+                              <p className="text-xs text-cinza/70">
+                                Data do pagamento
+                              </p>
 
-                        <td className="px-3 py-3 text-right font-medium text-primary">
-                          {Number(item.valor || 0).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          })}
-                        </td>
-                      </tr>
+                              <p className="text-sm text-cinza">
+                                {new Date(item.data_pagamento).toLocaleString(
+                                  'pt-BR',
+                                  {
+                                    dateStyle: 'short',
+                                    timeStyle: 'short',
+                                  }
+                                )}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0 text-right">
+                            <p className="font-semibold text-success">
+                              {Number(item.valor || 0).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              })}
+                            </p>
+
+                            <span className="mt-1 inline-flex rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              {item.pagamento || 'Não informado'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 space-y-3 text-sm">
+                          <div>
+                            <p className="text-xs text-cinza/70">Data</p>
+
+                            <p className="text-cinza">
+                              {new Date(
+                                `${item.data}T12:00:00`
+                              ).toLocaleDateString('pt-BR')}
+                            </p>
+                          </div>
+
+                          <div className="mt-3 text-sm">
+                            <p className="text-xs text-cinza/70">Serviço</p>
+
+                            <p className="break-words text-cinza">
+                              {item.servico || 'Não informado'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-primary">Pendências do período</h2>
+                  </div>
+                </>
+              )}
+            </div>
 
-            {pendencias.length === 0 ? (
-              <p className="text-sm text-cinza">
-                Nenhuma pendência encontrada neste período.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px]">
-                  <thead>
-                    <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                      <th className="px-3 py-2 font-medium">Agendamento</th>
-                      <th className="px-3 py-2 font-medium">Cliente</th>
-                      <th className="px-3 py-2 font-medium">Serviço</th>
-                      <th className="px-3 py-2 font-medium">Situação</th>
-                      <th className="px-3 py-2 text-right font-medium">
-                        Valor
-                      </th>
-                    </tr>
-                  </thead>
+            {/* PENDÊNCIAS DO PERÍODO */}
+            <div className="mb-6 rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+              <h2 className="mb-3 text-primary">Pendências do período</h2>
 
-                  <tbody>
+              {pendencias.length === 0 ? (
+                <p className="text-sm text-cinza">
+                  Nenhuma pendência encontrada neste período.
+                </p>
+              ) : (
+                <>
+                  {/* TABELA DE PENDÊNCIAS — TELAS GRANDES */}
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full min-w-[700px]">
+                      <thead>
+                        <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
+                          <th className="px-3 py-2 font-medium">Data</th>
+                          <th className="px-3 py-2 font-medium">Cliente</th>
+                          <th className="px-3 py-2 font-medium">Serviço</th>
+                          <th className="px-3 py-2 font-medium">Status</th>
+                          <th className="px-3 py-2 text-right font-medium">
+                            Valor
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {pendencias.map((item) => (
+                          <tr
+                            key={item.id}
+                            className="border-b border-cinza/20 text-sm"
+                          >
+                            <td className="px-3 py-3 text-cinza">
+                              {new Date(
+                                `${item.data}T12:00:00`
+                              ).toLocaleDateString('pt-BR')}
+                            </td>
+
+                            <td className="px-3 py-3 text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </td>
+
+                            <td className="px-3 py-3 text-cinza">
+                              {item.servico || 'Não informado'}
+                            </td>
+
+                            <td className="px-3 py-3 font-medium text-danger">
+                              {item.pagamento || 'Pendente'}
+                            </td>
+
+                            <td className="px-3 py-3 text-right font-medium text-danger">
+                              {Number(item.valor || 0).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* CARDS DE PENDÊNCIAS — TELAS PEQUENAS */}
+                  <div className="grid gap-3 md:hidden">
                     {pendencias.map((item) => (
-                      <tr
+                      <div
                         key={item.id}
-                        className="border-gray- border-b text-sm"
+                        className="rounded-xl border border-cinza/30 border-l-danger bg-white p-3 shadow-sm"
                       >
-                        <td className="px-3 py-3 text-cinza">
-                          {new Date(item.data + 'T12:00:00').toLocaleDateString(
-                            'pt-BR'
-                          )}
-                          {' • '}
-                          {item.horario}
-                        </td>
+                        <div className="flex items-start justify-between gap-3">
+                          {/* <div className="min-w-0">
+                            <p className="text-xs text-cinza/70">Cliente</p>
 
-                        <td className="px-3 py-3 text-primary">
-                          {item.clientes?.nome || 'Cliente sem nome'}
-                        </td>
+                            <h3 className="break-words font-semibold text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </h3>
+                          </div> */}
+                          <div className="min-w-0">
+                            <p className="text-xs text-cinza/70">Cliente</p>
 
-                        <td className="px-3 py-3 text-cinza">{item.servico}</td>
+                            <h3 className="break-words font-semibold text-primary">
+                              {item.clientes?.nome || 'Cliente sem nome'}
+                            </h3>
 
-                        <td className="px-3 py-3 font-medium uppercase text-red-600">
-                          {item.pagamento}
-                        </td>
+                            <div className="mt-2">
+                              <p className="text-xs text-cinza/70">Data</p>
 
-                        <td className="px-3 py-3 text-right font-medium text-primary">
-                          {Number(item.valor || 0).toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          })}
-                        </td>
-                      </tr>
+                              <p className="text-sm text-cinza">
+                                {new Date(
+                                  `${item.data}T12:00:00`
+                                ).toLocaleDateString('pt-BR')}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0 text-right">
+                            <p className="font-semibold text-danger">
+                              {Number(item.valor || 0).toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              })}
+                            </p>
+
+                            <span className="mt-1 inline-flex rounded-full bg-danger/10 px-2 py-1 text-xs font-semibold text-danger">
+                              {item.pagamento || 'Pendente'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                          <div>
+                            <p className="text-xs text-cinza/70">Data</p>
+
+                            <p className="text-cinza">
+                              {new Date(
+                                `${item.data}T12:00:00`
+                              ).toLocaleDateString('pt-BR')}
+                            </p>
+                          </div>
+
+                          {/* <div>
+                            <p className="text-xs text-cinza/70">Status</p>
+
+                            <span className="inline-flex rounded-full bg-danger/10 px-2 py-1 text-xs font-semibold text-danger">
+                              {item.pagamento || 'Pendente'}
+                            </span>
+                          </div> */}
+
+                          <div className="col-span-2">
+                            <p className="text-xs text-cinza/70">Serviço</p>
+
+                            <p className="break-words text-cinza">
+                              {item.servico || 'Não informado'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

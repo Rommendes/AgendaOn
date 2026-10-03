@@ -155,7 +155,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
 
                         if (status === 'cancelado') {
                           return (
-                            <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-gray-700">
+                            <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-cinza/80">
                               Cancelado
                             </span>
                           );
@@ -186,7 +186,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                         }
 
                         return (
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-cinza/80">
                             -
                           </span>
                         );

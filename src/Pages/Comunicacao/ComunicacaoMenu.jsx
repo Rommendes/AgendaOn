@@ -1,12 +1,7 @@
 import { Link } from 'react-router-dom';
 import Header from '../../Componentes/Header/Header';
 import {
-  ChartNoAxesCombined,
-  CreditCard,
-  ReceiptText,
-  WalletCards,
   BellRing,
-  CircleDotDashed,
   Hourglass,
   CircleAlert,
   Bell,

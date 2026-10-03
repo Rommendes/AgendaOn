@@ -5,6 +5,8 @@ import {
 } from '../../utils/whatsapp.jsx';
 import { apenasNumeros } from '../Utilitarios/formadores.js';
 import { supabase } from '../../api/supabaseClient.js';
+import { Check, Loader2, PhoneOff, Send } from 'lucide-react';
+
 export default function BotaoEnviarCobranca({
   agendamento,
   atualizarStatus,
@@ -92,23 +94,46 @@ export default function BotaoEnviarCobranca({
     <div className="flex flex-col items-start gap-1">
       <button
         type="button"
-        className={`rounded px-3 py-1 text-sm text-white ${
-          disabledFinal
-            ? 'cursor-not-allowed bg-emerald-600 text-white'
-            : 'bg-green-600 hover:bg-green-700'
+        className={`btn-icone inline-flex h-9 w-9 items-center justify-center rounded-md border bg-white shadow-sm transition ${
+          status === 'enviado'
+            ? 'cursor-not-allowed border-green-600 text-green-600'
+            : disabledExternamente
+              ? 'cursor-not-allowed border-gray-300 bg-gray-100 text-gray-400'
+              : enviando
+                ? 'cursor-wait border-secondary text-secondary'
+                : 'border-secondary text-secondary hover:border-primary hover:bg-primary/5 hover:text-primary'
         } ${className}`}
         onClick={handleClick}
         disabled={disabledFinal}
+        title={
+          status === 'enviado'
+            ? 'Cobrança enviada'
+            : enviando
+              ? 'Abrindo WhatsApp'
+              : disabledExternamente
+                ? 'Cliente sem telefone válido'
+                : label
+        }
+        aria-label={
+          status === 'enviado'
+            ? 'Cobrança enviada'
+            : enviando
+              ? 'Abrindo WhatsApp'
+              : disabledExternamente
+                ? 'Cliente sem telefone válido'
+                : label
+        }
       >
-        {status === 'enviado'
-          ? 'Enviado'
-          : enviando
-            ? 'Abrindo...'
-            : disabledExternamente
-              ? 'Sem telefone'
-              : label}
+        {status === 'enviado' ? (
+          <Check size={20} />
+        ) : enviando ? (
+          <Loader2 className="animate-spin" size={20} />
+        ) : disabledExternamente ? (
+          <PhoneOff size={20} />
+        ) : (
+          <Send size={20} className="" />
+        )}
       </button>
-
       {mensagem && (
         <p className={`text-xs ${erro ? 'text-red-600' : 'text-green-600'}`}>
           {mensagem}

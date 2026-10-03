@@ -209,7 +209,7 @@ function ResumoFinanceiro() {
 
   return (
     <>
-      <Header title="Resumo Financeiro" />
+      <Header title="Resumo Financeiro" voltarPara="/financeiro-menu" />
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
@@ -218,16 +218,16 @@ function ResumoFinanceiro() {
               Resumo Financeiro
             </h1>
 
-            <p className="mb-6 text-sm text-gray-500">
+            <p className="mb-6 text-sm text-cinza/80">
               Resumo de recebimentos, pendências e pagamentos dos atendimentos.
             </p>
-            <p className="border-b text-sm font-bold uppercase text-secondary">
+            <p className="border-b border-cinza/30 text-sm font-bold uppercase text-secondary">
               {mesAtual}
             </p>
             <div className="conteudo-amplo">
               <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Card 1 com refinamento de UI/UX */}
-                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
                     {/* Ícone ganha um fundinho suave da cor do tema */}
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
@@ -245,7 +245,7 @@ function ResumoFinanceiro() {
                 </div>
 
                 {/* Card 2: Pendente no mês */}
-                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <CircleAlert className="text-secondary" size={20} />
@@ -261,7 +261,7 @@ function ResumoFinanceiro() {
                 </div>
 
                 {/* Card 3: Clientes com pendências */}
-                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <UserRound className="text-secondary" size={20} />
@@ -274,7 +274,7 @@ function ResumoFinanceiro() {
                 </div>
 
                 {/* Card 4: Pagamentos registrados */}
-                <div className="flex cursor-pointer flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <BadgeCheck
@@ -326,7 +326,7 @@ function ResumoFinanceiro() {
                         <div className="mt-2 space-y-1">
                           <p className="flex items-center gap-2 text-xs text-cinza">
                             <CalendarDays
-                              size={14}
+                              size={20}
                               className="text-secondary"
                             />
 
@@ -344,13 +344,13 @@ function ResumoFinanceiro() {
                           </p>
 
                           <p className="flex items-center gap-2 text-xs text-cinza">
-                            <Scissors size={15} className="text-secondary" />
+                            <Scissors size={20} className="text-secondary" />
                             {item.servico}
                           </p>
 
                           <p className="flex items-center gap-2 text-secondary">
                             <BadgeDollarSign
-                              size={15}
+                              size={20}
                               className="font-bold text-secondary"
                             />
                             <span className="text-sm font-bold text-danger">
@@ -363,7 +363,7 @@ function ResumoFinanceiro() {
                         </div>
 
                         <select
-                          className="input-padrao mt-3 flex max-w-[220px] cursor-pointer text-cinza"
+                          className="input-padrao mt-3 flex max-w-[220px] text-cinza"
                           value={formaPagamento[item.id] || ''}
                           onChange={(e) => {
                             setFormaPagamento((prev) => ({
@@ -424,7 +424,10 @@ function ResumoFinanceiro() {
                       className="rounded-2xl border border-primary bg-white p-6 shadow-sm"
                     >
                       <p className="flex items-center gap-2 font-medium text-primary">
-                        <UserRound size={18} className="text-secondary" />
+                        <UserRound
+                          size={24}
+                          className="font-bold text-secondary"
+                        />
                         {item.clientes?.nome || 'Cliente sem nome'}
                       </p>
 

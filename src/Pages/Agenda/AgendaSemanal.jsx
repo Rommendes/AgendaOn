@@ -226,255 +226,263 @@ export default function AgendaSemanal() {
 
   return (
     <>
-      <Header />
-      <main className="main-container">
-        <div className="container-formulario">
-          <h1 className="mb-5 flex gap-2 p-4 text-primary">
-            <CalendarDays className="text-secondary" />
-            Agenda Semanal (atual e futura)
-          </h1>
+      <Header voltarPara="/agendamentos-menu" />
 
-          {carregando && <div className="text-gray-600">Carregando…</div>}
+      <div className="main">
+        <div className="main-container">
+          <div className="container-formulario text-primary">
+            <div>
+              {' '}
+              <h1 className="mb-5 flex gap-2 border-b text-primary">
+                <CalendarDays className="text-secondary" />
+                Agenda Semanal (atual e futura)
+              </h1>
+            </div>
 
-          {!carregando && semanas.length === 0 && (
-            <div className="text-gray-600">Não há agendamentos futuros.</div>
-          )}
+            {carregando && <div className="text-cinza/80">Carregando…</div>}
 
-          {!carregando &&
-            semanas.map((sem) => (
-              <section
-                id={`semana-${sem.ano}-${sem.semana}`}
-                key={`${sem.ano}-${sem.semana}`}
-                className="mb-5 rounded-xl border border-slate-200 bg-white shadow-sm"
-              >
-                {/* Cabeçalho da semana */}
-                <div className="ml-3 flex items-center gap-10 p-4">
-                  <h2 className="flex items-center gap-1 text-primary">
-                    <span>Semana</span>
+            {!carregando && semanas.length === 0 && (
+              <div className="text-cinza/80">Não há agendamentos futuros.</div>
+            )}
 
-                    <span className="font-bold text-secondary">
-                      {sem.semana}
-                    </span>
+            {!carregando &&
+              semanas.map((sem) => (
+                <section
+                  id={`semana-${sem.ano}-${sem.semana}`}
+                  key={`${sem.ano}-${sem.semana}`}
+                  className="mb-5 rounded-xl border-b shadow-sm"
+                >
+                  {/* Cabeçalho da semana */}
+                  <div className="ml-3 flex items-center gap-10 p-4">
+                    <h2 className="flex items-center gap-1 text-primary">
+                      <span>Semana</span>
 
-                    <span>de {sem.ano}</span>
-                  </h2>
+                      <span className="font-bold text-secondary">
+                        {sem.semana}
+                      </span>
 
-                  {/* Ações da semana */}
-                  <div className="flex items-center gap-2">
-                    {/* Imprimir semana */}
-                    <button
-                      type="button"
-                      title={`Imprimir a semana ${sem.semana}`}
-                      className="btn-icone text-primary"
-                      onClick={() => imprimirSemana(sem.ano, sem.semana)}
-                      aria-label={`Imprimir a semana ${sem.semana} de ${sem.ano}`}
-                    >
-                      <Printer size={19} aria-hidden="true" />
-                    </button>
+                      <span>de {sem.ano}</span>
+                    </h2>
 
-                    {/* Enviar lembretes da semana */}
-                    <button
-                      type="button"
-                      title="Enviar lembretes para todos desta semana"
-                      className="btn-icone text-secondary"
-                      onClick={async () => {
-                        const listaSemana = sem.dias.flatMap(([_, ags]) => ags);
+                    {/* Ações da semana */}
+                    <div className="flex items-center gap-2">
+                      {/* Imprimir semana */}
+                      <button
+                        type="button"
+                        title={`Imprimir a semana ${sem.semana}`}
+                        className="btn-icone text-primary"
+                        onClick={() => imprimirSemana(sem.ano, sem.semana)}
+                        aria-label={`Imprimir a semana ${sem.semana} de ${sem.ano}`}
+                      >
+                        <Printer size={19} aria-hidden="true" />
+                      </button>
 
-                        const { enviados, copiados } =
-                          await enviarLembretesEmLote(listaSemana, {
-                            intervalMs: 2000,
-                          });
+                      {/* Enviar lembretes da semana */}
+                      <button
+                        type="button"
+                        title="Enviar lembretes para todos desta semana"
+                        className="btn-icone text-secondary"
+                        onClick={async () => {
+                          const listaSemana = sem.dias.flatMap(
+                            ([_, ags]) => ags
+                          );
 
-                        abrirAviso(
-                          `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${
-                            copiados ? `, ${copiados} copiados` : ''
-                          }.`
-                        );
-                      }}
-                      aria-label={`Enviar lembretes da semana ${sem.semana}`}
-                    >
-                      <CalendarRange size={19} aria-hidden="true" />
-                    </button>
+                          const { enviados, copiados } =
+                            await enviarLembretesEmLote(listaSemana, {
+                              intervalMs: 2000,
+                            });
+
+                          abrirAviso(
+                            `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${
+                              copiados ? `, ${copiados} copiados` : ''
+                            }.`
+                          );
+                        }}
+                        aria-label={`Enviar lembretes da semana ${sem.semana}`}
+                      >
+                        <CalendarRange size={19} aria-hidden="true" />
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Dias da semana */}
-                <div className="ml-3 space-y-4 p-3 sm:p-4">
-                  {sem.dias.map(([dataISO, ags]) => (
-                    <div
-                      key={dataISO}
-                      className="rounded-lg border border-slate-200"
-                    >
-                      {/* Cabeçalho do dia */}
-                      <div className="ml-3 flex items-center gap-10 p-2">
-                        <div className="font-semibold text-primary">
-                          {formatarBRDataISO(dataISO)}
+                  {/* Dias da semana */}
+                  <div className="ml-3 space-y-4 p-3 sm:p-4">
+                    {sem.dias.map(([dataISO, ags]) => (
+                      <div
+                        key={dataISO}
+                        className="rounded-lg border border-slate-200"
+                      >
+                        {/* Cabeçalho do dia */}
+                        <div className="ml-3 flex items-center gap-10 p-2">
+                          <div className="font-semibold text-primary">
+                            {formatarBRDataISO(dataISO)}
+                          </div>
+
+                          {/* Enviar lembretes do dia */}
+                          <button
+                            type="button"
+                            title="Enviar lembretes para todos deste dia"
+                            className="btn-icone text-secondary"
+                            onClick={async () => {
+                              const { enviados, copiados } =
+                                await enviarLembretesEmLote(ags, {
+                                  intervalMs: 2000,
+                                });
+
+                              abrirAviso(
+                                `${formatarBRDataISO(
+                                  dataISO
+                                )}: ${enviados} enviados${
+                                  copiados ? `, ${copiados} copiados` : ''
+                                }.`
+                              );
+                            }}
+                            aria-label={`Enviar lembretes do dia ${formatarBRDataISO(
+                              dataISO
+                            )}`}
+                          >
+                            <CalendarClock size={19} aria-hidden="true" />
+                          </button>
                         </div>
 
-                        {/* Enviar lembretes do dia */}
-                        <button
-                          type="button"
-                          title="Enviar lembretes para todos deste dia"
-                          className="btn-icone text-secondary"
-                          onClick={async () => {
-                            const { enviados, copiados } =
-                              await enviarLembretesEmLote(ags, {
-                                intervalMs: 2000,
-                              });
+                        {/* Tabela de atendimentos do dia */}
+                        <div className="overflow-x-auto p-2">
+                          <table className="w-full table-fixed border-collapse">
+                            <colgroup>
+                              <col className="w-[14%]" />
+                              <col className="w-[30%]" />
+                              <col className="w-[38%]" />
+                              <col className="w-[18%]" />
+                            </colgroup>
 
-                            abrirAviso(
-                              `${formatarBRDataISO(
-                                dataISO
-                              )}: ${enviados} enviados${
-                                copiados ? `, ${copiados} copiados` : ''
-                              }.`
-                            );
-                          }}
-                          aria-label={`Enviar lembretes do dia ${formatarBRDataISO(
-                            dataISO
-                          )}`}
-                        >
-                          <CalendarClock size={19} aria-hidden="true" />
-                        </button>
-                      </div>
+                            <thead>
+                              <tr className="border bg-cinza/10 text-center text-sm font-extrabold uppercase text-primary">
+                                <th
+                                  scope="col"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                >
+                                  Hora
+                                </th>
 
-                      {/* Tabela de atendimentos do dia */}
-                      <div className="overflow-x-auto p-2">
-                        <table className="w-full table-fixed border-collapse">
-                          <colgroup>
-                            <col className="w-[14%]" />
-                            <col className="w-[30%]" />
-                            <col className="w-[38%]" />
-                            <col className="w-[18%]" />
-                          </colgroup>
+                                <th
+                                  scope="col"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                >
+                                  Cliente
+                                </th>
 
-                          <thead>
-                            <tr className="border bg-cinza/10 text-center text-sm font-extrabold uppercase text-primary">
-                              <th
-                                scope="col"
-                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
-                              >
-                                Hora
-                              </th>
+                                <th
+                                  scope="col"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                >
+                                  Serviço
+                                </th>
 
-                              <th
-                                scope="col"
-                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
-                              >
-                                Cliente
-                              </th>
-
-                              <th
-                                scope="col"
-                                className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
-                              >
-                                Serviço
-                              </th>
-
-                              <th
-                                scope="col"
-                                className="px-2 py-2 text-center text-xs font-semibold uppercase text-slate-500"
-                              >
-                                Lembrete
-                              </th>
-                            </tr>
-                          </thead>
-
-                          <tbody className="divide-y divide-slate-100">
-                            {ags.map((ag) => (
-                              <tr
-                                key={ag.id}
-                                className="transition-colors hover:bg-slate-50"
-                              >
-                                {/* Hora */}
-                                <td className="px-4 py-3 align-middle font-semibold text-cinza">
-                                  {ag.horario}
-                                </td>
-
-                                {/* Cliente */}
-                                <td className="break-words px-4 py-3 align-middle text-cinza">
-                                  {ag.clientes?.nome || 'Sem nome'}
-                                </td>
-
-                                {/* Serviço */}
-                                <td className="break-words px-4 py-3 align-middle text-cinza">
-                                  {ag.servico || '-'}
-                                </td>
-
-                                {/* Lembrete individual */}
-                                <td className="px-2 py-3 text-center align-middle">
-                                  <button
-                                    type="button"
-                                    title={`Enviar lembrete para ${
-                                      ag.clientes?.nome || 'este cliente'
-                                    }`}
-                                    className="btn-icone text-secondary"
-                                    onClick={async () => {
-                                      const resultado =
-                                        await enviarLembreteDeAgendamento(ag);
-
-                                      if (resultado === 'copiado') {
-                                        abrirAviso(
-                                          'Sem telefone. Mensagem copiada para a área de transferência.'
-                                        );
-                                      }
-                                    }}
-                                    aria-label={`Enviar lembrete para ${
-                                      ag.clientes?.nome || 'este cliente'
-                                    }`}
-                                  >
-                                    <BellRing size={19} aria-hidden="true" />
-                                  </button>
-                                </td>
+                                <th
+                                  scope="col"
+                                  className="px-2 py-2 text-center text-xs font-semibold uppercase text-slate-500"
+                                >
+                                  Lembrete
+                                </th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+
+                            <tbody className="divide-y divide-slate-100">
+                              {ags.map((ag) => (
+                                <tr
+                                  key={ag.id}
+                                  className="transition-colors hover:bg-slate-50"
+                                >
+                                  {/* Hora */}
+                                  <td className="px-4 py-3 align-middle font-semibold text-cinza">
+                                    {ag.horario}
+                                  </td>
+
+                                  {/* Cliente */}
+                                  <td className="break-words px-4 py-3 align-middle text-cinza">
+                                    {ag.clientes?.nome || 'Sem nome'}
+                                  </td>
+
+                                  {/* Serviço */}
+                                  <td className="break-words px-4 py-3 align-middle text-cinza">
+                                    {ag.servico || '-'}
+                                  </td>
+
+                                  {/* Lembrete individual */}
+                                  <td className="px-2 py-3 text-center align-middle">
+                                    <button
+                                      type="button"
+                                      title={`Enviar lembrete para ${
+                                        ag.clientes?.nome || 'este cliente'
+                                      }`}
+                                      className="btn-icone text-secondary"
+                                      onClick={async () => {
+                                        const resultado =
+                                          await enviarLembreteDeAgendamento(ag);
+
+                                        if (resultado === 'copiado') {
+                                          abrirAviso(
+                                            'Sem telefone. Mensagem copiada para a área de transferência.'
+                                          );
+                                        }
+                                      }}
+                                      aria-label={`Enviar lembrete para ${
+                                        ag.clientes?.nome || 'este cliente'
+                                      }`}
+                                    >
+                                      <BellRing size={19} aria-hidden="true" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </section>
+              ))}
+          </div>
+
+          {/* Modal de aviso */}
+          {aviso.aberto && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="titulo-aviso"
+            >
+              <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white shadow-xl">
+                <div className="border-b border-slate-200 px-5 py-4">
+                  <h2
+                    id="titulo-aviso"
+                    className="text-lg font-semibold text-primary"
+                  >
+                    Lembretes
+                  </h2>
                 </div>
-              </section>
-            ))}
-        </div>
 
-        {/* Modal de aviso */}
-        {aviso.aberto && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="titulo-aviso"
-          >
-            <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white shadow-xl">
-              <div className="border-b border-slate-200 px-5 py-4">
-                <h2
-                  id="titulo-aviso"
-                  className="text-lg font-semibold text-primary"
-                >
-                  Lembretes
-                </h2>
-              </div>
+                <div className="px-5 py-5">
+                  <p className="text-sm leading-relaxed text-cinza">
+                    {aviso.mensagem}
+                  </p>
+                </div>
 
-              <div className="px-5 py-5">
-                <p className="text-sm leading-relaxed text-cinza">
-                  {aviso.mensagem}
-                </p>
-              </div>
-
-              <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
-                <button
-                  type="button"
-                  className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
-                  onClick={fecharAviso}
-                >
-                  OK
-                </button>
+                <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
+                  <button
+                    type="button"
+                    className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                    onClick={fecharAviso}
+                  >
+                    OK
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
+          )}
+        </div>
+      </div>
     </>
   );
 }

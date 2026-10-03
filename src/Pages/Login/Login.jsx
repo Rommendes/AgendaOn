@@ -64,7 +64,7 @@ const Login = () => {
           {error && <p className="text-center text-sm text-red-500">{error}</p>}
 
           <div>
-            <label className="block text-gray-700">Email</label>
+            <label className="block text-cinza/80">Email</label>
             <input
               type="email"
               autoComplete="email"
@@ -77,7 +77,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700">Senha</label>
+            <label className="block text-cinza/80">Senha</label>
             <input
               type="password"
               autoComplete="current-password"

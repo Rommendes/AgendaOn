@@ -69,10 +69,12 @@ body {
     @apply bg-secondary hover:bg-alternativo;
   }
 
+  /* .input-padrao {
+    @apply w-full appearance-none rounded-md border border-secondary bg-secondary/5 px-3 py-2 text-sm font-normal leading-tight text-cinza focus:border-b-2 focus:border-primary focus:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-borderLigth;
+  } */
   .input-padrao {
-    @apply w-full appearance-none rounded-md border border-cinza/30 bg-cinza/5 px-3 py-2 text-sm font-normal leading-tight text-cinza focus:border-b-2 focus:border-b-secondary focus:outline-none focus:ring-2 focus:ring-borderLigth;
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
   }
-
   /* Botão base e variações de cor */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded px-3 py-1.5 text-sm text-white transition;
@@ -168,7 +170,7 @@ body {
   }
   /*  ✅ Ícones */
   .btn-icone {
-    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm transition-colors duration-200;
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg border border-cinza/20 bg-white shadow-lg transition-colors duration-200;
 
     color: inherit;
   }

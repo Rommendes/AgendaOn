@@ -145,99 +145,118 @@ const CadastrarCliente = () => {
 
   return (
     <>
-      <Header title="Cadastro de Cliente" />
+      <Header title="Cadastro de Cliente" voltarPara="/clientes-menu" />
 
       <div className="main">
-        <div className="container-formulario">
-          <div className="flex-wrapp-4 rounded">
-            <h1 className="mb-5 flex gap-2 p-4 text-primary">
-              <UserRoundPlus className="text-secondary" size={24} />
-              Preencha os Campos Obrigatórios
-              <span className="text-bold text-red-500">*</span> e opcionais
-            </h1>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Nome */}
-            <div>
-              <label className="block px-2 text-left font-medium">
-                Nome <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="nome"
-                value={formData.nome}
-                onChange={handleChange}
-                className={` ${errors.nome ? 'border-red-500' : 'border-gray-300'} input-padrao`}
-              />
-              {errors.nome && (
-                <p className="text-sm text-red-500">{errors.nome}</p>
-              )}
+        <div className="main-container">
+          <div className="container-formulario text-primary">
+            <div className="mb-6">
+              <h1 className="flex gap-2 text-primary">
+                <UserRoundPlus className="text-secondary" />
+                Cadastrar novo cliente
+              </h1>
+              <p className="text-sm text-cinza/80">
+                Preencha os campos abaixo para cadastrar um novo cliente.
+              </p>
+              <p className="mt-1 text-sm text-cinza/80">
+                <span className="whitespace-nowrap">
+                  Campos com{' '}
+                  <span className="text-cinza/80">
+                    (<span className="tex-lg font-bold text-danger">*</span>)
+                  </span>{' '}
+                  são obrigatórios
+                </span>
+              </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
-              {/* Telefone */}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Nome */}
               <div>
                 <label className="block px-2 text-left font-medium">
-                  Telefone <span className="text-red-500">*</span>
+                  Nome<span className="font-bold text-danger">*</span>
                 </label>
+
                 <input
                   type="text"
-                  name="telefone"
-                  value={formData.telefone}
+                  name="nome"
+                  value={formData.nome}
                   onChange={handleChange}
-                  placeholder="(99) 99999-9999"
-                  className={`input-padrao ${errors.telefone ? 'border-red-500' : 'border-gray-300'} `}
+                  className={`input-padrao ${errors.nome ? '!border-red-500 !ring-red-200' : ''}`}
                 />
-                {errors.telefone && (
-                  <p className="text-sm text-red-500">{errors.telefone}</p>
+                {errors.nome && (
+                  <p className="text-sm text-red-500">{errors.nome}</p>
                 )}
               </div>
+              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-3">
+                {/* Telefone */}
+                <div>
+                  <label className="block px-2 text-left font-medium">
+                    Telefone<span className="font-bold text-danger">*</span>
+                  </label>
 
-              {/* Data de aniversário */}
-              <div>
-                <label className="block px-2 text-left font-medium">
-                  Data de Aniversário<span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="dataAniversario"
-                  value={formData.dataAniversario}
-                  onChange={handleChange}
-                  className="input-padrao"
-                />
+                  <input
+                    type="text"
+                    name="telefone"
+                    value={formData.telefone}
+                    onChange={handleChange}
+                    placeholder="(99) 99999-9999"
+                    className={`input-padrao ${
+                      errors.telefone ? '!border-red-500 !ring-red-200' : ''
+                    }`}
+                  />
+
+                  {errors.telefone && (
+                    <p className="text-sm text-red-500">{errors.telefone}</p>
+                  )}
+                </div>
+
+                {/* Data de aniversário */}
+                <div>
+                  <label className="block px-2 text-left font-medium">
+                    Data de Aniversário
+                    <span className="font-bold text-danger">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="dataAniversario"
+                    value={formData.dataAniversario}
+                    onChange={handleChange}
+                    className="input-padrao"
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className="block px-2 text-left font-medium">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="input-padrao"
+                  />
+                </div>
               </div>
+              {/* Endereço */}
+              <EnderecoForm
+                formData={formData.endereco}
+                handleChange={handleEnderecoChange}
+              />
 
-              {/* Email */}
-              <div>
-                <label className="block px-2 text-left font-medium">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input-padrao"
-                />
+              {/* Botão de cadastrar */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
+                  disabled={loading}
+                >
+                  {loading ? 'Cadastrando...' : 'Cadastrar'}
+                </button>
               </div>
-            </div>
-            {/* Endereço */}
-            <EnderecoForm
-              formData={formData.endereco}
-              handleChange={handleEnderecoChange}
-            />
-
-            {/* Botão de cadastrar */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
-                disabled={loading}
-              >
-                {loading ? 'Cadastrando...' : 'Cadastrar'}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </>

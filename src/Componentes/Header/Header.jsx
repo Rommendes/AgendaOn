@@ -1,10 +1,14 @@
-import { Menu, X, Home, ChevronDown } from 'lucide-react';
+import { Menu, X, Home, ChevronDown, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import BotaoSair from '../BotaoSair';
 import { useState } from 'react';
 
-const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
+const Header = ({
+  title = 'Agenda de Atendimentos',
+  actionButton = null,
+  voltarPara = null,
+}) => {
   const [menuAberto, setMenuAberto] = useState(false);
   const [submenuClientesAberto, setSubmenuClientesAberto] = useState(false);
   const [submenuAgendamentosAberto, setSubmenuAgendamentosAberto] =
@@ -22,18 +26,33 @@ const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
 
       {/* Área principal do cabeçalho */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-4">
-        <Link
-          to="/home"
-          className="justify-self-start"
-          aria-label="Ir para a página inicial"
-        >
-          <img
-            src="/agendaon-icon.png"
-            alt="AgendaOn"
-            className="h-10 w-10 object-contain"
-          />
-        </Link>
-
+        <div className="justify-self-start">
+          {voltarPara ? (
+            <Link
+              to={voltarPara}
+              aria-label="Voltar"
+              title="Voltar"
+              className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-secondary"
+            >
+              <ArrowLeft size={25} />
+              <span className="text-sm font-medium">Voltar</span>
+            </Link>
+          ) : (
+            <Link
+              to="/home"
+              aria-label="Ir para a página inicial
+            "
+              className="text-primary"
+            >
+              <img
+                src="/agendaon-icon.png"
+                alt="AgendaOn"
+                className="h-10 w-10 object-contain"
+              />
+              Home
+            </Link>
+          )}
+        </div>
         <h1 className="px-2 text-center text-lg font-semibold text-primary sm:text-xl">
           {title}
         </h1>
@@ -45,14 +64,15 @@ const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
             onClick={() => setMenuAberto(!menuAberto)}
             aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={menuAberto}
-            className="flex h-10 w-10 items-center justify-center rounded text-secondary transition hover:bg-orange-50"
+            className="btn-icone flex h-10 w-10 items-center justify-center rounded text-secondary transition hover:bg-secondary/10"
+            title="Menu"
           >
             {menuAberto ? <X size={30} /> : <Menu size={30} />}
           </button>
         </div>
       </div>
       {menuAberto && (
-        <nav className="absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border border-gray-200 bg-white shadow-lg">
+        <nav className="absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border border-cinza/30 bg-white shadow-lg">
           <Link
             to="/home"
             onClick={() => setMenuAberto(false)}
@@ -250,7 +270,7 @@ const Header = ({ title = 'Agenda de Atendimentos', actionButton = null }) => {
               </div>
             )}
           </div>
-          <div className="border-b border-gray-200">
+          <div className="border-b border-cinza/30">
             <div className="flex items-center">
               <Link
                 to="/financeiro-menu"

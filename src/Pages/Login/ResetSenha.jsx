@@ -35,7 +35,7 @@ export default function ResetSenha() {
 
         <div className="mt-6 space-y-4">
           <div>
-            <label className="block text-gray-700">Nova senha</label>
+            <label className="block text-cinza/80">Nova senha</label>
             <input
               type="password"
               className="w-full rounded-lg border border-cinza border-b-secondary p-3 focus:outline-none focus:ring-2 focus:ring-primary"

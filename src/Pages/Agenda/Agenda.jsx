@@ -8,7 +8,7 @@ import {
   Pencil,
   Trash2,
   Save,
-  Clock,
+  BellRing,
   CircleOff,
   ClipboardPlusIcon,
 } from 'lucide-react';
@@ -113,6 +113,7 @@ const AgendaAtendimento = () => {
         clientes ( id, nome, telefone )
       `
       )
+      .eq('status_agendamento', 'agendado')
       .order('data', { ascending: false })
       .order('horario', { ascending: true });
     if (error) {
@@ -476,6 +477,7 @@ const AgendaAtendimento = () => {
         )
       `
       )
+
       .order('enviado_em', { ascending: false });
 
     if (error) {
@@ -489,23 +491,23 @@ const AgendaAtendimento = () => {
 
   return (
     <>
-      <Header title="Agenda" />
+      <Header title="Agendamentos" voltarPara="/agendamentos-menu" />
       <div className="main">
         <div className="main-container">
           {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
-          <div className="container-formulario">
-            <h1 className="flex gap-2 text-primary">
+          <div className="container-formulario text-primary">
+            <h1 className="mb-4 flex gap-2 border-b border-cinza/30 text-primary">
               <ClipboardPlusIcon className="text-secondary" size={25} />
               Novo Agendamento
             </h1>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 text-primary md:grid-cols-2 lg:grid-cols-4">
               {/* Data e Horário */}
 
               {/* 🗓️ Data */}
               <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
+                <label className="mb-1 text-[13px] font-normal text-primary">
                   Data
                 </label>
 
@@ -518,23 +520,19 @@ const AgendaAtendimento = () => {
               </div>
               {/* ⏰ Horário */}
               <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
-                  Horário
-                </label>
+                <label className="mb-1 text-[13px] font-normal">Horário</label>
                 <InputHorario
                   value={novoAgendamento.horario}
                   onChange={(val) =>
                     setNovoAgendamento({ ...novoAgendamento, horario: val })
                   }
-                  className="w-full rounded border bg-white px-3 py-2 text-sm text-gray-600"
+                  className="w-full rounded border bg-white px-3 py-2 text-sm text-cinza"
                 />
               </div>
 
               {/* Cliente */}
-              <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
-                  Cliente
-                </label>
+              <div className="flex flex-col text-primary">
+                <label className="mb-1 text-[13px] font-normal">Cliente</label>
 
                 <select
                   value={novoAgendamento.cliente_id}
@@ -557,10 +555,8 @@ const AgendaAtendimento = () => {
               </div>
 
               {/* Serviço */}
-              <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
-                  Serviço
-                </label>
+              <div className="flex flex-col text-primary">
+                <label className="mb-1 text-[13px] font-normal">Serviço</label>
                 <select
                   value={novoAgendamento.servico}
                   onChange={(e) =>
@@ -585,10 +581,8 @@ const AgendaAtendimento = () => {
               </div>
 
               {/* Valor */}
-              <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
-                  Valor
-                </label>
+              <div className="flex flex-col text-primary">
+                <label className="mb-1 text-[13px] font-normal">Valor</label>
                 <input
                   type="text"
                   placeholder="Valor"
@@ -604,8 +598,8 @@ const AgendaAtendimento = () => {
               </div>
 
               {/* Observações */}
-              <div className="flex flex-col">
-                <label className="mb-1 text-[13px] font-normal text-gray-700">
+              <div className="flex flex-col text-primary">
+                <label className="mb-1 text-[13px] font-normal text-cinza">
                   Observações
                 </label>
                 <textarea
@@ -627,7 +621,7 @@ const AgendaAtendimento = () => {
               <div title="Salvar agendamento">
                 <button
                   onClick={salvarAgendamento}
-                  className="btn btn-secondary w-full sm:w-auto"
+                  className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
                   aria-label="Salvar agendamento"
                 >
                   <Save size={20} />
@@ -648,7 +642,7 @@ const AgendaAtendimento = () => {
                   <div
                     // key={diaSemana}
                     key={`${diaSemana}-${dataFormatada}`}
-                    className="mb-6 rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm"
+                    className="mb-6 rounded-2xl bg-white/70 px-0 py-4 shadow-sm backdrop-blur-sm md:p-4"
                   >
                     <div className="mb-3 flex items-center justify-between gap-4">
                       <div>
@@ -664,19 +658,342 @@ const AgendaAtendimento = () => {
                             onClick={() =>
                               iniciarFilaLembretes(agendamentosDoDia)
                             }
-                            className="btn btn-lembrete-primary w-full sm:w-auto"
+                            className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:border-primary hover:bg-primary/5 hover:text-primary"
                             aria-label="Enviar lembretes para todos da semana"
                           >
-                            <Save size={20} />
+                            <BellRing size={20} />
                             Enviar Lembrete
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    <div className="w-full overflow-x-auto rounded-xl border border-gray-200 bg-gradient-to-b from-white to-violet-50/30">
+                    {/*‼️ CARDS PARA MOBILE */}
+                    <div className="grid gap-3 md:hidden">
+                      {agendamentosDoDia.map((agendamento) => {
+                        const statusAtual =
+                          statusLocal[agendamento.id] ||
+                          (agendamento.status_agendamento === 'concluido'
+                            ? 'Concluído'
+                            : agendamento.status_agendamento === 'cancelado'
+                              ? 'Cancelado'
+                              : 'Agendado');
+
+                        const textoStatus =
+                          statusAtual === 'Concluído' &&
+                          agendamento.pagamento === 'Pendente'
+                            ? 'Pendente'
+                            : statusAtual;
+
+                        const classeStatus =
+                          textoStatus === 'Concluído'
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : textoStatus === 'Pendente'
+                              ? 'bg-red-100 text-red-700'
+                              : textoStatus === 'Cancelado'
+                                ? 'bg-gray-200 text-cinza/80'
+                                : 'bg-blue-100 text-blue-700';
+                        return (
+                          <div
+                            key={agendamento.id}
+                            className="rounded-xl border border-cinza/30 bg-white p-4 shadow-sm"
+                          >
+                            {/* Cliente e status */}
+                            <div>
+                              <div>
+                                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                                  Cliente
+                                </p>
+
+                                <h2 className="mt-1 font-semibold text-primary">
+                                  {agendamento.clientes?.nome || 'Sem nome'}
+                                </h2>
+                              </div>
+                            </div>
+
+                            {editandoId === agendamento.id ? (
+                              /* MODO DE EDIÇÃO NO CELULAR */
+                              <div className="mt-4 space-y-3 rounded-xl border border-blue-200 bg-blue-50/40 p-3">
+                                <div>
+                                  <label className="label-padrao">Data</label>
+                                  <InputData
+                                    value={formEdicao.data || ''}
+                                    onChange={(valor) =>
+                                      atualizarCampoEdicao('data', valor)
+                                    }
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="label-padrao">
+                                    Horário
+                                  </label>
+                                  <input
+                                    type="time"
+                                    value={formEdicao.horario || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'horario',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="input-padrao"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="label-padrao">
+                                    Cliente
+                                  </label>
+                                  <select
+                                    value={formEdicao.cliente_id || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'cliente_id',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="input-padrao"
+                                  >
+                                    <option value="">
+                                      Selecione um cliente
+                                    </option>
+
+                                    {clientes.map((cliente) => (
+                                      <option
+                                        key={cliente.id}
+                                        value={cliente.id}
+                                      >
+                                        {cliente.nome}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label className="label-padrao">
+                                    Serviço
+                                  </label>
+                                  <select
+                                    value={formEdicao.servico || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'servico',
+                                        e.target.value
+                                      )
+                                    }
+                                    className="input-padrao"
+                                  >
+                                    <option value="">Selecione</option>
+                                    <option value="Tintura">Tintura</option>
+                                    <option value="Corte">Corte</option>
+                                    <option value="Escova progressiva">
+                                      Escova Progressiva
+                                    </option>
+                                    <option value="Butox">Butox</option>
+                                    <option value="Manicure">Manicure</option>
+                                    <option value="Maquiagem">Maquiagem</option>
+                                    <option value="Sobrancelha">
+                                      Sobrancelha
+                                    </option>
+                                    <option value="Depilação">Depilação</option>
+                                    <option value="Penteado festa">
+                                      Penteado festa
+                                    </option>
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label className="label-padrao">Valor</label>
+                                  <input
+                                    type="text"
+                                    value={formEdicao.valorFormatado || ''}
+                                    onChange={(e) => {
+                                      const somenteNumeros =
+                                        e.target.value.replace(/\D/g, '');
+
+                                      setFormEdicao((anterior) => ({
+                                        ...anterior,
+                                        valor: somenteNumeros,
+                                        valorFormatado:
+                                          formatarMoeda(somenteNumeros),
+                                      }));
+                                    }}
+                                    className="input-padrao"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="label-padrao">
+                                    Observações
+                                  </label>
+                                  <textarea
+                                    value={formEdicao.obs || ''}
+                                    onChange={(e) =>
+                                      atualizarCampoEdicao(
+                                        'obs',
+                                        e.target.value
+                                      )
+                                    }
+                                    rows={3}
+                                    className="input-padrao resize-none"
+                                    placeholder="Digite uma observação"
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              /* VISUALIZAÇÃO NORMAL */
+                              <div className="mt-4 grid grid-cols-2 gap-x-6 text-sm">
+                                <div className="space-y-3">
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Horário
+                                    </p>
+                                    <p className="font-medium text-cinza">
+                                      {agendamento.horario}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Serviço
+                                    </p>
+                                    <p className="font-medium text-cinza">
+                                      {agendamento.servico || 'Não informado'}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                  <div>
+                                    <p className="text-xs text-gray-500">
+                                      Valor
+                                    </p>
+                                    <p className="font-medium text-cinza">
+                                      {formatarValor(agendamento.valor)}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="mb-1 text-xs text-gray-500">
+                                      Status
+                                    </p>
+
+                                    <span
+                                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${classeStatus}`}
+                                    >
+                                      {textoStatus}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="col-span-2 mt-4 min-h-[64px] rounded-lg border border-cinza/30 bg-gray-50 p-3">
+                                  <p className="mb-1 text-xs font-medium text-gray-500">
+                                    Observações
+                                  </p>
+
+                                  <p className="whitespace-pre-wrap break-words text-sm text-cinza">
+                                    {agendamento.obs?.trim() ||
+                                      'Nenhuma observação.'}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Ações */}
+                            <div className="mt-4 flex items-center justify-between border-t border-cinza/30 pt-3">
+                              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                                Ações
+                              </p>
+
+                              <div className="flex items-center gap-1 rounded-full bg-gray-50 px-2 py-1">
+                                {editandoId === agendamento.id ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      abrirConfirmacao(
+                                        'Deseja salvar as alterações deste agendamento?',
+                                        () => salvarEdicao(agendamento.id)
+                                      )
+                                    }
+                                    className="rounded-md p-2 text-green-600 transition hover:bg-green-100"
+                                    title="Salvar alterações"
+                                    aria-label="Salvar alterações"
+                                  >
+                                    <SquareCheckBig size={20} />
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      abrirConfirmacao(
+                                        'Você deseja editar este agendamento?',
+                                        () => iniciarEdicao(agendamento)
+                                      )
+                                    }
+                                    className="rounded-md p-2 text-blue-600 transition hover:bg-blue-100"
+                                    title="Editar"
+                                    aria-label="Editar agendamento"
+                                  >
+                                    <Pencil size={20} />
+                                  </button>
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    abrirConfirmacao(
+                                      'Deseja realmente excluir este atendimento?',
+                                      () => excluirAgendamento(agendamento.id)
+                                    )
+                                  }
+                                  className="rounded-md p-2 text-danger transition hover:bg-danger/10"
+                                  title="Excluir"
+                                  aria-label="Excluir atendimento"
+                                >
+                                  <Trash2 size={20} />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    abrirConfirmacao(
+                                      'Deseja realmente cancelar este atendimento?',
+                                      () =>
+                                        alterarStatus(
+                                          agendamento.id,
+                                          'Cancelado'
+                                        )
+                                    )
+                                  }
+                                  className="rounded-md p-2 text-cinza transition hover:bg-cinza/10"
+                                  title="Cancelar"
+                                  aria-label="Cancelar atendimento"
+                                >
+                                  <CircleOff size={20} />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    alterarStatus(agendamento.id, 'Concluído')
+                                  }
+                                  className="rounded-md p-2 text-success transition hover:bg-success/10"
+                                  title="Concluir"
+                                  aria-label="Concluir atendimento"
+                                >
+                                  <Save size={20} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="hidden w-full overflow-x-auto rounded-xl border border-cinza/30 bg-gradient-to-b from-white to-violet-50/30 md:block">
                       <table className="w-full min-w-[820px] border-separate border-spacing-0">
-                        <thead className="justify-normal border bg-cinza/10 text-center text-sm font-extrabold uppercase tracking-wide text-primary">
+                        <thead className="justify-normal border bg-primary/5 text-center text-sm font-extrabold uppercase tracking-wide text-primary">
                           {/* bg-cinza/10 text-[11px] uppercase text-primary */}
                           <tr className="overflow-x-auto">
                             <th className="w-full border-b border-violet-200 px-2 py-2 text-left font-semibold md:px-4 md:py-3">
@@ -721,11 +1038,19 @@ const AgendaAtendimento = () => {
                               statusAtual,
                               agendamento.pagamento
                             );
+                            const classeStatus =
+                              badge.label === 'Concluído'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : badge.label === 'Pendente'
+                                  ? 'bg-red-100 text-red-700'
+                                  : badge.label === 'Cancelado'
+                                    ? 'bg-gray-200 text-cinza/80'
+                                    : 'bg-blue-100 text-blue-700';
                             return (
                               <Fragment key={agendamento.id}>
-                                <tr className="text-cinza transition hover:bg-violet-50/60">
+                                <tr className="-50/60 text-cinza transition hover:bg-alternativo/20">
                                   {/* Data */}
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <InputData
                                         value={formEdicao.data || ''}
@@ -740,7 +1065,7 @@ const AgendaAtendimento = () => {
                                     )}
                                   </td>
                                   {/* Horário */}
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         type="time"
@@ -763,7 +1088,7 @@ const AgendaAtendimento = () => {
                                   </td>
 
                                   {/* Cliente */}
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <select
                                         value={formEdicao.cliente_id || ''}
@@ -791,7 +1116,7 @@ const AgendaAtendimento = () => {
 
                                   {/* Serviço */}
 
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <select
                                         value={formEdicao.servico || ''}
@@ -831,7 +1156,7 @@ const AgendaAtendimento = () => {
                                     )}
                                   </td>
                                   {/* Valor */}
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         value={formEdicao.valorFormatado || ''}
@@ -853,15 +1178,16 @@ const AgendaAtendimento = () => {
                                     )}
                                   </td>
 
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
-                                    <StatusBadge
-                                      status={badge.label}
-                                      style={badge.style}
-                                    />
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                    <span
+                                      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-semibold ${classeStatus}`}
+                                    >
+                                      {badge.label}
+                                    </span>
                                   </td>
 
                                   {/* Observações */}
-                                  <td className="min-w-[100px] border-b border-gray-200 px-2 py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-cinza/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         value={formEdicao.obs}
@@ -880,7 +1206,7 @@ const AgendaAtendimento = () => {
 
                                   {/* Ações */}
 
-                                  <td className="min-w-[180px] border-b border-gray-200 px-3 py-2 md:px-4 md:py-3">
+                                  <td className="min-w-[180px] border-b border-cinza/30 px-3 py-2 md:px-4 md:py-3">
                                     <div className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gray-50 px-2 py-1">
                                       {editandoId === agendamento.id ? (
                                         <button
@@ -905,7 +1231,7 @@ const AgendaAtendimento = () => {
                                               () => iniciarEdicao(agendamento)
                                             )
                                           }
-                                          className="rounded-md p-2 text-yellow-600 transition hover:bg-yellow-200"
+                                          className="rounded-md p-2 text-blue-600 transition hover:bg-primary/10"
                                           title="Editar"
                                         >
                                           <Pencil size={20} />
@@ -920,7 +1246,7 @@ const AgendaAtendimento = () => {
                                               excluirAgendamento(agendamento.id)
                                           )
                                         }
-                                        className="rounded-md p-2 text-red-600 transition hover:bg-red-200"
+                                        className="rounded-md p-2 text-danger transition hover:bg-danger/10"
                                         title="Excluir atendimento"
                                       >
                                         <Trash2 size={20} />
@@ -938,7 +1264,7 @@ const AgendaAtendimento = () => {
                                               )
                                           )
                                         }
-                                        className="rounded-md p-2 text-gray-600 transition hover:bg-gray-200"
+                                        className="rounded-md p-2 text-cinza transition hover:bg-cinza/10"
                                         title="Cancelar atendimento"
                                       >
                                         <CircleOff size={20} />
@@ -952,7 +1278,7 @@ const AgendaAtendimento = () => {
                                             'Concluído'
                                           )
                                         }
-                                        className="rounded-md p-2 text-green-600 transition hover:bg-green-200"
+                                        className="rounded-md p-2 text-success transition hover:bg-success/10"
                                         title="Concluir atendimento"
                                       >
                                         <Save size={20} />
@@ -982,7 +1308,7 @@ const AgendaAtendimento = () => {
                   Confirmação
                 </h2>
 
-                <p className="mb-6 text-gray-700">{confirmacao.mensagem}</p>
+                <p className="mb-6 text-cinza/80">{confirmacao.mensagem}</p>
 
                 <div className="flex justify-end gap-3">
                   <button
@@ -1030,7 +1356,7 @@ const AgendaAtendimento = () => {
                   {mensagemSistema.tipo === 'erro' ? 'Atenção' : 'Sucesso'}
                 </h2>
 
-                <p className="mb-5 text-gray-700">{mensagemSistema.texto}</p>
+                <p className="mb-5 text-cinza/80">{mensagemSistema.texto}</p>
 
                 <div className="flex justify-end">
                   <button
@@ -1060,7 +1386,7 @@ const AgendaAtendimento = () => {
                   Fila de lembretes
                 </h2>
 
-                <p className="mb-4 text-gray-700">
+                <p className="mb-4 text-cinza/80">
                   Lembrete <strong>{filaLembretes.indiceAtual + 1}</strong> de{' '}
                   <strong>{filaLembretes.lista.length}</strong>
                 </p>
@@ -1077,8 +1403,8 @@ const AgendaAtendimento = () => {
                   />
                 </div>
 
-                <div className="mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-gray-700">
+                <div className="mb-6 space-y-2 rounded-lg border border-cinza/30 bg-gray-50 p-4">
+                  <p className="text-cinza/80">
                     <span className="font-medium text-primary">Cliente:</span>{' '}
                     {
                       filaLembretes.lista[filaLembretes.indiceAtual]?.clientes
@@ -1086,12 +1412,12 @@ const AgendaAtendimento = () => {
                     }
                   </p>
 
-                  <p className="text-gray-700">
+                  <p className="text-cinza/80">
                     <span className="font-medium text-primary">Serviço:</span>{' '}
                     {filaLembretes.lista[filaLembretes.indiceAtual]?.servico}
                   </p>
 
-                  <p className="text-gray-700">
+                  <p className="text-cinza/80">
                     <span className="font-medium text-primary">Horário:</span>{' '}
                     {filaLembretes.lista[filaLembretes.indiceAtual]?.horario}
                   </p>
@@ -1100,7 +1426,7 @@ const AgendaAtendimento = () => {
                 <div className="mt-4 flex items-center justify-between">
                   <button
                     type="button"
-                    className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition hover:bg-gray-200"
+                    className="text-cinza/80transition rounded-lg bg-gray-100 px-4 py-2 hover:bg-gray-200"
                     onClick={() =>
                       setFilaLembretes({
                         aberta: false,

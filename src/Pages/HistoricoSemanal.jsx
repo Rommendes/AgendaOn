@@ -182,7 +182,7 @@
 //   {/* </div> */}
 
 //       {Object.entries(agendamentosAgrupados).length === 0 ? (
-//         <p className="text-gray-600">Nenhum agendamento encontrado para essa semana.</p>
+//         <p className="text-cinza/80">Nenhum agendamento encontrado para essa semana.</p>
 //       ) : (
 //         Object.entries(agendamentosAgrupados).map(([dia, ags]) => (
 //           <div key={dia} className="mb-6">
