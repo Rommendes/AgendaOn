@@ -202,9 +202,9 @@ function ExtratoFinanceiro() {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b lg:border-cinza/30 lg:pb-4">
+            <div className="lg:border-primary/30lg:pb-4 mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b">
               {/* Título e descrição */}
-              <div className="border-b border-cinza/30 pb-2 lg:border-b-0 lg:pb-0">
+              <div className="border-primary/30pb-2 border-b lg:border-b-0 lg:pb-0">
                 <h1 className="flex gap-2 text-primary">
                   <Receipt className="text-secondary" />
                   Extrato Financeiro
@@ -244,7 +244,7 @@ function ExtratoFinanceiro() {
             </div>
 
             <div className="mb-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+              <div className="border-primary/30bg-white rounded-lg border p-4 shadow-sm">
                 <p className="text-primary">Pagamentos encontrados</p>
                 <p className="text-2xl font-bold text-cinza">
                   {pagamentos.length}
@@ -257,7 +257,7 @@ function ExtratoFinanceiro() {
                 </p>
               </div>
 
-              <div className="rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+              <div className="border-primary/30bg-white rounded-lg border p-4 shadow-sm">
                 <p className="text-primary">Pendências encontradas</p>
                 <p className="text-2xl font-bold text-red-600">
                   {pendencias.length}
@@ -272,7 +272,7 @@ function ExtratoFinanceiro() {
             </div>
 
             {/* PAGAMENTOS DO PERÍODO */}
-            <div className="mb-6 rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+            <div className="border-primary/30bg-white mb-6 rounded-lg border p-4 shadow-sm">
               <h2 className="mb-3 text-primary">Pagamentos do período</h2>
 
               {pagamentos.length === 0 ? (
@@ -341,7 +341,7 @@ function ExtratoFinanceiro() {
                     {pagamentos.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-cinza/30 bg-white p-3 shadow-sm"
+                        className="border-primary/30bg-white rounded-xl border p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
                           {/* <div className="min-w-0">
@@ -416,7 +416,7 @@ function ExtratoFinanceiro() {
             </div>
 
             {/* PENDÊNCIAS DO PERÍODO */}
-            <div className="mb-6 rounded-lg border border-cinza/30 bg-white p-4 shadow-sm">
+            <div className="border-primary/30bg-white mb-6 rounded-lg border p-4 shadow-sm">
               <h2 className="mb-3 text-primary">Pendências do período</h2>
 
               {pendencias.length === 0 ? (
@@ -481,7 +481,7 @@ function ExtratoFinanceiro() {
                     {pendencias.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-cinza/30 border-l-danger bg-white p-3 shadow-sm"
+                        className="border-primary/30border-l-danger rounded-xl border bg-white p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
                           {/* <div className="min-w-0">

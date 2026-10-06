@@ -94,7 +94,7 @@ const ListaClientes = () => {
                 {clientes.map((cliente) => (
                   <div
                     key={cliente.id}
-                    className="w-full rounded-lg border bg-white p-4 shadow-sm"
+                    className="w-full rounded-lg border border-primary/30 bg-white p-4 shadow-sm"
                   >
                     <p className="mb-3 flex items-center justify-between gap-x-2 font-bold text-primary">
                       {cliente.nome}

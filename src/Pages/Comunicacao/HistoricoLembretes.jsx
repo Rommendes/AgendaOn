@@ -210,23 +210,23 @@ const HistoricoLembretes = () => {
             ) : lembretes.length === 0 ? (
               <p className="text-cinza/80">Nenhum lembrete registrado ainda.</p>
             ) : (
-              <div className="overflow-x-auto rounded border border-cinza/30 bg-white">
+              <div className="border-primary/30bg-white overflow-x-auto rounded border">
                 <table className="w-full min-w-[700px] border-separate border-spacing-0">
                   <thead className="bg-alternativo/10 text-xs uppercase text-primary">
                     <tr>
-                      <th className="border-b border-cinza/30 px-3 py-3 text-left">
+                      <th className="border-primary/30px-3 border-b py-3 text-left">
                         Cliente
                       </th>
 
-                      <th className="border-b border-cinza/30 px-3 py-3 text-center">
+                      <th className="border-primary/30px-3 border-b py-3 text-center">
                         Lembretes enviados
                       </th>
 
-                      <th className="border-b border-cinza/30 px-3 py-3 text-left">
+                      <th className="border-primary/30px-3 border-b py-3 text-left">
                         Último envio
                       </th>
 
-                      <th className="border-b border-cinza/30 px-3 py-3 text-center">
+                      <th className="border-primary/30px-3 border-b py-3 text-center">
                         Detalhes
                       </th>
                     </tr>
@@ -239,21 +239,21 @@ const HistoricoLembretes = () => {
                       return (
                         <Fragment key={grupo.chave}>
                           <tr className="bg-white transition hover:bg-alternativo/5">
-                            <td className="border-b border-cinza/30 px-3 py-3 text-sm font-medium text-primary">
+                            <td className="border-primary/30px-3 border-b py-3 text-sm font-medium text-primary">
                               {grupo.nome}
                             </td>
 
-                            <td className="border-b border-cinza/30 px-3 py-3 text-center">
+                            <td className="border-primary/30px-3 border-b py-3 text-center">
                               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
                                 {grupo.quantidade}
                               </span>
                             </td>
 
-                            <td className="border-b border-cinza/30 px-3 py-3 text-sm text-cinza">
+                            <td className="border-primary/30px-3 border-b py-3 text-sm text-cinza">
                               {formatarDataHora(grupo.ultimoEnvio)}
                             </td>
 
-                            <td className="border-b border-cinza/30 px-3 py-3 text-center">
+                            <td className="border-primary/30px-3 border-b py-3 text-center">
                               <button
                                 type="button"
                                 onClick={() =>
@@ -281,7 +281,7 @@ const HistoricoLembretes = () => {
                             <tr>
                               <td
                                 colSpan={4}
-                                className="border-b border-cinza/30 bg-gray-50 p-3"
+                                className="border-primary/30bg-gray-50 border-b p-3"
                               >
                                 <div className="space-y-2">
                                   {grupo.lembretes.map((item) => (

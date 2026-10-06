@@ -221,14 +221,14 @@ function ResumoFinanceiro() {
             <p className="mb-6 text-sm text-cinza/80">
               Resumo de recebimentos, pendências e pagamentos dos atendimentos.
             </p>
-            <p className="border-b border-cinza/30 text-sm font-bold uppercase text-secondary">
+            <p className="border-primary/30text-sm border-b font-bold uppercase text-secondary">
               {mesAtual}
             </p>
             <div className="conteudo-amplo">
               <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Card 1 com refinamento de UI/UX */}
                 <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <p className="flex items-center gap-2 text-sm font-medium text-primary">
                     {/* Ícone ganha um fundinho suave da cor do tema */}
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <Wallet className="text-secondary" size={20} />
@@ -246,7 +246,7 @@ function ResumoFinanceiro() {
 
                 {/* Card 2: Pendente no mês */}
                 <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <p className="flex items-center gap-2 text-sm font-medium text-primary">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <CircleAlert className="text-secondary" size={20} />
                     </span>
@@ -262,7 +262,7 @@ function ResumoFinanceiro() {
 
                 {/* Card 3: Clientes com pendências */}
                 <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <p className="flex items-center gap-2 text-sm font-medium text-primary">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <UserRound className="text-secondary" size={20} />
                     </span>
@@ -275,7 +275,7 @@ function ResumoFinanceiro() {
 
                 {/* Card 4: Pagamentos registrados */}
                 <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                  <p className="flex items-center gap-2 text-sm font-medium text-primary">
                     <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
                       <BadgeCheck
                         className="text-bold text-secondary"

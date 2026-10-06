@@ -111,6 +111,7 @@ export default function AgendaSemanal() {
 
     janelaImpressao.document.write(`
     <!DOCTYPE html>
+
     <html lang="pt-BR">
       <head>
         <meta charset="UTF-8" />
@@ -233,9 +234,13 @@ export default function AgendaSemanal() {
           <div className="container-formulario text-primary">
             <div>
               {' '}
-              <h1 className="mb-5 flex gap-2 border-b text-primary">
-                <CalendarDays className="text-secondary" />
-                Agenda Semanal (atual e futura)
+              <h1 className="mb-5 flex items-center gap-2 pb-2 text-lg leading-tight text-primary sm:text-2xl">
+                <CalendarDays
+                  size={22}
+                  className="shrink-0 text-secondary sm:h-6 sm:w-6"
+                />
+
+                <span>Agenda Semanal (atual e futura)</span>
               </h1>
             </div>
 
@@ -250,22 +255,20 @@ export default function AgendaSemanal() {
                 <section
                   id={`semana-${sem.ano}-${sem.semana}`}
                   key={`${sem.ano}-${sem.semana}`}
-                  className="mb-5 rounded-xl border-b shadow-sm"
+                  className="mb-5 rounded-xl border border-primary/30 bg-white pt-5 shadow-sm"
                 >
                   {/* Cabeçalho da semana */}
-                  <div className="ml-3 flex items-center gap-10 p-4">
-                    <h2 className="flex items-center gap-1 text-primary">
-                      <span>Semana</span>
-
+                  <div className="flex h-10 items-center justify-between gap-3 border-primary/30 px-4 sm:ml-3 sm:h-auto sm:p-4">
+                    <h2 className="whitespace-nowrap text-lg font-semibold text-primary sm:text-xl">
+                      Semana{' '}
                       <span className="font-bold text-secondary">
                         {sem.semana}
-                      </span>
-
-                      <span>de {sem.ano}</span>
+                      </span>{' '}
+                      de {sem.ano}
                     </h2>
 
                     {/* Ações da semana */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-2">
                       {/* Imprimir semana */}
                       <button
                         type="button"
@@ -306,14 +309,11 @@ export default function AgendaSemanal() {
                   </div>
 
                   {/* Dias da semana */}
-                  <div className="ml-3 space-y-4 p-3 sm:p-4">
+                  <div className="space-y-4 p-2 sm:ml-3 sm:p-4">
                     {sem.dias.map(([dataISO, ags]) => (
-                      <div
-                        key={dataISO}
-                        className="rounded-lg border border-slate-200"
-                      >
+                      <div key={dataISO} className="border-t border-primary/30">
                         {/* Cabeçalho do dia */}
-                        <div className="ml-3 flex items-center gap-10 p-2">
+                        <div className="flex items-center justify-between gap-3 p-3">
                           <div className="font-semibold text-primary">
                             {formatarBRDataISO(dataISO)}
                           </div>
@@ -346,7 +346,7 @@ export default function AgendaSemanal() {
                         </div>
 
                         {/* Tabela de atendimentos do dia */}
-                        <div className="overflow-x-auto p-2">
+                        <div className="hidden overflow-x-auto p-2 md:block">
                           <table className="w-full table-fixed border-collapse">
                             <colgroup>
                               <col className="w-[14%]" />
@@ -356,31 +356,31 @@ export default function AgendaSemanal() {
                             </colgroup>
 
                             <thead>
-                              <tr className="border bg-cinza/10 text-center text-sm font-extrabold uppercase text-primary">
+                              <tr className="border bg-primary/10 text-center text-sm font-extrabold uppercase text-primary">
                                 <th
                                   scope="col"
-                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-primary"
                                 >
                                   Hora
                                 </th>
 
                                 <th
                                   scope="col"
-                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-primary"
                                 >
                                   Cliente
                                 </th>
 
                                 <th
                                   scope="col"
-                                  className="px-4 py-2 text-xs font-semibold uppercase text-slate-500"
+                                  className="px-4 py-2 text-xs font-semibold uppercase text-primary"
                                 >
                                   Serviço
                                 </th>
 
                                 <th
                                   scope="col"
-                                  className="px-2 py-2 text-center text-xs font-semibold uppercase text-slate-500"
+                                  className="px-2 py-2 text-center text-xs font-semibold uppercase text-primary"
                                 >
                                   Lembrete
                                 </th>
@@ -437,6 +437,70 @@ export default function AgendaSemanal() {
                               ))}
                             </tbody>
                           </table>
+                        </div>
+
+                        {/* CARDS — TELAS PEQUENAS */}
+                        <div className="grid gap-3 p-2 md:hidden">
+                          {ags.map((ag) => (
+                            <div
+                              key={ag.id}
+                              className="rounded-lg bg-primary/10 p-3 shadow-sm"
+                            >
+                              {/* Horário e lembrete */}
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <p className="text-xs text-cinza/60">
+                                    Horário
+                                  </p>
+
+                                  <p className="font-semibold text-primary">
+                                    {ag.horario || '-'}
+                                  </p>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  title={`Enviar lembrete para ${
+                                    ag.clientes?.nome || 'este cliente'
+                                  }`}
+                                  className="btn-icone shrink-0 text-secondary"
+                                  onClick={async () => {
+                                    const resultado =
+                                      await enviarLembreteDeAgendamento(ag);
+
+                                    if (resultado === 'copiado') {
+                                      abrirAviso(
+                                        'Sem telefone. Mensagem copiada para a área de transferência.'
+                                      );
+                                    }
+                                  }}
+                                  aria-label={`Enviar lembrete para ${
+                                    ag.clientes?.nome || 'este cliente'
+                                  }`}
+                                >
+                                  <BellRing size={19} aria-hidden="true" />
+                                </button>
+                              </div>
+
+                              {/* Cliente */}
+                              <div className="mt-3">
+                                <p className="text-xs text-cinza/60">Cliente</p>
+
+                                <p className="break-words font-semibold text-primary">
+                                  {ag.clientes?.nome || 'Sem nome'}
+                                </p>
+                              </div>
+
+                              {/* Serviço */}
+                              <div className="mt-3">
+                                <p className="text-xs text-cinza/60">Serviço</p>
+
+                                <p className="break-words text-sm text-cinza">
+                                  {ag.servico || 'Não informado'}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     ))}

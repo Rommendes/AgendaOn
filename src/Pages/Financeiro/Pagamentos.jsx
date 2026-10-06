@@ -92,7 +92,7 @@ function Pagamentos() {
       <main className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="mb-8 border-b border-cinza/30 pb-1">
+            <div className="border-primary/30pb-1 mb-8 border-b">
               <h1 className="flex gap-2 text-primary">
                 <ReceiptText className="text-secondary" size={24} />
                 Pagamentos pendentes
@@ -137,7 +137,7 @@ function Pagamentos() {
                   {pendentes.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-xl border border-cinza/30 bg-white p-4 shadow-sm transition hover:shadow-md"
+                      className="border-primary/30bg-white rounded-xl border p-4 shadow-sm transition hover:shadow-md"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

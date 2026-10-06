@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Componentes/Header/Header';
@@ -17,6 +17,14 @@ const PesquisandoClientes = () => {
   const [search, setSearch] = useState('');
   const [resultados, setResultados] = useState([]);
   const [resumoFinanceiro, setResumoFinanceiro] = useState({});
+
+  const atualizarResumoFinanceiro = useCallback((clienteId, resumo) => {
+    setResumoFinanceiro((anterior) => ({
+      ...anterior,
+      [clienteId]: resumo,
+    }));
+  }, []);
+
   const [resumoCobrancas, setResumoCobrancas] = useState({});
   const navigate = useNavigate();
 
@@ -173,194 +181,201 @@ const PesquisandoClientes = () => {
               </div>
             </div>
 
-            {resultados.length > 0
+            {/* {resultados.length > 0
               ? resultados.map((cliente) => (
-                  <div key={cliente.id} className="mb-12">
-                    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-                      {/* COLUNA ESQUERDA - DADOS DO CLIENTE */}
-                      <div>
-                        <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-primary">
-                          Dados do Cliente
-                        </h3>
+                  <div key={cliente.id} className="mb-12"> */}
+            {resultados.length > 0
+              ? resultados.map((cliente) => {
+                  const resumoCliente = resumoFinanceiro[cliente.id] || {};
 
-                        <div className="rounded-xl border border-cinza/30 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
-                          <h3 className="mb-3 text-xl font-bold text-primary">
-                            {cliente.nome}
+                  return (
+                    <div key={cliente.id} className="mb-12">
+                      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+                        {/* COLUNA ESQUERDA - DADOS DO CLIENTE */}
+                        <div>
+                          <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-primary">
+                            Dados do Cliente
                           </h3>
-                          <div
-                            className={`mb-4 rounded-lg px-3 py-2 text-sm font-medium ${
-                              resumoFinanceiro.totalPendente > 0
-                                ? 'border border-red-200 bg-red-50 text-red-700'
-                                : 'border border-green-200 bg-green-50 text-green-700'
-                            }`}
-                          >
-                            {resumoFinanceiro.totalPendente > 0
-                              ? '🔴 Cliente com pendência financeira'
-                              : '🟢 Cliente sem pendências'}
-                          </div>
-                          <div className="text-cinza/80md:grid-cols-2 grid grid-cols-1 gap-3 text-sm">
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Aniversário:
-                              </span>{' '}
-                              {formatarDataBR(cliente.data_aniversario)}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Telefone:
-                              </span>{' '}
-                              {formatarTelefoneBR(cliente.telefone)}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Rua:
-                              </span>{' '}
-                              {cliente.rua || '-'}, {cliente.numero || 's/n'}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Complemento:
-                              </span>{' '}
-                              {cliente.complemento || '-'}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Bairro:
-                              </span>{' '}
-                              {cliente.bairro || '-'}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                Cidade:
-                              </span>{' '}
-                              {cliente.cidade || '-'}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-primary">
-                                CEP:
-                              </span>{' '}
-                              {formatarCEP(cliente.cep)}
-                            </p>
-                          </div>
 
-                          <div className="mt-5 flex gap-3">
-                            <button
-                              onClick={() => handleEditar(cliente.id)}
-                              className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-success"
+                          <div className="rounded-xl border border-primary/30 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
+                            <h3 className="mb-3 text-xl font-bold text-primary">
+                              {cliente.nome}
+                            </h3>
+                            <div
+                              className={`mb-4 rounded-lg px-3 py-2 text-sm font-medium ${
+                                resumoCliente.totalPago > 0
+                                  ? 'border border-red-200 bg-red-50 text-red-700'
+                                  : 'border border-green-200 bg-green-50 text-green-700'
+                              }`}
                             >
-                              <SquarePen size={20} />
-                              <span className="text-sm font-medium">
-                                Editar
-                              </span>
-                            </button>
-
-                            <button
-                              onClick={() => handleExcluir(cliente.id)}
-                              className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-danger"
-                            >
-                              <Trash2 size={20} />
-                              <span className="text-sm font-medium">
-                                Editar
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/*RESUMO FINANCEIRO */}
-
-                      <div>
-                        {/*"mb-3 mt-3 text-xl font-bold uppercase text-primary*/}
-                        <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-secondary">
-                          Resumo Financeiro
-                        </h3>
-                        <div className="mt-3 rounded-xl border border-cinza/30 bg-white p-5 shadow-md">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="rounded-lg border border-green-100 bg-green-50 p-3">
-                              <p className="text-xs text-gray-500">
-                                Total Pago
+                              {resumoCliente.totalPago > 0
+                                ? '🔴 Cliente com pendência financeira'
+                                : '🟢 Cliente sem pendências'}
+                            </div>
+                            <div className="text-cinza/80md:grid-cols-2 grid grid-cols-1 gap-3 text-sm">
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Aniversário:
+                                </span>{' '}
+                                {formatarDataBR(cliente.data_aniversario)}
                               </p>
-
-                              <p className="font-bold text-green-600">
-                                R${' '}
-                                {(resumoFinanceiro.totalPago || 0)
-                                  .toFixed(2)
-                                  .replace('.', ',')}
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Telefone:
+                                </span>{' '}
+                                {formatarTelefoneBR(cliente.telefone)}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Rua:
+                                </span>{' '}
+                                {cliente.rua || '-'}, {cliente.numero || 's/n'}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Complemento:
+                                </span>{' '}
+                                {cliente.complemento || '-'}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Bairro:
+                                </span>{' '}
+                                {cliente.bairro || '-'}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  Cidade:
+                                </span>{' '}
+                                {cliente.cidade || '-'}
+                              </p>
+                              <p>
+                                <span className="font-semibold text-primary">
+                                  CEP:
+                                </span>{' '}
+                                {formatarCEP(cliente.cep)}
                               </p>
                             </div>
 
-                            <div className="rounded-lg border border-red-100 bg-red-50 p-3">
-                              <p className="text-xs text-gray-500">Pendente</p>
+                            <div className="mt-5 flex gap-3">
+                              <button
+                                onClick={() => handleEditar(cliente.id)}
+                                className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-success"
+                              >
+                                <SquarePen size={20} />
+                                <span className="text-sm font-medium">
+                                  Editar
+                                </span>
+                              </button>
 
-                              <p className="font-bold text-red-600">
-                                R${' '}
-                                {(resumoFinanceiro.totalPendente || 0)
-                                  .toFixed(2)
-                                  .replace('.', ',')}
-                              </p>
-                            </div>
-
-                            <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
-                              <p className="text-xs text-gray-500">
-                                Atendimentos
-                              </p>
-
-                              <p className="font-bold text-primary">
-                                {resumoFinanceiro.totalAtendimentos || 0}
-                              </p>
-                            </div>
-
-                            <div className="rounded-lg border border-cinza/30 bg-gray-50 p-3">
-                              <p className="text-xs text-gray-500">
-                                Último Atendimento
-                              </p>
-
-                              <p className="font-bold text-cinza">
-                                {resumoFinanceiro.ultimoAtendimento || '-'}
-                              </p>
-                            </div>
-                            <div className="rounded-lg border border-purple-100 bg-purple-50 p-3">
-                              <p className="text-xs text-gray-500">
-                                Cobranças enviadas
-                              </p>
-
-                              <p className="font-bold text-purple-700">
-                                {resumoCobrancas[cliente.id]?.quantidade || 0}
-                              </p>
-                            </div>
-
-                            <div className="rounded-lg border border-orange-100 bg-orange-50 p-3">
-                              <p className="text-xs text-gray-500">
-                                Última cobrança
-                              </p>
-
-                              <p className="font-bold text-orange-700">
-                                {resumoCobrancas[cliente.id]?.ultimaCobranca
-                                  ? new Date(
-                                      resumoCobrancas[cliente.id].ultimaCobranca
-                                    ).toLocaleDateString('pt-BR')
-                                  : '-'}
-                              </p>
+                              <button
+                                onClick={() => handleExcluir(cliente.id)}
+                                className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded px-2 text-sm font-medium text-danger"
+                              >
+                                <Trash2 size={20} />
+                                <span className="text-sm font-medium">
+                                  Editar
+                                </span>
+                              </button>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* COLUNA DIREITA - HISTÓRICO */}
-                      <div className="lg:col-span-2">
-                        <h3 className="mb-3 mt-3 text-xl font-bold text-primary">
-                          Histórico de Agendamentos
-                        </h3>
-                        <div className="rounded-xl border border-cinza/30 bg-white p-4 shadow-md">
-                          <HistoricoDoCliente
-                            clienteId={cliente.id}
-                            onResumoFinanceiro={setResumoFinanceiro}
-                          />
+                        {/*RESUMO FINANCEIRO */}
+
+                        <div>
+                          <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-secondary">
+                            Resumo Financeiro
+                          </h3>
+                          <div className="mt-3 rounded-xl border border-primary/30 bg-white p-5 shadow-md">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="rounded-lg border border-green-100 bg-green-50 p-3">
+                                <p className="text-xs text-gray-500">
+                                  Total Pago
+                                </p>
+
+                                <p className="font-bold text-green-600">
+                                  R${' '}
+                                  {(resumoCliente.totalPago || 0)
+                                    .toFixed(2)
+                                    .replace('.', ',')}
+                                </p>
+                              </div>
+                              <div className="rounded-lg border border-red-100 bg-red-50 p-3">
+                                <p className="text-xs text-gray-500">
+                                  Pendente
+                                </p>
+
+                                <p className="font-bold text-red-600">
+                                  R${' '}
+                                  {(resumoCliente.totalPendente || 0)
+                                    .toFixed(2)
+                                    .replace('.', ',')}
+                                </p>
+                              </div>
+                              <div className="rounded-lg border border-blue-100 bg-blue-50 p-3">
+                                <p className="text-xs text-gray-500">
+                                  Atendimentos
+                                </p>
+
+                                <p className="font-bold text-primary">
+                                  {resumoCliente.totalAtendimentos || 0}
+                                </p>
+                              </div>
+
+                              <div className="border-primary/30bg-gray-50 rounded-lg border p-3">
+                                <p className="text-xs text-gray-500">
+                                  Último Atendimento
+                                </p>
+
+                                <p className="font-bold text-cinza">
+                                  {resumoCliente.ultimoAtendimento || '-'}
+                                </p>
+                              </div>
+                              <div className="rounded-lg border border-purple-100 bg-purple-50 p-3">
+                                <p className="text-xs text-gray-500">
+                                  Cobranças enviadas
+                                </p>
+
+                                <p className="font-bold text-purple-700">
+                                  {resumoCobrancas[cliente.id]?.quantidade || 0}
+                                </p>
+                              </div>
+
+                              <div className="rounded-lg border border-orange-100 bg-orange-50 p-3">
+                                <p className="text-xs text-gray-500">
+                                  Última cobrança
+                                </p>
+
+                                <p className="font-bold text-orange-700">
+                                  {resumoCobrancas[cliente.id]?.ultimaCobranca
+                                    ? new Date(
+                                        resumoCobrancas[cliente.id]
+                                          .ultimaCobranca
+                                      ).toLocaleDateString('pt-BR')
+                                    : '-'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* COLUNA DIREITA - HISTÓRICO */}
+                        <div className="lg:col-span-2">
+                          <h3 className="mb-3 mt-3 text-xl font-bold text-primary">
+                            Histórico de Agendamentos
+                          </h3>
+                          <div className="rounded-xl border border-primary/30 bg-white p-4 shadow-md">
+                            <HistoricoDoCliente
+                              clienteId={cliente.id}
+                              onResumoFinanceiro={atualizarResumoFinanceiro}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               : search && (
                   <p className="text-center text-red-500">
                     Nenhum cliente encontrado.

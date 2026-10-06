@@ -66,6 +66,47 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
 
     return texto === 'pix' || texto === 'cartao' || texto === 'dinheiro';
   };
+  const renderizarSituacao = (item) => {
+    const status = normalizarTexto(item.status_agendamento);
+
+    if (status === 'cancelado') {
+      return (
+        <span className="inline-flex rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-cinza/80">
+          Cancelado
+        </span>
+      );
+    }
+
+    if (status === 'agendado') {
+      return (
+        <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+          Agendado
+        </span>
+      );
+    }
+
+    if (pagamentoPendente(item.pagamento)) {
+      return (
+        <span className="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+          Pendente
+        </span>
+      );
+    }
+
+    if (pagamentoRealizado(item.pagamento)) {
+      return (
+        <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+          {item.pagamento}
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-cinza/80">
+        -
+      </span>
+    );
+  };
 
   const agendamentosValidosFinanceiro = agendamentos.filter(
     (item) => item.status_agendamento !== 'cancelado'
@@ -104,13 +145,14 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
     : '-';
 
   useEffect(() => {
-    onResumoFinanceiro?.({
+    onResumoFinanceiro?.(clienteId, {
       totalPago,
       totalPendente,
       totalAtendimentos,
       ultimoAtendimento,
     });
   }, [
+    clienteId,
     totalPago,
     totalPendente,
     totalAtendimentos,
@@ -119,92 +161,125 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
   ]);
   return (
     <div>
-      <div className="overflow-x-auto">
-        {agendamentos.length > 0 ? (
-          <>
+      {agendamentos.length > 0 ? (
+        <>
+          {/* TABELA — TELAS GRANDES */}
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full rounded border bg-white">
-              <thead className="bg-azulzinho text-sm uppercase text-primary">
+              <thead className="bg-alternativo/10 text-sm uppercase text-primary">
                 <tr className="text-center">
                   <th className="border px-4 py-2">Data</th>
                   <th className="border px-4 py-2">Horário</th>
                   <th className="border px-4 py-2">Serviço</th>
                   <th className="border px-4 py-2">Valor</th>
                   <th className="border px-4 py-2">Situação</th>
-
                   <th className="border px-4 py-2">Observações</th>
                 </tr>
               </thead>
+
               <tbody>
-                {agendamentos.map((item, index) => (
-                  <tr key={index} className="text-center hover:bg-gray-100">
-                    <td className="border px-4 py-2">
-                      {new Date(item.data + 'T12:00:00').toLocaleDateString(
+                {agendamentos.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="text-center transition hover:bg-primary/5"
+                  >
+                    <td className="px-4 py-2">
+                      {new Date(`${item.data}T12:00:00`).toLocaleDateString(
                         'pt-BR'
                       )}
                     </td>
-                    <td className="border px-4 py-2">{item.horario}</td>
-                    <td className="border px-4 py-2">{item.servico}</td>
-                    <td className="border px-4 py-2">
-                      R$ {parseValor(item.valor).toFixed(2)}
+
+                    <td className="px-4 py-2">{item.horario || '-'}</td>
+
+                    <td className="px-4 py-2">{item.servico || '-'}</td>
+
+                    <td className="px-4 py-2">
+                      {parseValor(item.valor).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
                     </td>
-                    {/* <td className="border px-4 py-2">{item.pagamento}</td> */}
-                    <td className="border px-4 py-2">
-                      {(() => {
-                        const status = item.status_agendamento;
-                        const pagamento = normalizarTexto(item.pagamento);
 
-                        if (status === 'cancelado') {
-                          return (
-                            <span className="rounded-full bg-gray-200 px-3 py-1 text-xs font-semibold text-cinza/80">
-                              Cancelado
-                            </span>
-                          );
-                        }
+                    <td className="px-4 py-2">{renderizarSituacao(item)}</td>
 
-                        if (status === 'agendado') {
-                          return (
-                            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                              Agendado
-                            </span>
-                          );
-                        }
-
-                        if (pagamentoPendente(item.pagamento)) {
-                          return (
-                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
-                              Pendente
-                            </span>
-                          );
-                        }
-
-                        if (pagamentoRealizado(item.pagamento)) {
-                          return (
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                              {item.pagamento}
-                            </span>
-                          );
-                        }
-
-                        return (
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-cinza/80">
-                            -
-                          </span>
-                        );
-                      })()}
-                    </td>
-                    <td className="border px-4 py-2">{item.obs}</td>
+                    <td className="px-4 py-2">{item.obs?.trim() || '-'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {/* Resumo Financeiro */}
-          </>
-        ) : (
-          <p className="mt-4 text-center text-gray-500">
-            Nenhum agendamento encontrado.
-          </p>
-        )}
-      </div>
+          </div>
+
+          {/* CARDS — TELAS PEQUENAS */}
+          <div className="grid gap-3 md:hidden">
+            {agendamentos.map((item) => (
+              <div
+                key={item.id}
+                className="border-primary/30bg-white rounded-xl border p-4 shadow-sm"
+              >
+                {/* Data e situação */}
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-cinza/60">Data</p>
+
+                    <p className="font-semibold text-primary">
+                      {new Date(`${item.data}T12:00:00`).toLocaleDateString(
+                        'pt-BR'
+                      )}
+                    </p>
+                  </div>
+
+                  {renderizarSituacao(item)}
+                </div>
+
+                {/* Informações */}
+                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                  <div>
+                    <p className="text-xs text-cinza/60">Horário</p>
+
+                    <p className="font-medium text-cinza">
+                      {item.horario || '-'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-cinza/60">Valor</p>
+
+                    <p className="font-semibold text-primary">
+                      {parseValor(item.valor).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="col-span-2">
+                    <p className="text-xs text-cinza/60">Serviço</p>
+
+                    <p className="break-words font-medium text-cinza">
+                      {item.servico || 'Não informado'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Observações */}
+                <div className="mt-4 min-h-[64px] rounded-lg border border-cinza/20 bg-gray-50 p-3">
+                  <p className="mb-1 text-xs font-medium text-cinza/60">
+                    Observações
+                  </p>
+
+                  <p className="whitespace-pre-wrap break-words text-sm text-cinza">
+                    {item.obs?.trim() || 'Nenhuma observação.'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="mt-4 text-center text-cinza/70">
+          Nenhum agendamento encontrado.
+        </p>
+      )}
     </div>
   );
 };

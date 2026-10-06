@@ -72,7 +72,7 @@ const Header = ({
         </div>
       </div>
       {menuAberto && (
-        <nav className="absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border border-cinza/30 bg-white shadow-lg">
+        <nav className="border-primary/30bg-white absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border shadow-lg">
           <Link
             to="/home"
             onClick={() => setMenuAberto(false)}
