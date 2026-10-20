@@ -3,19 +3,23 @@ import { Routes, Route } from 'react-router-dom';
 import 'material-icons/iconfont/material-icons.css';
 import Login from './Pages/Login/Login.jsx';
 import Home from './Pages/Home';
-import CadastrarCliente from './Pages/Clientes/CadastrarCliente.jsx';
-import ListaClientes from './Pages/Clientes/ListaClientes.jsx';
-import EditarCliente from './Componentes/EditarCliente/editarCliente.jsx';
-import Agenda from './Pages/Agenda/Agenda.jsx';
-import BuscaCliente from './Pages/Clientes/buscaCliente.jsx';
-//import HistoricoSemanal from './Pages/HistoricoSemanal.jsx';
-import AgendamentosMenu from './Pages/Agenda/AgendaMenu.jsx';
-import AgendaSemanal from './Pages/Agenda/AgendaSemanal.jsx';
 import ResetSenha from './Pages/Login/ResetSenha.jsx';
 import ProtectedRoute from './Componentes/ProtectedRoute.jsx';
 
+{
+  /*Clientes */
+}
+import CadastrarCliente from './Pages/Clientes/CadastrarCliente.jsx';
+import ListaClientes from './Pages/Clientes/ListaClientes.jsx';
+import EditarCliente from './Componentes/EditarCliente/editarCliente.jsx';
+import BuscaCliente from './Pages/Clientes/buscaCliente.jsx';
+{
+  /*Agenda */
+}
+import Agenda from './Pages/Agenda/Agenda.jsx';
+import AgendamentosMenu from './Pages/Agenda/AgendaMenu.jsx';
+import AgendaSemanal from './Pages/Agenda/AgendaSemanal.jsx';
 import ClientesMenu from './Pages/Clientes/ClientesMenu.jsx';
-
 {
   /*Comunicação */
 }
@@ -23,8 +27,7 @@ import ComunicacaoMenu from './Pages/Comunicacao/ComunicacaoMenu.jsx';
 import HistoricoLembretes from './Pages/Comunicacao/HistoricoLembretes.jsx';
 import EnviarCobrancasPendentes from './Pages/Comunicacao/EnviarCobrancasPendentes.jsx';
 import LembreteAgendamentos from './Pages/Comunicacao/LembreteAgendamentos.jsx';
-import Mensagem from './Pages/Comunicacao/Mensagens.jsx';
-import Avisos from './Pages/Comunicacao/Avisos.jsx';
+import MensagensAvisos from './Pages/Comunicacao/MensagensAvisos.jsx';
 
 {
   /*Financeiro */
@@ -56,14 +59,13 @@ function App() {
           <Route path="/lista-clientes" element={<ListaClientes />} />
 
           <Route path="/financeiro-menu" element={<FinanceiroMenu />} />
-          {/* <Route path="/historico-semanal" element={<HistoricoSemanal />} /> */}
 
           <Route path="/comunicacao-menu" element={<ComunicacaoMenu />} />
           <Route path="/historico-lembretes" element={<HistoricoLembretes />} />
           <Route path="/cobrancas" element={<EnviarCobrancasPendentes />} />
           <Route path="/lembretes" element={<LembreteAgendamentos />} />
-          <Route path="/mensagem" element={<Mensagem />} />
-          <Route path="/avisos" element={<Avisos />} />
+
+          <Route path="/mensagens-avisos" element={<MensagensAvisos />} />
 
           <Route path="/pagamentos" element={<Pagamentos />} />
           <Route path="/extrato-financeiro" element={<ExtratoFinanceiro />} />

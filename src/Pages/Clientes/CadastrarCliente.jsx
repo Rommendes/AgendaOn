@@ -3,7 +3,7 @@ import { supabase } from '../../api/supabaseClient'; // Importe seu Supabase
 import EnderecoForm from '../../Componentes/EnderecoForm';
 
 import Header from '../../Componentes/Header/Header';
-import { UserCog, UserRoundPlus } from 'lucide-react';
+import { CircleCheck, X, UserRoundPlus, Save } from 'lucide-react';
 import {
   apenasNumeros,
   formatarCEP,
@@ -14,6 +14,7 @@ import { createLogger } from '../../lib/logger';
 const logger = createLogger('CadastrarCliente');
 
 const CadastrarCliente = () => {
+  const [avisoSucesso, setAvisoSucesso] = useState('');
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
@@ -114,7 +115,7 @@ const CadastrarCliente = () => {
 
       if (error) throw error;
 
-      alert('Cliente cadastrado com sucesso!');
+      setAvisoSucesso('Cliente cadastrado com sucesso!');
 
       // Resetar formulário após sucesso
       setFormData({
@@ -146,6 +147,28 @@ const CadastrarCliente = () => {
   return (
     <>
       <Header title="Cadastro de Cliente" voltarPara="/clientes-menu" />
+      {avisoSucesso && (
+        <div
+          role="status"
+          className="fixed right-4 top-24 z-50 flex w-[calc(100%-2rem)] max-w-sm items-center justify-between gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-lg"
+        >
+          <div className="flex items-center gap-2">
+            <CircleCheck size={21} className="shrink-0" />
+
+            <p className="text-sm font-medium">{avisoSucesso}</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setAvisoSucesso('')}
+            className="rounded-md p-1 text-green-700 transition hover:bg-green-100"
+            aria-label="Fechar aviso"
+            title="Fechar aviso"
+          >
+            <X size={18} />
+          </button>
+        </div>
+      )}
 
       <div className="main">
         <div className="main-container">
@@ -245,11 +268,21 @@ const CadastrarCliente = () => {
                 handleChange={handleEnderecoChange}
               />
 
+              {/* <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
+                  disabled={loading}
+                >
+                  {loading ? 'Cadastrando...' : 'Cadastrar'}
+                </button> 
+              </div>*/}
+
               {/* Botão de cadastrar */}
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
+                  className="w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
                   disabled={loading}
                 >
                   {loading ? 'Cadastrando...' : 'Cadastrar'}

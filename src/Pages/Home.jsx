@@ -103,42 +103,7 @@ export default function Home() {
               <h1>Financeiro</h1>
               <p>Gerencie pagamentos, pendẽncias e extratos</p>
             </div>
-            {/* <div>
-              <h2 className="text-lg font-medium text-white">Financeiro</h2>
-            </div> */}
           </Link>
-          {/* 
-          <Link
-            to="/extrato-financeiro"
-            className="botao-menu w-full transition hover:scale-[1.02]"
-          >
-            <ReceiptText className="text-secondary" size={32} />
-
-            <div>
-              <h2 className="text-lg font-bold">Extrato Financeiro</h2>
-
-              <p className="text-sm">
-                Consulte pagamentos por mês, cliente e forma de pagamento
-              </p>
-            </div>
-          </Link> */}
-
-          {/* <Link
-            to="/cobrancas"
-            className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
-          >
-            <WalletCards
-              className="material-icons text-4xl text-secondary"
-              size={35}
-            />
-
-            <div>
-              <h2 className="text-lg font-bold">Pendências</h2>
-              <p className="text-sm">
-                Envie cobranças para clientes com débito
-              </p>
-            </div>
-          </Link> */}
         </div>
       </div>
     </div>

@@ -6,7 +6,13 @@ import { supabase } from '../../api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Componentes/Header/Header';
 
-import { SquarePen, Trash2, Users } from 'lucide-react';
+import {
+  SquarePen,
+  Trash2,
+  Users,
+  UserCheck,
+  UserRoundPlus,
+} from 'lucide-react';
 
 import { createLogger } from '../../lib/logger';
 const logger = createLogger('ListaClientes');
@@ -32,7 +38,10 @@ const ListaClientes = () => {
 
   useEffect(() => {
     const fetchClientes = async () => {
-      const { data, error } = await supabase.from('clientes').select('*');
+      const { data, error } = await supabase
+        .from('clientes')
+        .select('*')
+        .order('nome', { ascending: true });
       if (error) {
         logger.error('Erro ao buscar clientes: ', error);
       } else {
@@ -72,13 +81,26 @@ const ListaClientes = () => {
             <div className="mb-6">
               {/* Cabeçalho */}
               <h1 className="flex gap-2 text-primary">
-                <Users className="text-secondary" />
+                <UserRoundPlus className="text-secondary" />
                 Clientes cadastrados
               </h1>
               <p className="text-sm text-cinza/80">
                 Aqui você pode visualizar, editar ou excluir clientes
                 cadastrados.
               </p>
+            </div>
+
+            {/* Total de clientes */}
+            <div className="mb-5 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
+              <div>
+                <p className="text-sm text-cinza/70">Clientes cadastrados</p>
+
+                <p className="text-2xl font-bold text-primary">
+                  {clientes.length}
+                </p>
+              </div>
+
+              <UserCheck size={28} className="text-secondary" />
             </div>
             {/* Tabela Responsiva */}
 

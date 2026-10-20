@@ -178,12 +178,6 @@ const HistoricoLembretes = () => {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            {/* <div>
-              <h1 className="mb-4 flex gap-2 text-primary">
-                <Hourglass size={24} className="text-secondary" />
-                Histórico de lembretes enviados
-              </h1>
-            </div> */}
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="flex items-center gap-2 text-primary">
                 <Hourglass size={24} className="shrink-0 text-secondary" />
@@ -194,7 +188,7 @@ const HistoricoLembretes = () => {
                 type="button"
                 onClick={limparHistoricosAntigos}
                 disabled={limpandoHistorico}
-                className="inline-flex items-center justify-center gap-2 self-end rounded-lg border border-danger px-3 py-2 text-sm font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
+                className="inline-flex items-center justify-center gap-2 self-end rounded-lg border border-danger px-5 py-2 text-sm font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
               >
                 {limpandoHistorico ? (
                   <Loader2 size={17} className="animate-spin" />
@@ -210,141 +204,287 @@ const HistoricoLembretes = () => {
             ) : lembretes.length === 0 ? (
               <p className="text-cinza/80">Nenhum lembrete registrado ainda.</p>
             ) : (
-              <div className="border-primary/30bg-white overflow-x-auto rounded border">
-                <table className="w-full min-w-[700px] border-separate border-spacing-0">
-                  <thead className="bg-alternativo/10 text-xs uppercase text-primary">
-                    <tr>
-                      <th className="border-primary/30px-3 border-b py-3 text-left">
-                        Cliente
-                      </th>
+              <>
+                {/* TABELA — TELAS GRANDES */}
+                <div className="hidden overflow-x-auto rounded border border-primary/30 bg-white md:block">
+                  <table className="w-full min-w-[700px] border-separate border-spacing-0">
+                    <thead className="bg-alternativo/10 text-xs uppercase text-primary">
+                      <tr>
+                        <th className="border-b border-primary/30 px-3 py-3 text-left">
+                          Cliente
+                        </th>
 
-                      <th className="border-primary/30px-3 border-b py-3 text-center">
-                        Lembretes enviados
-                      </th>
+                        <th className="border-b border-primary/30 px-3 py-3 text-center">
+                          Lembretes enviados
+                        </th>
 
-                      <th className="border-primary/30px-3 border-b py-3 text-left">
-                        Último envio
-                      </th>
+                        <th className="border-b border-primary/30 px-3 py-3 text-center">
+                          Último envio
+                        </th>
 
-                      <th className="border-primary/30px-3 border-b py-3 text-center">
-                        Detalhes
-                      </th>
-                    </tr>
-                  </thead>
+                        <th className="border-b border-primary/30 px-3 py-3 text-center">
+                          Detalhes
+                        </th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {clientesAgrupados.map((grupo) => {
-                      const aberto = clienteAberto === grupo.chave;
+                    <tbody>
+                      {clientesAgrupados.map((grupo) => {
+                        const aberto = clienteAberto === grupo.chave;
 
-                      return (
-                        <Fragment key={grupo.chave}>
-                          <tr className="bg-white transition hover:bg-alternativo/5">
-                            <td className="border-primary/30px-3 border-b py-3 text-sm font-medium text-primary">
-                              {grupo.nome}
-                            </td>
+                        return (
+                          <Fragment key={grupo.chave}>
+                            <tr className="bg-white transition hover:bg-alternativo/5">
+                              <td className="border-b border-primary/30 px-3 py-3 text-sm font-medium text-primary">
+                                {grupo.nome}
+                              </td>
 
-                            <td className="border-primary/30px-3 border-b py-3 text-center">
-                              <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                                {grupo.quantidade}
-                              </span>
-                            </td>
+                              <td className="border-b border-primary/30 px-3 py-3 text-center">
+                                <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                                  {grupo.quantidade}
+                                </span>
+                              </td>
 
-                            <td className="border-primary/30px-3 border-b py-3 text-sm text-cinza">
-                              {formatarDataHora(grupo.ultimoEnvio)}
-                            </td>
+                              <td className="border-b border-primary/30 px-3 py-3 text-sm">
+                                {formatarDataHora(grupo.ultimoEnvio)}
+                              </td>
 
-                            <td className="border-primary/30px-3 border-b py-3 text-center">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setClienteAberto(aberto ? null : grupo.chave)
-                                }
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary"
-                                title={
-                                  aberto ? 'Fechar detalhes' : 'Ver detalhes'
-                                }
-                                aria-label={
-                                  aberto ? 'Fechar detalhes' : 'Ver detalhes'
-                                }
-                              >
-                                <ChevronDown
-                                  size={20}
-                                  className={`transition-transform ${
-                                    aberto ? 'rotate-180' : ''
-                                  }`}
-                                />
-                              </button>
-                            </td>
-                          </tr>
-
-                          {aberto && (
-                            <tr>
-                              <td
-                                colSpan={4}
-                                className="border-primary/30bg-gray-50 border-b p-3"
-                              >
-                                <div className="space-y-2">
-                                  {grupo.lembretes.map((item) => (
-                                    <div
-                                      key={item.id}
-                                      className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 rounded-lg border border-cinza/20 bg-white p-3 text-sm"
-                                    >
-                                      <div>
-                                        <p className="font-medium text-primary">
-                                          {item.agendamentos?.servico ||
-                                            'Serviço não disponível'}
-                                        </p>
-
-                                        <p className="text-xs text-gray-500">
-                                          Horário:{' '}
-                                          {item.agendamentos?.horario || '-'}
-                                        </p>
-                                      </div>
-
-                                      <p className="whitespace-nowrap text-cinza">
-                                        {formatarDataHora(item.enviado_em)}
-                                      </p>
-
-                                      <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
-                                        Enviado
-                                      </span>
-
-                                      <button
-                                        type="button"
-                                        disabled={
-                                          !item.agendamentos || !item.telefone
-                                        }
-                                        onClick={() => {
-                                          const agendamento = {
-                                            ...item.agendamentos,
-                                            clientes: {
-                                              nome: item.cliente_nome,
-                                              telefone: item.telefone,
-                                            },
-                                          };
-
-                                          enviarLembreteDeAgendamento(
-                                            agendamento
-                                          );
-                                        }}
-                                        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
-                                        title="Reenviar lembrete"
-                                        aria-label="Reenviar lembrete"
-                                      >
-                                        <RotateCcw size={18} />
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
+                              <td className="border-b border-primary/30 px-3 py-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setClienteAberto(
+                                      aberto ? null : grupo.chave
+                                    )
+                                  }
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                  title={
+                                    aberto ? 'Fechar detalhes' : 'Ver detalhes'
+                                  }
+                                  aria-label={
+                                    aberto ? 'Fechar detalhes' : 'Ver detalhes'
+                                  }
+                                >
+                                  <ChevronDown
+                                    size={20}
+                                    className={`transition-transform ${
+                                      aberto ? 'rotate-180' : ''
+                                    }`}
+                                  />
+                                </button>
                               </td>
                             </tr>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+
+                            {aberto && (
+                              <tr>
+                                <td
+                                  colSpan={4}
+                                  className="border-primary/30bg-gray-50 border-b p-3"
+                                >
+                                  <div className="space-y-2">
+                                    {grupo.lembretes.map((item) => (
+                                      <div
+                                        key={item.id}
+                                        className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 rounded-lg border border-cinza/20 bg-white p-3 text-sm"
+                                      >
+                                        <div>
+                                          <p className="font-medium text-primary">
+                                            {item.agendamentos?.servico ||
+                                              'Serviço não disponível'}
+                                          </p>
+
+                                          <p className="text-xs text-gray-500">
+                                            Horário:{' '}
+                                            {item.agendamentos?.horario || '-'}
+                                          </p>
+                                        </div>
+
+                                        <p className="whitespace-nowrap text-cinza">
+                                          {formatarDataHora(item.enviado_em)}
+                                        </p>
+
+                                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                          Enviado
+                                        </span>
+
+                                        <button
+                                          type="button"
+                                          disabled={
+                                            !item.agendamentos || !item.telefone
+                                          }
+                                          onClick={() => {
+                                            const agendamento = {
+                                              ...item.agendamentos,
+                                              clientes: {
+                                                nome: item.cliente_nome,
+                                                telefone: item.telefone,
+                                              },
+                                            };
+
+                                            enviarLembreteDeAgendamento(
+                                              agendamento
+                                            );
+                                          }}
+                                          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+                                          title="Reenviar lembrete"
+                                          aria-label="Reenviar lembrete"
+                                        >
+                                          <RotateCcw size={18} />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                {/* CARDS — TELAS PEQUENAS */}
+                <div className="grid gap-3 md:hidden">
+                  {clientesAgrupados.map((grupo) => {
+                    const aberto = clienteAberto === grupo.chave;
+
+                    return (
+                      <div
+                        key={grupo.chave}
+                        className="rounded-xl border border-cinza/30 bg-white p-4 shadow-sm"
+                      >
+                        {/* Cliente, quantidade e botão */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs text-cinza">Cliente</p>
+
+                            <h2 className="break-words font-semibold text-primary">
+                              {grupo.nome}
+                            </h2>
+                          </div>
+
+                          <div className="flex shrink-0 items-center gap-2">
+                            <span className="inline-flex gap-2 rounded bg-primary/5 px-3.5 py-1 text-xs text-primary">
+                              {grupo.quantidade}
+                              <p className="text-xs">envios</p>
+                            </span>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setClienteAberto(aberto ? null : grupo.chave)
+                              }
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:bg-secondary/10"
+                              title={
+                                aberto ? 'Fechar detalhes' : 'Ver detalhes'
+                              }
+                              aria-label={
+                                aberto ? 'Fechar detalhes' : 'Ver detalhes'
+                              }
+                            >
+                              <ChevronDown
+                                size={19}
+                                className={`transition-transform ${
+                                  aberto ? 'rotate-180' : ''
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Último envio */}
+                        <div className="mt-3 border-t border-cinza/20 pt-3">
+                          <p className="text-xs text-cinza">Último envio</p>
+
+                          <p className="text-sm font-medium text-cinza">
+                            {formatarDataHora(grupo.ultimoEnvio)}
+                          </p>
+                        </div>
+
+                        {/* Detalhes */}
+                        {aberto && (
+                          <div className="mt-4 space-y-3 border-t border-cinza/20 pt-4">
+                            {grupo.lembretes.map((item) => (
+                              <div
+                                key={item.id}
+                                className="rounded-lg border border-cinza/20 bg-gray-50 p-3"
+                              >
+                                {/* Serviço e ação */}
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    <p className="text-xs text-cinza">
+                                      Serviço
+                                    </p>
+
+                                    <p className="break-words font-medium text-primary">
+                                      {item.agendamentos?.servico ||
+                                        'Serviço não disponível'}
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      !item.agendamentos || !item.telefone
+                                    }
+                                    onClick={() => {
+                                      const agendamento = {
+                                        ...item.agendamentos,
+                                        clientes: {
+                                          nome: item.cliente_nome,
+                                          telefone: item.telefone,
+                                        },
+                                      };
+
+                                      enviarLembreteDeAgendamento(agendamento);
+                                    }}
+                                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-secondary text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+                                    title="Reenviar lembrete"
+                                    aria-label="Reenviar lembrete"
+                                  >
+                                    <RotateCcw size={18} />
+                                  </button>
+                                </div>
+
+                                {/* Informações do lembrete */}
+                                <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <p className="text-xs text-cinza">
+                                      Horário
+                                    </p>
+
+                                    <p className="text-cinza">
+                                      {item.agendamentos?.horario || '-'}
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <p className="text-xs text-cinza">Status</p>
+
+                                    <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                      Enviado
+                                    </span>
+                                  </div>
+
+                                  <div className="col-span-2">
+                                    <p className="text-xs text-cinza">
+                                      Enviado em
+                                    </p>
+
+                                    <p className="text-cinza">
+                                      {formatarDataHora(item.enviado_em)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>

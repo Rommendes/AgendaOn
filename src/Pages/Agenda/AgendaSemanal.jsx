@@ -273,7 +273,7 @@ export default function AgendaSemanal() {
                       <button
                         type="button"
                         title={`Imprimir a semana ${sem.semana}`}
-                        className="btn-icone text-primary"
+                        className="btn-icone flex h-9 w-9 items-center justify-center text-primary"
                         onClick={() => imprimirSemana(sem.ano, sem.semana)}
                         aria-label={`Imprimir a semana ${sem.semana} de ${sem.ano}`}
                       >
@@ -284,7 +284,7 @@ export default function AgendaSemanal() {
                       <button
                         type="button"
                         title="Enviar lembretes para todos desta semana"
-                        className="btn-icone text-secondary"
+                        className="btn-icone flex h-9 w-9 items-center justify-center text-secondary"
                         onClick={async () => {
                           const listaSemana = sem.dias.flatMap(
                             ([_, ags]) => ags
@@ -322,7 +322,7 @@ export default function AgendaSemanal() {
                           <button
                             type="button"
                             title="Enviar lembretes para todos deste dia"
-                            className="btn-icone text-secondary"
+                            className="btn-icone hidden text-secondary md:inline-flex"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -415,7 +415,7 @@ export default function AgendaSemanal() {
                                       title={`Enviar lembrete para ${
                                         ag.clientes?.nome || 'este cliente'
                                       }`}
-                                      className="btn-icone text-secondary"
+                                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-secondary/40 bg-white text-secondary transition hover:bg-secondary/10"
                                       onClick={async () => {
                                         const resultado =
                                           await enviarLembreteDeAgendamento(ag);
@@ -444,14 +444,12 @@ export default function AgendaSemanal() {
                           {ags.map((ag) => (
                             <div
                               key={ag.id}
-                              className="rounded-lg bg-primary/10 p-3 shadow-sm"
+                              className="rounded-lg bg-secondary/10 p-3 shadow-sm"
                             >
                               {/* Horário e lembrete */}
                               <div className="flex items-start justify-between gap-3">
                                 <div>
-                                  <p className="text-xs text-cinza/60">
-                                    Horário
-                                  </p>
+                                  <p className="text-xs text-cinza">Horário</p>
 
                                   <p className="font-semibold text-primary">
                                     {ag.horario || '-'}
@@ -484,7 +482,7 @@ export default function AgendaSemanal() {
 
                               {/* Cliente */}
                               <div className="mt-3">
-                                <p className="text-xs text-cinza/60">Cliente</p>
+                                <p className="text-xs text-cinza">Cliente</p>
 
                                 <p className="break-words font-semibold text-primary">
                                   {ag.clientes?.nome || 'Sem nome'}
@@ -493,7 +491,7 @@ export default function AgendaSemanal() {
 
                               {/* Serviço */}
                               <div className="mt-3">
-                                <p className="text-xs text-cinza/60">Serviço</p>
+                                <p className="text-xs text-cinza">Serviço</p>
 
                                 <p className="break-words text-sm text-cinza">
                                   {ag.servico || 'Não informado'}

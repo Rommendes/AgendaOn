@@ -219,7 +219,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                 {/* Data e situação */}
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs text-cinza/60">Data</p>
+                    <p className="text-xs text-cinza">Data</p>
 
                     <p className="font-semibold text-primary">
                       {new Date(`${item.data}T12:00:00`).toLocaleDateString(
@@ -234,7 +234,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                 {/* Informações */}
                 <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                   <div>
-                    <p className="text-xs text-cinza/60">Horário</p>
+                    <p className="text-xs text-cinza">Horário</p>
 
                     <p className="font-medium text-cinza">
                       {item.horario || '-'}
@@ -242,7 +242,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                   </div>
 
                   <div>
-                    <p className="text-xs text-cinza/60">Valor</p>
+                    <p className="text-xs text-cinza">Valor</p>
 
                     <p className="font-semibold text-primary">
                       {parseValor(item.valor).toLocaleString('pt-BR', {
@@ -253,7 +253,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
                   </div>
 
                   <div className="col-span-2">
-                    <p className="text-xs text-cinza/60">Serviço</p>
+                    <p className="text-xs text-cinza">Serviço</p>
 
                     <p className="break-words font-medium text-cinza">
                       {item.servico || 'Não informado'}
@@ -263,7 +263,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
 
                 {/* Observações */}
                 <div className="mt-4 min-h-[64px] rounded-lg border border-cinza/20 bg-gray-50 p-3">
-                  <p className="mb-1 text-xs font-medium text-cinza/60">
+                  <p className="mb-1 text-xs font-medium text-cinza">
                     Observações
                   </p>
 

@@ -1,21 +1,22 @@
 import Header from '../../Componentes/Header/Header';
 
-function Avisos() {
+function MensagensAvisos() {
+  console.log('MensagensAvisos renderizou');
   return (
     <>
-      <Header title="Avisos" voltarPara="/comunicacao-menu" />
+      <Header title="Mensagens e Avisos" voltarPara="/comunicacao-menu" />
       <div className="main">
         <div className="main-container">
           <div className="container-formulario text-primary">
             <div className="">
               <div className="mx-auto max-w-3xl rounded-xl border bg-white p-6 shadow">
-                <h1 className="text-2xl font-bold text-primary">
-                  Página funcionando!
-                </h1>
+                <h2 className="text-2xl font-bold text-primary">
+                  Enviar mensagens e avisos
+                </h2>
 
                 <p className="mt-3 text-cinza">
-                  Este conteúdo é apenas para testar se a página está sendo
-                  renderizada.
+                  Envie avisos importantes, promoções, novidades ou mensagens
+                  personalizadas.
                 </p>
 
                 <button
@@ -34,4 +35,4 @@ function Avisos() {
   );
 }
 
-export default Avisos;
+export default MensagensAvisos;

@@ -57,35 +57,17 @@ function ComunicacaoMenu() {
             </Link>
 
             <Link
-              to="/avisos"
+              to="/mensagens-avisos"
               className="botao-menu w-full transition hover:scale-[1.02]"
             >
               <Bell className="shrink-0 text-secondary" size={32} />
 
               <div>
-                <h1>Avisos</h1>
+                <h1>Avisos e mensagens</h1>
 
                 <p>
                   Envie avisos para clientes sobre eventos ou informações
                   importantes.
-                </p>
-              </div>
-            </Link>
-            <Link
-              to="/mensagem"
-              className="botao-menu w-full transition hover:scale-[1.02]"
-            >
-              <MessageSquareText
-                className="shrink-0 text-secondary"
-                size={32}
-              />
-
-              <div>
-                <h1>Mensagens</h1>
-
-                <p>
-                  Envie mensagens personalizadas , promoções, novidades ou
-                  atualizações de serviços.
                 </p>
               </div>
             </Link>
