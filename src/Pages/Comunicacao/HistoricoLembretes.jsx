@@ -39,7 +39,14 @@ const HistoricoLembretes = () => {
             )
             `
         )
-        .eq('tipo', 'lembrete_agendamento')
+        .in('tipo', [
+          'lembrete_agendamento',
+          'aviso_importante',
+          'promocao',
+          'novidade',
+          'atualizacao_servico',
+          'mensagem_personalizada',
+        ])
         .order('enviado_em', { ascending: false });
 
       if (error) {
@@ -63,8 +70,16 @@ const HistoricoLembretes = () => {
     });
   };
   const traduzirTipo = (tipo) => {
-    if (tipo === 'lembrete_agendamento') return 'Lembrete de atendimento';
-    return tipo;
+    const tipos = {
+      lembrete_agendamento: 'Lembrete de atendimento',
+      aviso_importante: 'Aviso importante',
+      promocao: 'Promoção',
+      novidade: 'Novidade',
+      atualizacao_servico: 'Atualização de serviço',
+      mensagem_personalizada: 'Mensagem personalizada',
+    };
+
+    return tipos[tipo] || 'Comunicação';
   };
 
   const traduzirStatus = (status) => {
@@ -172,16 +187,100 @@ const HistoricoLembretes = () => {
     }
   };
 
+  const prepararTelefoneWhatsapp = (telefone) => {
+    const numeros = String(telefone || '').replace(/\D/g, '');
+
+    if (numeros.startsWith('55') && [12, 13].includes(numeros.length)) {
+      return numeros;
+    }
+
+    if ([10, 11].includes(numeros.length)) {
+      return `55${numeros}`;
+    }
+
+    return null;
+  };
+
+  const reenviarRegistro = async (item) => {
+    if (item.tipo === 'lembrete_agendamento' && item.agendamentos) {
+      if (!item.agendamentos || !item.telefone) return;
+
+      const agendamento = {
+        ...item.agendamentos,
+        clientes: {
+          nome: item.cliente_nome,
+          telefone: item.telefone,
+        },
+      };
+
+      await enviarLembreteDeAgendamento(agendamento);
+      return;
+    }
+
+    const telefone = prepararTelefoneWhatsapp(item.telefone);
+
+    if (!telefone || !item.mensagem) return;
+
+    const link = `https://wa.me/${telefone}?text=${encodeURIComponent(
+      item.mensagem
+    )}`;
+
+    const novaAba = window.open(link, '_blank');
+
+    if (!novaAba) return;
+
+    const novoEnvio = {
+      cliente_nome: item.cliente_nome,
+      telefone: item.telefone,
+      mensagem: item.mensagem,
+      tipo: item.tipo,
+      status: 'aberto_whatsapp',
+      enviado_em: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase
+      .from('lembretes_enviados')
+      .insert([novoEnvio])
+      .select(
+        `
+        id,
+        cliente_nome,
+        telefone,
+        mensagem,
+        tipo,
+        status,
+        enviado_em
+      `
+      )
+      .single();
+
+    if (error) {
+      console.error('Erro ao registrar reenvio:', error);
+      return;
+    }
+
+    setLembretes((anteriores) => [
+      {
+        ...data,
+        agendamentos: null,
+      },
+      ...anteriores,
+    ]);
+  };
+
   return (
     <>
-      <Header title="Lembretes enviados" voltarPara="/comunicacao-menu" />
+      <Header
+        title="Histórico de comunicações"
+        voltarPara="/comunicacao-menu"
+      />
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="flex items-center gap-2 text-primary">
                 <Hourglass size={24} className="shrink-0 text-secondary" />
-                Histórico de lembretes enviados
+                Histórico de comunicações
               </h1>
 
               <button
@@ -215,7 +314,7 @@ const HistoricoLembretes = () => {
                         </th>
 
                         <th className="border-b border-primary/30 px-3 py-3 text-center">
-                          Lembretes enviados
+                          Comunicações
                         </th>
 
                         <th className="border-b border-primary/30 px-3 py-3 text-center">
@@ -241,7 +340,8 @@ const HistoricoLembretes = () => {
 
                               <td className="border-b border-primary/30 px-3 py-3 text-center">
                                 <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                                  {grupo.quantidade}
+                                  {grupo.quantidade}{' '}
+                                  {grupo.quantidade === 1 ? 'envio' : 'envios'}
                                 </span>
                               </td>
 
@@ -282,57 +382,85 @@ const HistoricoLembretes = () => {
                                   className="border-primary/30bg-gray-50 border-b p-3"
                                 >
                                   <div className="space-y-2">
-                                    {grupo.lembretes.map((item) => (
-                                      <div
-                                        key={item.id}
-                                        className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 rounded-lg border border-cinza/20 bg-white p-3 text-sm"
-                                      >
-                                        <div>
-                                          <p className="font-medium text-primary">
-                                            {item.agendamentos?.servico ||
-                                              'Serviço não disponível'}
-                                          </p>
+                                    {grupo.lembretes.map((item) => {
+                                      const ehLembrete =
+                                        item.tipo === 'lembrete_agendamento' &&
+                                        Boolean(item.agendamentos);
 
-                                          <p className="text-xs text-gray-500">
-                                            Horário:{' '}
-                                            {item.agendamentos?.horario || '-'}
-                                          </p>
-                                        </div>
+                                      const podeReenviar =
+                                        Boolean(item.telefone) &&
+                                        (ehLembrete
+                                          ? Boolean(item.agendamentos)
+                                          : Boolean(item.mensagem));
 
-                                        <p className="whitespace-nowrap text-cinza">
-                                          {formatarDataHora(item.enviado_em)}
-                                        </p>
-
-                                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
-                                          Enviado
-                                        </span>
-
-                                        <button
-                                          type="button"
-                                          disabled={
-                                            !item.agendamentos || !item.telefone
-                                          }
-                                          onClick={() => {
-                                            const agendamento = {
-                                              ...item.agendamentos,
-                                              clientes: {
-                                                nome: item.cliente_nome,
-                                                telefone: item.telefone,
-                                              },
-                                            };
-
-                                            enviarLembreteDeAgendamento(
-                                              agendamento
-                                            );
-                                          }}
-                                          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
-                                          title="Reenviar lembrete"
-                                          aria-label="Reenviar lembrete"
+                                      return (
+                                        <div
+                                          key={item.id}
+                                          className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-4 rounded-lg border border-cinza/20 bg-white p-3 text-sm"
                                         >
-                                          <RotateCcw size={18} />
-                                        </button>
-                                      </div>
-                                    ))}
+                                          <div className="min-w-0">
+                                            {ehLembrete ? (
+                                              <>
+                                                <p className="font-medium text-primary">
+                                                  {item.agendamentos?.servico ||
+                                                    '-'}
+                                                </p>
+
+                                                <p className="text-xs text-gray-500">
+                                                  Horário:{' '}
+                                                  {item.agendamentos?.horario ||
+                                                    '-'}
+                                                </p>
+                                              </>
+                                            ) : (
+                                              <>
+                                                <p className="text-xs text-gray-500">
+                                                  Tipo
+                                                </p>
+
+                                                <p className="font-medium text-primary">
+                                                  {traduzirTipo(item.tipo)}
+                                                </p>
+
+                                                <p className="mt-2 line-clamp-3 whitespace-pre-line text-xs text-cinza/80">
+                                                  {item.mensagem ||
+                                                    'Mensagem não disponível'}
+                                                </p>
+                                              </>
+                                            )}
+                                          </div>
+
+                                          <p className="whitespace-nowrap text-cinza">
+                                            {formatarDataHora(item.enviado_em)}
+                                          </p>
+
+                                          <span className="inline-flex whitespace-nowrap rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                            Mensagem enviada
+                                          </span>
+
+                                          <button
+                                            type="button"
+                                            disabled={!podeReenviar}
+                                            onClick={() =>
+                                              reenviarRegistro(item)
+                                            }
+                                            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-secondary text-secondary transition hover:border-primary hover:bg-primary/5 hover:text-primary disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+                                            title={
+                                              podeReenviar
+                                                ? 'Reenviar comunicação'
+                                                : 'Comunicação indisponível para reenvio'
+                                            }
+                                            aria-label={
+                                              podeReenviar
+                                                ? 'Reenviar comunicação'
+                                                : 'Comunicação indisponível para reenvio'
+                                            }
+                                          >
+                                            <RotateCcw size={18} />
+                                          </button>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 </td>
                               </tr>
@@ -404,80 +532,118 @@ const HistoricoLembretes = () => {
                         {/* Detalhes */}
                         {aberto && (
                           <div className="mt-4 space-y-3 border-t border-cinza/20 pt-4">
-                            {grupo.lembretes.map((item) => (
-                              <div
-                                key={item.id}
-                                className="rounded-lg border border-cinza/20 bg-gray-50 p-3"
-                              >
-                                {/* Serviço e ação */}
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <p className="text-xs text-cinza">
-                                      Serviço
-                                    </p>
+                            {grupo.lembretes.map((item) => {
+                              const ehLembrete =
+                                item.tipo === 'lembrete_agendamento' &&
+                                Boolean(item.agendamentos);
 
-                                    <p className="break-words font-medium text-primary">
-                                      {item.agendamentos?.servico ||
-                                        'Serviço não disponível'}
-                                    </p>
+                              const podeReenviar =
+                                Boolean(item.telefone) &&
+                                (ehLembrete
+                                  ? Boolean(item.agendamentos)
+                                  : Boolean(item.mensagem));
+
+                              // const whatsappAberto =
+                              //   item.status === 'aberto_whatsapp';
+
+                              return (
+                                <div
+                                  key={item.id}
+                                  className="rounded-lg border border-cinza/20 bg-gray-50 p-3"
+                                >
+                                  {/* Tipo ou serviço e ação */}
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                      <p className="text-xs text-cinza">
+                                        {ehLembrete ? 'Serviço' : 'Tipo'}
+                                      </p>
+
+                                      <p className="break-words font-medium text-primary">
+                                        {ehLembrete
+                                          ? item.agendamentos?.servico || '-'
+                                          : traduzirTipo(item.tipo)}
+                                      </p>
+                                    </div>
+
+                                    <button
+                                      type="button"
+                                      disabled={!podeReenviar}
+                                      onClick={() => reenviarRegistro(item)}
+                                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-secondary text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
+                                      title={
+                                        podeReenviar
+                                          ? 'Reenviar comunicação'
+                                          : 'Comunicação indisponível para reenvio'
+                                      }
+                                      aria-label={
+                                        podeReenviar
+                                          ? 'Reenviar comunicação'
+                                          : 'Comunicação indisponível para reenvio'
+                                      }
+                                    >
+                                      <RotateCcw size={18} />
+                                    </button>
                                   </div>
+                                  {/* Conteúdo das mensagens e avisos */}
 
-                                  <button
-                                    type="button"
-                                    disabled={
-                                      !item.agendamentos || !item.telefone
-                                    }
-                                    onClick={() => {
-                                      const agendamento = {
-                                        ...item.agendamentos,
-                                        clientes: {
-                                          nome: item.cliente_nome,
-                                          telefone: item.telefone,
-                                        },
-                                      };
+                                  {/* Prévia da mensagem */}
+                                  {!ehLembrete && (
+                                    <p className="mt-3 line-clamp-3 whitespace-pre-line break-all text-xs text-cinza/80">
+                                      {item.mensagem ||
+                                        'Mensagem não disponível'}
+                                    </p>
+                                  )}
+                                  {/* Informações do envio */}
+                                  {ehLembrete ? (
+                                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                                      <div>
+                                        <p className="text-xs text-cinza">
+                                          Horário
+                                        </p>
 
-                                      enviarLembreteDeAgendamento(agendamento);
-                                    }}
-                                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-secondary text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-400"
-                                    title="Reenviar lembrete"
-                                    aria-label="Reenviar lembrete"
-                                  >
-                                    <RotateCcw size={18} />
-                                  </button>
+                                        <p className="text-cinza">
+                                          {item.agendamentos?.horario || '-'}
+                                        </p>
+                                      </div>
+
+                                      <div>
+                                        <p className="text-xs text-cinza">
+                                          Status
+                                        </p>
+
+                                        <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+                                          Enviado
+                                        </span>
+                                      </div>
+
+                                      <div className="col-span-2">
+                                        <p className="text-xs text-cinza">
+                                          Enviado em
+                                        </p>
+
+                                        <p className="text-cinza">
+                                          {formatarDataHora(item.enviado_em)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="mt-3 border-t border-cinza/20 pt-3 text-sm">
+                                      <p className="text-xs text-cinza">
+                                        Status
+                                      </p>
+
+                                      <p className="mt-1 text-cinza">
+                                        Mensagem{' '}
+                                        <span className="font-semibold text-secondary">
+                                          enviada
+                                        </span>{' '}
+                                        em {formatarDataHora(item.enviado_em)}.
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
-
-                                {/* Informações do lembrete */}
-                                <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                                  <div>
-                                    <p className="text-xs text-cinza">
-                                      Horário
-                                    </p>
-
-                                    <p className="text-cinza">
-                                      {item.agendamentos?.horario || '-'}
-                                    </p>
-                                  </div>
-
-                                  <div>
-                                    <p className="text-xs text-cinza">Status</p>
-
-                                    <span className="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
-                                      Enviado
-                                    </span>
-                                  </div>
-
-                                  <div className="col-span-2">
-                                    <p className="text-xs text-cinza">
-                                      Enviado em
-                                    </p>
-
-                                    <p className="text-cinza">
-                                      {formatarDataHora(item.enviado_em)}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>
