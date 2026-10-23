@@ -379,7 +379,7 @@ const HistoricoLembretes = () => {
                               <tr>
                                 <td
                                   colSpan={4}
-                                  className="border-primary/30bg-gray-50 border-b p-3"
+                                  className="border-b border-primary/30 bg-gray-50 p-3"
                                 >
                                   <div className="space-y-2">
                                     {grupo.lembretes.map((item) => {
@@ -479,7 +479,7 @@ const HistoricoLembretes = () => {
                     return (
                       <div
                         key={grupo.chave}
-                        className="rounded-xl border border-cinza/30 bg-white p-4 shadow-sm"
+                        className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm"
                       >
                         {/* Cliente, quantidade e botão */}
                         <div className="flex items-start justify-between gap-3">

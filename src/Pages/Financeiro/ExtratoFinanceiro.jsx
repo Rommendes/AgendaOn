@@ -202,9 +202,9 @@ function ExtratoFinanceiro() {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="lg:border-primary/30lg:pb-4 mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b">
+            <div className="mb-6 lg:flex lg:items-end lg:gap-10 lg:border-b lg:border-primary lg:pb-4">
               {/* Título e descrição */}
-              <div className="border-primary/30pb-2 border-b lg:border-b-0 lg:pb-0">
+              <div className="border-b border-primary/30 pb-2 lg:border-b-0 lg:pb-0">
                 <h1 className="flex gap-2 text-primary">
                   <Receipt className="text-secondary" />
                   Extrato Financeiro
@@ -244,9 +244,9 @@ function ExtratoFinanceiro() {
             </div>
 
             <div className="mb-6 grid gap-4 sm:grid-cols-2">
-              <div className="border-primary/30bg-white rounded-lg border p-4 shadow-sm">
+              <div className="rounded-lg border border-primary/30 bg-success/10 p-4 shadow-sm">
                 <p className="text-primary">Pagamentos encontrados</p>
-                <p className="text-2xl font-bold text-cinza">
+                <p className="text-2xl font-bold text-success">
                   {pagamentos.length}
                 </p>
                 <p className="text-cinza">
@@ -257,7 +257,7 @@ function ExtratoFinanceiro() {
                 </p>
               </div>
 
-              <div className="border-primary/30bg-white rounded-lg border p-4 shadow-sm">
+              <div className="rounded-lg border border-primary/30 bg-danger/10 p-4 shadow-sm">
                 <p className="text-primary">Pendências encontradas</p>
                 <p className="text-2xl font-bold text-red-600">
                   {pendencias.length}
@@ -272,7 +272,7 @@ function ExtratoFinanceiro() {
             </div>
 
             {/* PAGAMENTOS DO PERÍODO */}
-            <div className="border-primary/30bg-white mb-6 rounded-lg border p-4 shadow-sm">
+            <div className="mb-6 rounded-lg border border-primary/30 bg-white p-4 shadow-sm">
               <h2 className="mb-3 text-primary">Pagamentos do período</h2>
 
               {pagamentos.length === 0 ? (
@@ -284,25 +284,27 @@ function ExtratoFinanceiro() {
                   {/* TABELA DE PAGAMENTOS — TELAS GRANDES */}
                   <div className="hidden overflow-x-auto md:block">
                     <table className="w-full min-w-[700px]">
+                      <colgroup>
+                        <col className="w-[24%]" />
+                        <col className="w-[30%]" />
+                        <col className="w-[20%]" />
+                        <col className="w-[12%]" />
+                        <col className="w-[14%]" />
+                      </colgroup>
                       <thead>
                         <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                          <th className="px-3 py-2 font-medium">Pagamento</th>
-                          <th className="px-3 py-2 font-medium">Cliente</th>
-                          <th className="px-3 py-2 font-medium">Serviço</th>
-                          <th className="px-3 py-2 font-medium">Forma</th>
-                          <th className="px-3 py-2 text-right font-medium">
-                            Valor
-                          </th>
+                          <th className="px-3 py-1 font-medium">Pagamento</th>
+                          <th className="px-3 py-1 font-medium">Cliente</th>
+                          <th className="px-3 py-1 font-medium">Serviço</th>
+                          <th className="px-3 py-1 font-medium">Forma</th>
+                          <th className="px-3 py-1 font-medium">Valor</th>
                         </tr>
                       </thead>
 
                       <tbody>
                         {pagamentos.map((item) => (
-                          <tr
-                            key={item.id}
-                            className="border-b border-cinza/20 text-sm"
-                          >
-                            <td className="px-3 py-3 text-cinza">
+                          <tr key={item.id} className="text-sm">
+                            <td className="whitespace-nowrap px-3 py-3 text-cinza">
                               {new Date(item.data_pagamento).toLocaleString(
                                 'pt-BR',
                                 {
@@ -312,19 +314,19 @@ function ExtratoFinanceiro() {
                               )}
                             </td>
 
-                            <td className="px-3 py-3 text-primary">
+                            <td className="whitespace-nowrap px-3 py-3 text-primary">
                               {item.clientes?.nome || 'Cliente sem nome'}
                             </td>
 
-                            <td className="px-3 py-3 text-cinza">
+                            <td className="truncate px-3 py-3 text-primary">
                               {item.servico || 'Não informado'}
                             </td>
 
-                            <td className="px-3 py-3 text-cinza">
+                            <td className="whitespace-nowrap px-3 py-3 text-primary">
                               {item.pagamento || 'Não informado'}
                             </td>
 
-                            <td className="px-3 py-3 text-right font-medium text-primary">
+                            <td className="whitespace-nowrap px-3 py-3 font-medium text-primary">
                               {Number(item.valor || 0).toLocaleString('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL',
@@ -341,16 +343,9 @@ function ExtratoFinanceiro() {
                     {pagamentos.map((item) => (
                       <div
                         key={item.id}
-                        className="border-primary/30bg-white rounded-xl border p-3 shadow-sm"
+                        className="rounded-xl border border-primary/10 bg-cinza/5 p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          {/* <div className="min-w-0">
-                            <p className="text-xs text-cinza/70">Cliente</p>
-
-                            <h3 className="break-words font-semibold text-primary">
-                              {item.clientes?.nome || 'Cliente sem nome'}
-                            </h3>
-                          </div> */}
                           <div className="min-w-0">
                             <p className="text-xs text-cinza/70">Cliente</p>
 
@@ -416,7 +411,7 @@ function ExtratoFinanceiro() {
             </div>
 
             {/* PENDÊNCIAS DO PERÍODO */}
-            <div className="border-primary/30bg-white mb-6 rounded-lg border p-4 shadow-sm">
+            <div className="mb-6 rounded-lg border border-primary/30 bg-white p-4 shadow-sm">
               <h2 className="mb-3 text-primary">Pendências do período</h2>
 
               {pendencias.length === 0 ? (
@@ -427,44 +422,46 @@ function ExtratoFinanceiro() {
                 <>
                   {/* TABELA DE PENDÊNCIAS — TELAS GRANDES */}
                   <div className="hidden overflow-x-auto md:block">
+                    <colgroup>
+                      <col className="w-[24%]" />
+                      <col className="w-[30%]" />
+                      <col className="w-[20%]" />
+                      <col className="w-[12%]" />
+                      <col className="w-[14%]" />
+                    </colgroup>
                     <table className="w-full min-w-[700px]">
                       <thead>
                         <tr className="border-b border-secondary/60 text-left text-sm text-cinza">
-                          <th className="px-3 py-2 font-medium">Data</th>
-                          <th className="px-3 py-2 font-medium">Cliente</th>
-                          <th className="px-3 py-2 font-medium">Serviço</th>
-                          <th className="px-3 py-2 font-medium">Status</th>
-                          <th className="px-3 py-2 text-right font-medium">
-                            Valor
-                          </th>
+                          <th className="px-3 py-1 font-medium">Data</th>
+                          <th className="px-3 py-1 font-medium">Cliente</th>
+                          <th className="px-3 py-1 font-medium">Serviço</th>
+                          <th className="px-3 py-1 font-medium">Status</th>
+                          <th className="px-3 py-1 font-medium">Valor</th>
                         </tr>
                       </thead>
 
                       <tbody>
                         {pendencias.map((item) => (
-                          <tr
-                            key={item.id}
-                            className="border-b border-cinza/20 text-sm"
-                          >
-                            <td className="px-3 py-3 text-cinza">
+                          <tr key={item.id} className="text-sm">
+                            <td className="whitespace-nowrap px-3 py-3 text-cinza">
                               {new Date(
                                 `${item.data}T12:00:00`
                               ).toLocaleDateString('pt-BR')}
                             </td>
 
-                            <td className="px-3 py-3 text-primary">
+                            <td className="truncate whitespace-nowrap px-3 py-3 text-primary">
                               {item.clientes?.nome || 'Cliente sem nome'}
                             </td>
 
-                            <td className="px-3 py-3 text-cinza">
+                            <td className="truncate whitespace-nowrap px-3 py-3 text-cinza">
                               {item.servico || 'Não informado'}
                             </td>
 
-                            <td className="px-3 py-3 font-medium text-danger">
+                            <td className="truncate whitespace-nowrap px-3 py-3 font-medium text-danger">
                               {item.pagamento || 'Pendente'}
                             </td>
 
-                            <td className="px-3 py-3 text-right font-medium text-danger">
+                            <td className="truncate whitespace-nowrap px-3 py-3 font-medium text-danger">
                               {Number(item.valor || 0).toLocaleString('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL',
@@ -481,16 +478,9 @@ function ExtratoFinanceiro() {
                     {pendencias.map((item) => (
                       <div
                         key={item.id}
-                        className="border-primary/30border-l-danger rounded-xl border bg-white p-3 shadow-sm"
+                        className="rounded-xl border border-primary/30 border-l-danger bg-white p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          {/* <div className="min-w-0">
-                            <p className="text-xs text-cinza/70">Cliente</p>
-
-                            <h3 className="break-words font-semibold text-primary">
-                              {item.clientes?.nome || 'Cliente sem nome'}
-                            </h3>
-                          </div> */}
                           <div className="min-w-0">
                             <p className="text-xs text-cinza/70">Cliente</p>
 
@@ -509,7 +499,7 @@ function ExtratoFinanceiro() {
                             </div>
                           </div>
 
-                          <div className="shrink-0 text-right">
+                          <div className="shrink-0">
                             <p className="font-semibold text-danger">
                               {Number(item.valor || 0).toLocaleString('pt-BR', {
                                 style: 'currency',
@@ -533,14 +523,6 @@ function ExtratoFinanceiro() {
                               ).toLocaleDateString('pt-BR')}
                             </p>
                           </div>
-
-                          {/* <div>
-                            <p className="text-xs text-cinza/70">Status</p>
-
-                            <span className="inline-flex rounded-full bg-danger/10 px-2 py-1 text-xs font-semibold text-danger">
-                              {item.pagamento || 'Pendente'}
-                            </span>
-                          </div> */}
 
                           <div className="col-span-2">
                             <p className="text-xs text-cinza/70">Serviço</p>

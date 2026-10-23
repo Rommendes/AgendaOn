@@ -22,7 +22,7 @@ function ComunicacaoMenu() {
               <BellRing className="shrink-0 text-secondary" size={32} />
 
               <div>
-                <h1>Lembretes</h1>
+                <h1>Lembretes de agendamento</h1>
 
                 <p>Envie lembretes de agendamentos para clientes.</p>
               </div>

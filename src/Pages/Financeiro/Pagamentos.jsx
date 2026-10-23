@@ -92,7 +92,7 @@ function Pagamentos() {
       <main className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="border-primary/30pb-1 mb-8 border-b">
+            <div className="mb-8 rounded-lg border-b border-primary/30 pb-1">
               <h1 className="flex gap-2 text-primary">
                 <ReceiptText className="text-secondary" size={24} />
                 Pagamentos pendentes
@@ -117,7 +117,7 @@ function Pagamentos() {
               <div className="mb-2 flex items-center gap-4">
                 <h2 className="text-primary">Recebimentos pendentes</h2>
 
-                <span className="rounded-full bg-danger/10 px-3 py-1 text-sm font-medium text-danger">
+                <span className="rounded-sm border border-danger bg-danger/5 px-3 py-1 text-sm font-medium text-danger shadow">
                   {pendentes.length}
                 </span>
               </div>
@@ -137,7 +137,7 @@ function Pagamentos() {
                   {pendentes.map((item) => (
                     <div
                       key={item.id}
-                      className="border-primary/30bg-white rounded-xl border p-4 shadow-sm transition hover:shadow-md"
+                      className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm transition hover:shadow-md"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

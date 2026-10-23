@@ -221,21 +221,20 @@ function ResumoFinanceiro() {
             <p className="mb-6 text-sm text-cinza/80">
               Resumo de recebimentos, pendências e pagamentos dos atendimentos.
             </p>
-            <p className="border-primary/30text-sm border-b font-bold uppercase text-secondary">
+            <p className="border-b border-primary/30 text-sm font-bold uppercase text-secondary">
               {mesAtual}
             </p>
             <div className="conteudo-amplo">
               <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Card 1 com refinamento de UI/UX */}
-                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-primary/30 bg-primary/5 p-5 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-primary">
-                    {/* Ícone ganha um fundinho suave da cor do tema */}
-                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
-                      <Wallet className="text-secondary" size={20} />
+                    <span className="flex items-center justify-center rounded-lg p-1.5">
+                      <Wallet className="text-secondary" size={24} />
                     </span>
                     Recebido no mês
                   </p>
-                  {/* O valor numérico fica em um tom escuro neutro e elegante */}
+
                   <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
                     {resumoFinanceiro.recebidoMes.toLocaleString('pt-BR', {
                       style: 'currency',
@@ -245,10 +244,10 @@ function ResumoFinanceiro() {
                 </div>
 
                 {/* Card 2: Pendente no mês */}
-                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-primary/30 bg-danger/5 p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-primary">
-                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
-                      <CircleAlert className="text-secondary" size={20} />
+                    <span className="flex items-center justify-center rounded-lg p-1.5">
+                      <CircleAlert className="text-secondary" size={24} />
                     </span>
                     Pendente no mês
                   </p>
@@ -261,25 +260,25 @@ function ResumoFinanceiro() {
                 </div>
 
                 {/* Card 3: Clientes com pendências */}
-                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-danger/5 p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-primary">
-                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
-                      <UserRound className="text-secondary" size={20} />
+                    <span className="flex items-center justify-center rounded-lg p-1.5">
+                      <UserRound className="text-secondary" size={24} />
                     </span>
                     Clientes com pendências
                   </p>
-                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-primary md:mt-3 md:text-2xl">
+                  <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-danger md:mt-3 md:text-2xl">
                     {resumoFinanceiro.clientesDevedores}
                   </h2>
                 </div>
 
                 {/* Card 4: Pagamentos registrados */}
-                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-white p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
+                <div className="flex flex-row items-center justify-between rounded-2xl border border-violet-300 bg-success/5 p-5 shadow shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md md:flex-col md:items-start md:justify-start">
                   <p className="flex items-center gap-2 text-sm font-medium text-primary">
-                    <span className="flex items-center justify-center rounded-lg bg-secondary/10 p-1.5">
+                    <span className="flex items-center justify-center rounded-lg p-1.5">
                       <BadgeCheck
                         className="text-bold text-secondary"
-                        size={20}
+                        size={24}
                       />
                     </span>
                     Pagamentos registrados
@@ -292,12 +291,15 @@ function ResumoFinanceiro() {
             </div>
             <section className="conteudo-amplo">
               <div className="mb-4">
-                <h2 className="text-xl font-medium text-primary">
+                <h2 className="flex items-center gap-2 text-xl font-medium text-primary">
+                  <span>
+                    <CircleAlert className="text-secondary" size={24} />
+                  </span>
                   Pendências de pagamento
                 </h2>
               </div>
 
-              <div className="rounded-2xl border border-violet-400 bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-primary/30 bg-white p-5 shadow-sm">
                 {/* <input
                 type="text"
                 placeholder="Buscar cliente..."
@@ -318,7 +320,7 @@ function ResumoFinanceiro() {
                     {pendentes.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-lg border border-gray-300 p-3"
+                        className="rounded-lg border border-cinza/30 p-3"
                       >
                         <p className="font-medium text-primary">
                           {item.clientes?.nome || 'Cliente sem nome'}
@@ -411,7 +413,7 @@ function ResumoFinanceiro() {
               </h2>
 
               {pagos.length === 0 ? (
-                <div className="rounded-2xl border border-secondary bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-primary/30 bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">
                     Nenhum pagamento encontrado.
                   </p>
@@ -421,7 +423,7 @@ function ResumoFinanceiro() {
                   {pagos.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-2xl border border-primary bg-white p-6 shadow-sm"
+                      className="rounded-2xl border border-primary/30 bg-white p-6 shadow-sm"
                     >
                       <p className="flex items-center gap-2 font-medium text-primary">
                         <UserRound

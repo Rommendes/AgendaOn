@@ -323,7 +323,7 @@ const PesquisandoClientes = () => {
                                 </p>
                               </div>
 
-                              <div className="border-primary/30bg-gray-50 rounded-lg border p-3">
+                              <div className="rounded-lg border border-primary/30 bg-gray-50 p-3">
                                 <p className="text-xs text-gray-500">
                                   Último Atendimento
                                 </p>

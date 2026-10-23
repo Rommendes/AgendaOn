@@ -135,11 +135,12 @@ export default function LembreteAgendamentos() {
                 Lembre seu cliente do agendamento.
               </p>
             </div>
-            <div className="container-formulario">
+            <div className="container-formulario mb-4 rounded-lg border border-primary/30 bg-white p-4 shadow-sm">
               {/* Filtros */}
-              <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="col-span-1">
+              <div className="mb-3 grid grid-cols-2 gap-3 md:grid-cols-3">
+                <div className="col-span-2 md:col-span-1">
                   <label className="text-sm text-cinza/80">Dia</label>
+
                   <input
                     type="date"
                     value={dataBase}
@@ -150,6 +151,7 @@ export default function LembreteAgendamentos() {
 
                 <div>
                   <label className="text-sm text-cinza/80">Hora inicial</label>
+
                   <input
                     type="time"
                     value={horaInicio}
@@ -160,6 +162,7 @@ export default function LembreteAgendamentos() {
 
                 <div>
                   <label className="text-sm text-cinza/80">Hora final</label>
+
                   <input
                     type="time"
                     value={horaFim}
@@ -169,31 +172,38 @@ export default function LembreteAgendamentos() {
                 </div>
               </div>
 
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p
-                  className={`text-sm ${intervaloInvalido ? 'text-red-600' : 'text-cinza/80'}`}
+                  className={`text-sm ${
+                    intervaloInvalido ? 'text-red-600' : 'text-cinza/80'
+                  }`}
                 >
                   {intervaloInvalido
-                    ? '⚠️ Hora inicial deve ser menor ou igual à hora final.'
+                    ? 'Hora inicial deve ser menor ou igual à hora final.'
                     : `Exibindo agendamentos entre ${horaInicio} e ${horaFim}.`}
                 </p>
+
                 <button
                   type="button"
                   onClick={enviarTodos}
-                  className="btn btn-alt inline-flex items-center gap-2 transition hover:bg-secondary/10"
                   disabled={
                     carregando || filtrada.length === 0 || intervaloInvalido
                   }
-                  title="Enviar lembrete para todos listados"
+                  className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-primary disabled:text-primary disabled:hover:bg-transparent"
+                  title={
+                    filtrada.length === 0
+                      ? 'Nenhum agendamento disponível para envio'
+                      : 'Enviar lembretes para todos os clientes listados'
+                  }
                 >
-                  <Send size={18} className="shrink-0 text-secondary" />
-                  <span className="text-primary">Enviar todos</span>
+                  <BellRing size={18} className="shrink-0" />
+                  Enviar lembretes
+                  <BellRing size={18} className="shrink-0" />
                 </button>
               </div>
-
               {/* Tabela (desktop) */}
-              <div className="hidden overflow-x-auto sm:block">
-                <table className="w-full min-w-[700px] border text-left">
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-[700px] border border-primary/30 text-left">
                   <thead className="bg-alternativo/10 text-sm font-bold uppercase text-primary">
                     <tr>
                       <th className="border p-2">Cliente</th>
@@ -280,79 +290,94 @@ export default function LembreteAgendamentos() {
               </div>
 
               {/* Cards (mobile) */}
-              <div className="grid gap-3 sm:hidden">
+
+              <div className="grid gap-3 md:hidden">
                 {carregando ? (
-                  <div className="rounded-lg border bg-white p-3 text-center text-sm text-cinza/80 shadow">
+                  <div className="rounded-xl border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
                     Carregando…
                   </div>
                 ) : filtrada.length === 0 ? (
-                  <div className="rounded-lg border bg-white p-3 text-center text-sm text-cinza/80 shadow">
+                  <div className="rounded-xl border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
                     Nenhum agendamento no intervalo.
                   </div>
                 ) : (
                   filtrada.map((ag) => (
                     <div
                       key={ag.id}
-                      className="rounded-lg border bg-white p-3 shadow"
+                      className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm"
                     >
-                      <div className="flex items-center justify-between">
-                        <h2 className="font-semibold text-gray-800">
-                          {ag.clientes?.nome || '-'}
-                        </h2>
-                      </div>
-                      <div className="mt-2 space-y-1 text-sm text-cinza/80">
-                        <p>
-                          <strong>Serviço:</strong> {ag.servico || '-'}
-                        </p>
-                        <p>
-                          <strong>Data:</strong>{' '}
-                          {new Date(ag.data + 'T12:00:00').toLocaleDateString(
-                            'pt-BR'
-                          )}
-                        </p>
-                        <p>
-                          <strong>Hora:</strong> {horaBR(ag.horario)}
-                        </p>
-                        {ag.obs && (
-                          <p>
-                            <strong>Obs.:</strong> {ag.obs}
-                          </p>
-                        )}
-                      </div>
-                      <div className="mt-3">
-                        <button
-                          type="button"
-                          onClick={() => enviarUm(ag)}
-                          disabled={!!enviando[ag.id]}
-                          className={`btn inline-flex w-full items-center justify-center gap-2 ${
-                            enviando[ag.id] ? 'btn-gray' : 'btn-alt'
-                          }`}
-                        >
-                          {enviando[ag.id] ? (
-                            'Enviando...'
-                          ) : (
-                            <>
-                              <BellRing
-                                size={18}
-                                className="shrink-0 text-secondary"
-                              />
-                              <span className="text-primary">Lembrete</span>
-                            </>
-                          )}
-                        </button>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs text-cinza/70">Cliente</p>
+
+                          <h2 className="font-semibold text-primary">
+                            {ag.clientes?.nome || '-'}
+                          </h2>
+                        </div>
+
                         {status[ag.id] && (
-                          <p
-                            className={`mt-1 text-xs ${
+                          <span
+                            className={`whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${
                               status[ag.id] === 'enviado'
-                                ? 'text-emerald-700'
-                                : 'text-cinza/80'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-cinza'
                             }`}
                           >
                             {status[ag.id] === 'enviado'
                               ? 'Enviado'
                               : 'Copiado'}
-                          </p>
+                          </span>
                         )}
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                        <div className="col-span-2">
+                          <p className="text-xs text-cinza/70">Serviço</p>
+
+                          <p className="text-cinza">{ag.servico || '-'}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-cinza/70">Data</p>
+
+                          <p className="text-cinza">
+                            {new Date(`${ag.data}T12:00:00`).toLocaleDateString(
+                              'pt-BR'
+                            )}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-cinza/70">Horário</p>
+
+                          <p className="font-medium text-primary">
+                            {horaBR(ag.horario)}
+                          </p>
+                        </div>
+
+                        {ag.obs && (
+                          <div className="col-span-2">
+                            <p className="text-xs text-cinza/70">Observações</p>
+
+                            <p className="break-words text-cinza">{ag.obs}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-4 flex justify-end border-t border-cinza/20 pt-3">
+                        <button
+                          type="button"
+                          onClick={() => enviarUm(ag)}
+                          disabled={Boolean(enviando[ag.id])}
+                          className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-primary disabled:text-primary disabled:hover:bg-transparent"
+                          title={`Enviar lembrete para ${
+                            ag.clientes?.nome || 'o cliente'
+                          }`}
+                        >
+                          <BellRing size={18} className="shrink-0" />
+
+                          {enviando[ag.id] ? 'Enviando...' : 'Enviar lembrete'}
+                        </button>
                       </div>
                     </div>
                   ))

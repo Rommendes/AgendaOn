@@ -27,28 +27,16 @@ export default function Home() {
           <img
             src={logoAgendaOn}
             alt="AgendaOn"
-            className="mx-auto h-auto w-64"
+            className="mx-auto h-auto w-64 rounded-lg p-2 px-4 shadow-lg"
           />
 
-          <p className="text-primary">
+          <p className="mt-2 text-lg text-primary">
             mais que agenda, sua parceira de confiança.
           </p>
         </div>
         {/* ATENDIMENTOS */}
 
         <div className="mb-6 flex flex-col gap-4">
-          {/* <Link
-            to="/agenda"
-            className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
-          >
-            <CalendarRange className="text-4xl text-secondary" size={32} />
-
-            <div>
-              <h1>Agenda</h1>
-              <p>Gerencie sua agenda e os atendimentos da semana.</p>
-            </div>
-          </Link> */}
-
           <Link
             to="/agendamentos-menu"
             className="botao-menu w-full transition hover:scale-[1.02]"

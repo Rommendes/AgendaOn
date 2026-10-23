@@ -214,7 +214,7 @@ const HistoricoDoCliente = ({ clienteId, onResumoFinanceiro }) => {
             {agendamentos.map((item) => (
               <div
                 key={item.id}
-                className="border-primary/30bg-white rounded-xl border p-4 shadow-sm"
+                className="bg-whiterounded-xl border border-primary/30 p-4 shadow-sm"
               >
                 {/* Data e situação */}
                 <div className="flex items-start justify-between gap-3">

@@ -42,14 +42,14 @@ const Header = ({
               to="/home"
               aria-label="Ir para a página inicial
             "
-              className="text-primary"
+              className="flex flex-col items-center gap-1 text-primary"
             >
               <img
                 src="/agendaon-icon.png"
                 alt="AgendaOn"
-                className="h-10 w-10 object-contain"
+                className="w-16 rounded-full object-contain shadow-lg"
               />
-              Home
+              <span className="text-sm font-medium uppercase">Home</span>
             </Link>
           )}
         </div>
@@ -64,7 +64,7 @@ const Header = ({
             onClick={() => setMenuAberto(!menuAberto)}
             aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={menuAberto}
-            className="btn-icone flex h-10 w-10 items-center justify-center rounded text-secondary transition hover:bg-secondary/10"
+            className="btn-icone bg- flex h-10 w-10 items-center justify-center rounded text-secondary transition hover:bg-secondary/10"
             title="Menu"
           >
             {menuAberto ? <X size={30} /> : <Menu size={30} />}
@@ -72,7 +72,7 @@ const Header = ({
         </div>
       </div>
       {menuAberto && (
-        <nav className="border-primary/30bg-white absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border shadow-lg">
+        <nav className="absolute right-4 top-full z-50 max-h-[calc(100vh-7rem)] w-64 overflow-y-auto rounded-b-lg border border-primary/30 bg-white shadow-lg">
           <Link
             to="/home"
             onClick={() => setMenuAberto(false)}

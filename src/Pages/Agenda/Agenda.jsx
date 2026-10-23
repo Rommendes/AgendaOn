@@ -497,7 +497,7 @@ const AgendaAtendimento = () => {
           {/* 🟡 FORMULÁRIO DE NOVO AGENDAMENTO */}
 
           <div className="container-formulario text-primary">
-            <h1 className="border-primary/30text-primary mb-4 flex gap-2 border-b">
+            <h1 className="mb-4 flex gap-2 border-b border-primary/30 text-primary">
               <ClipboardPlusIcon className="text-secondary" size={25} />
               Novo Agendamento
             </h1>
@@ -577,6 +577,8 @@ const AgendaAtendimento = () => {
                   <option value="Sobrancelha">Sobrancelha</option>
                   <option value="Depilação">Depilação</option>
                   <option value="Penteado festa">Penteado festa</option>
+                  <option value="Luzes">Luzes</option>
+                  <option value="Mechas">Mechas</option>
                 </select>
               </div>
 
@@ -800,6 +802,8 @@ const AgendaAtendimento = () => {
                                     <option value="Penteado festa">
                                       Penteado festa
                                     </option>
+                                    <option value="Luzes">Luzes</option>
+                                    <option value="Mechas">Mechas</option>
                                   </select>
                                 </div>
 
@@ -887,7 +891,7 @@ const AgendaAtendimento = () => {
                                   </div>
                                 </div>
 
-                                <div className="border-primary/30bg-gray-50 col-span-2 mt-4 min-h-[64px] rounded-lg border p-3">
+                                <div className="col-span-2 mt-4 min-h-[64px] rounded-lg border border-primary/30 bg-gray-50 p-3">
                                   <p className="mb-1 text-xs font-medium text-gray-500">
                                     Observações
                                   </p>
@@ -901,7 +905,7 @@ const AgendaAtendimento = () => {
                             )}
 
                             {/* Ações */}
-                            <div className="border-primary/30pt-3 mt-4 flex items-center justify-between border-t">
+                            <div className="mt-4 flex items-center justify-between border-t border-primary/30 pt-3">
                               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                                 Ações
                               </p>
@@ -991,7 +995,7 @@ const AgendaAtendimento = () => {
                       })}
                     </div>
 
-                    <div className="border-primary/30bg-gradient-to-b hidden w-full overflow-x-auto rounded-xl border from-white to-violet-50/30 md:block">
+                    <div className="hidden w-full overflow-x-auto rounded-xl border border-primary/30 bg-gradient-to-b from-white to-violet-50/30 md:block">
                       <table className="w-full min-w-[820px] border-separate border-spacing-0">
                         <thead className="justify-normal border bg-primary/5 text-center text-sm font-extrabold uppercase tracking-wide text-primary">
                           {/* bg-cinza/10 text-[11px] uppercase text-primary */}
@@ -1050,7 +1054,7 @@ const AgendaAtendimento = () => {
                               <Fragment key={agendamento.id}>
                                 <tr className="-50/60 text-cinza transition hover:bg-alternativo/20">
                                   {/* Data */}
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <InputData
                                         value={formEdicao.data || ''}
@@ -1065,7 +1069,7 @@ const AgendaAtendimento = () => {
                                     )}
                                   </td>
                                   {/* Horário */}
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         type="time"
@@ -1088,7 +1092,7 @@ const AgendaAtendimento = () => {
                                   </td>
 
                                   {/* Cliente */}
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <select
                                         value={formEdicao.cliente_id || ''}
@@ -1116,7 +1120,7 @@ const AgendaAtendimento = () => {
 
                                   {/* Serviço */}
 
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <select
                                         value={formEdicao.servico || ''}
@@ -1150,13 +1154,15 @@ const AgendaAtendimento = () => {
                                         <option value="Penteado festa">
                                           Penteado festa
                                         </option>
+                                        <option value="Luzes">Luzes</option>
+                                        <option value="Mechas">Mechas</option>
                                       </select>
                                     ) : (
                                       agendamento.servico
                                     )}
                                   </td>
                                   {/* Valor */}
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         value={formEdicao.valorFormatado || ''}
@@ -1178,7 +1184,7 @@ const AgendaAtendimento = () => {
                                     )}
                                   </td>
 
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     <span
                                       className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-semibold ${classeStatus}`}
                                     >
@@ -1187,7 +1193,7 @@ const AgendaAtendimento = () => {
                                   </td>
 
                                   {/* Observações */}
-                                  <td className="border-primary/30px-2 min-w-[100px] border-b py-2 text-left text-sm md:px-4 md:py-3">
+                                  <td className="min-w-[100px] border-b border-primary/30 px-2 py-2 text-left text-sm md:px-4 md:py-3">
                                     {editandoId === agendamento.id ? (
                                       <input
                                         value={formEdicao.obs}
@@ -1206,7 +1212,7 @@ const AgendaAtendimento = () => {
 
                                   {/* Ações */}
 
-                                  <td className="border-primary/30px-3 min-w-[180px] border-b py-2 md:px-4 md:py-3">
+                                  <td className="min-w-[180px] border-b border-primary/30 px-3 py-2 md:px-4 md:py-3">
                                     <div className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gray-50 px-2 py-1">
                                       {editandoId === agendamento.id ? (
                                         <button
@@ -1403,7 +1409,7 @@ const AgendaAtendimento = () => {
                   />
                 </div>
 
-                <div className="border-primary/30bg-gray-50 mb-6 space-y-2 rounded-lg border p-4">
+                <div className="mb-6 space-y-2 rounded-lg border border-primary/30 bg-gray-50 p-4">
                   <p className="text-cinza/80">
                     <span className="font-medium text-primary">Cliente:</span>{' '}
                     {

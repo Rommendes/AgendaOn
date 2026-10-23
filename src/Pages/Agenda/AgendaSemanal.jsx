@@ -9,7 +9,7 @@ import {
   BellRing,
   CalendarClock,
   CalendarDays,
-  CalendarRange,
+  Send,
   Printer,
 } from 'lucide-react';
 import { createLogger } from '../../lib/logger.js';
@@ -100,6 +100,7 @@ export default function AgendaSemanal() {
       abrirAviso(
         'Não foi possível abrir a impressão. Verifique se o navegador bloqueou a nova janela.'
       );
+
       return;
     }
 
@@ -255,10 +256,10 @@ export default function AgendaSemanal() {
                 <section
                   id={`semana-${sem.ano}-${sem.semana}`}
                   key={`${sem.ano}-${sem.semana}`}
-                  className="mb-5 rounded-xl border border-primary/30 bg-white pt-5 shadow-sm"
+                  className="mb-5 rounded-lg border border-primary/30 bg-white pt-5 shadow-sm"
                 >
                   {/* Cabeçalho da semana */}
-                  <div className="flex h-10 items-center justify-between gap-3 border-primary/30 px-4 sm:ml-3 sm:h-auto sm:p-4">
+                  <div className="flex h-10 items-center gap-10 border-primary/30 px-4 sm:ml-3 sm:h-auto sm:p-4">
                     <h2 className="whitespace-nowrap text-lg font-semibold text-primary sm:text-xl">
                       Semana{' '}
                       <span className="font-bold text-secondary">
@@ -270,51 +271,35 @@ export default function AgendaSemanal() {
                     {/* Ações da semana */}
                     <div className="flex shrink-0 items-center gap-2">
                       {/* Imprimir semana */}
+
+                      {/* Imprimir semana */}
                       <button
                         type="button"
-                        title={`Imprimir a semana ${sem.semana}`}
-                        className="btn-icone flex h-9 w-9 items-center justify-center text-primary"
+                        title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
+                        className="btn-icone flex h-9 w-auto items-center justify-center gap-2 px-3 text-secondary"
                         onClick={() => imprimirSemana(sem.ano, sem.semana)}
-                        aria-label={`Imprimir a semana ${sem.semana} de ${sem.ano}`}
+                        aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
                       >
                         <Printer size={19} aria-hidden="true" />
-                      </button>
-
-                      {/* Enviar lembretes da semana */}
-                      <button
-                        type="button"
-                        title="Enviar lembretes para todos desta semana"
-                        className="btn-icone flex h-9 w-9 items-center justify-center text-secondary"
-                        onClick={async () => {
-                          const listaSemana = sem.dias.flatMap(
-                            ([_, ags]) => ags
-                          );
-
-                          const { enviados, copiados } =
-                            await enviarLembretesEmLote(listaSemana, {
-                              intervalMs: 2000,
-                            });
-
-                          abrirAviso(
-                            `Semana ${sem.semana}: ${enviados} enviados no WhatsApp${
-                              copiados ? `, ${copiados} copiados` : ''
-                            }.`
-                          );
-                        }}
-                        aria-label={`Enviar lembretes da semana ${sem.semana}`}
-                      >
-                        <CalendarRange size={19} aria-hidden="true" />
+                        <span className="whitespace-nowrap text-sm font-medium">
+                          Imprimir / PDF
+                        </span>
                       </button>
                     </div>
                   </div>
 
                   {/* Dias da semana */}
-                  <div className="space-y-4 p-2 sm:ml-3 sm:p-4">
+                  <div className="space-y-2 p-2 sm:ml-3 sm:p-4">
                     {sem.dias.map(([dataISO, ags]) => (
-                      <div key={dataISO} className="border-t border-primary/30">
+                      <div key={dataISO}>
                         {/* Cabeçalho do dia */}
-                        <div className="flex items-center justify-between gap-3 p-3">
-                          <div className="font-semibold text-primary">
+                        <div className="flex items-center justify-between gap-3 p-2">
+                          <div className="flex gap-2 font-semibold text-primary">
+                            <CalendarClock
+                              className="text-secondary"
+                              size={19}
+                              aria-hidden="true"
+                            />
                             {formatarBRDataISO(dataISO)}
                           </div>
 
@@ -322,7 +307,7 @@ export default function AgendaSemanal() {
                           <button
                             type="button"
                             title="Enviar lembretes para todos deste dia"
-                            className="btn-icone hidden text-secondary md:inline-flex"
+                            className="btn-icone flex h-9 w-auto items-center justify-center gap-2 px-3 text-secondary"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -341,22 +326,26 @@ export default function AgendaSemanal() {
                               dataISO
                             )}`}
                           >
-                            <CalendarClock size={19} aria-hidden="true" />
+                            <Send size={18} aria-hidden="true" />
+                            <span>
+                              Enviar {ags.length}{' '}
+                              {ags.length === 1 ? 'lembrete' : 'lembretes'}
+                            </span>
                           </button>
                         </div>
 
                         {/* Tabela de atendimentos do dia */}
-                        <div className="hidden overflow-x-auto p-2 md:block">
-                          <table className="w-full table-fixed border-collapse">
+                        <div className="hidden overflow-x-auto rounded-lg border border-primary/30 p-2 md:block">
+                          <table className="w-full">
                             <colgroup>
-                              <col className="w-[14%]" />
-                              <col className="w-[30%]" />
-                              <col className="w-[38%]" />
-                              <col className="w-[18%]" />
+                              <col className="w-[25%]" />
+                              <col className="w-[25%]" />
+                              <col className="w-[25%]" />
+                              <col className="w-[25%]" />
                             </colgroup>
 
                             <thead>
-                              <tr className="border bg-primary/10 text-center text-sm font-extrabold uppercase text-primary">
+                              <tr className="bg-primary/5 text-left text-sm font-extrabold uppercase text-primary">
                                 <th
                                   scope="col"
                                   className="px-4 py-2 text-xs font-semibold uppercase text-primary"
@@ -387,7 +376,7 @@ export default function AgendaSemanal() {
                               </tr>
                             </thead>
 
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="text-sm">
                               {ags.map((ag) => (
                                 <tr
                                   key={ag.id}
@@ -444,7 +433,7 @@ export default function AgendaSemanal() {
                           {ags.map((ag) => (
                             <div
                               key={ag.id}
-                              className="rounded-lg bg-secondary/10 p-3 shadow-sm"
+                              className="rounded-lg bg-secondary/10 p-4 shadow-sm"
                             >
                               {/* Horário e lembrete */}
                               <div className="flex items-start justify-between gap-3">
@@ -516,7 +505,7 @@ export default function AgendaSemanal() {
               aria-labelledby="titulo-aviso"
             >
               <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white shadow-xl">
-                <div className="border-b border-slate-200 px-5 py-4">
+                <div className="px-5 py-4">
                   <h2
                     id="titulo-aviso"
                     className="text-lg font-semibold text-primary"
@@ -531,7 +520,7 @@ export default function AgendaSemanal() {
                   </p>
                 </div>
 
-                <div className="flex justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
+                <div className="flex justify-end bg-slate-50 px-5 py-3">
                   <button
                     type="button"
                     className="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
