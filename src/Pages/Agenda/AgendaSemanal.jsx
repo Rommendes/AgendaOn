@@ -259,7 +259,7 @@ export default function AgendaSemanal() {
                   className="mb-5 rounded-lg border border-primary/30 bg-white pt-5 shadow-sm"
                 >
                   {/* Cabeçalho da semana */}
-                  <div className="flex h-10 items-center gap-10 border-primary/30 px-4 sm:ml-3 sm:h-auto sm:p-4">
+                  <div className="flex flex-col gap-3 px-3 py-4 sm:ml-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
                     <h2 className="whitespace-nowrap text-lg font-semibold text-primary sm:text-xl">
                       Semana{' '}
                       <span className="font-bold text-secondary">
@@ -269,21 +269,20 @@ export default function AgendaSemanal() {
                     </h2>
 
                     {/* Ações da semana */}
-                    <div className="flex shrink-0 items-center gap-2">
-                      {/* Imprimir semana */}
-
-                      {/* Imprimir semana */}
+                    <div className="flex self-end sm:self-auto">
                       <button
                         type="button"
                         title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
-                        className="btn-icone flex h-9 w-auto items-center justify-center gap-2 px-3 text-secondary"
+                        className="btn-icone inline-flex h-9 w-auto items-center justify-center gap-2 whitespace-nowrap px-3 text-sm font-medium text-secondary"
                         onClick={() => imprimirSemana(sem.ano, sem.semana)}
                         aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
                       >
-                        <Printer size={19} aria-hidden="true" />
-                        <span className="whitespace-nowrap text-sm font-medium">
-                          Imprimir / PDF
-                        </span>
+                        <Printer
+                          size={19}
+                          className="shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>Imprimir / PDF</span>
                       </button>
                     </div>
                   </div>
@@ -293,21 +292,24 @@ export default function AgendaSemanal() {
                     {sem.dias.map(([dataISO, ags]) => (
                       <div key={dataISO}>
                         {/* Cabeçalho do dia */}
-                        <div className="flex items-center justify-between gap-3 p-2">
-                          <div className="flex gap-2 font-semibold text-primary">
+                        <div className="flex flex-col gap-2 p-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                          <div className="flex items-center gap-2 font-semibold text-primary">
                             <CalendarClock
-                              className="text-secondary"
+                              className="shrink-0 text-secondary"
                               size={19}
                               aria-hidden="true"
                             />
-                            {formatarBRDataISO(dataISO)}
+
+                            <span className="whitespace-nowrap">
+                              {formatarBRDataISO(dataISO)}
+                            </span>
                           </div>
 
                           {/* Enviar lembretes do dia */}
                           <button
                             type="button"
                             title="Enviar lembretes para todos deste dia"
-                            className="btn-icone flex h-9 w-auto items-center justify-center gap-2 px-3 text-secondary"
+                            className="btn-icone inline-flex h-9 w-auto items-center justify-center gap-2 self-end whitespace-nowrap px-3 text-sm font-medium text-secondary sm:self-auto"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -315,18 +317,19 @@ export default function AgendaSemanal() {
                                 });
 
                               abrirAviso(
-                                `${formatarBRDataISO(
-                                  dataISO
-                                )}: ${enviados} enviados${
+                                `${formatarBRDataISO(dataISO)}: ${enviados} enviados${
                                   copiados ? `, ${copiados} copiados` : ''
                                 }.`
                               );
                             }}
-                            aria-label={`Enviar lembretes do dia ${formatarBRDataISO(
-                              dataISO
-                            )}`}
+                            aria-label={`Enviar lembretes do dia ${formatarBRDataISO(dataISO)}`}
                           >
-                            <Send size={18} aria-hidden="true" />
+                            <Send
+                              size={18}
+                              className="shrink-0"
+                              aria-hidden="true"
+                            />
+
                             <span>
                               Enviar {ags.length}{' '}
                               {ags.length === 1 ? 'lembrete' : 'lembretes'}
