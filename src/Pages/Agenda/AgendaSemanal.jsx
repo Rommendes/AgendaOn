@@ -273,16 +273,15 @@ export default function AgendaSemanal() {
                       <button
                         type="button"
                         title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
-                        className="btn-icone inline-flex h-9 w-auto items-center justify-center gap-2 whitespace-nowrap px-3 text-sm font-medium text-secondary"
+                        className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary sm:w-auto sm:gap-2 sm:px-3"
                         onClick={() => imprimirSemana(sem.ano, sem.semana)}
                         aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
                       >
-                        <Printer
-                          size={19}
-                          className="shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span>Imprimir / PDF</span>
+                        <Printer size={19} aria-hidden="true" />
+
+                        <span className="hidden whitespace-nowrap text-sm font-medium sm:inline">
+                          Imprimir / PDF
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -292,7 +291,7 @@ export default function AgendaSemanal() {
                     {sem.dias.map(([dataISO, ags]) => (
                       <div key={dataISO}>
                         {/* Cabeçalho do dia */}
-                        <div className="flex flex-col gap-2 p-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                        <div className="flex items-center justify-between gap-3 p-2">
                           <div className="flex items-center gap-2 font-semibold text-primary">
                             <CalendarClock
                               className="shrink-0 text-secondary"
@@ -305,11 +304,12 @@ export default function AgendaSemanal() {
                             </span>
                           </div>
 
-                          {/* Enviar lembretes do dia */}
                           <button
                             type="button"
-                            title="Enviar lembretes para todos deste dia"
-                            className="btn-icone inline-flex h-9 w-auto items-center justify-center gap-2 self-end whitespace-nowrap px-3 text-sm font-medium text-secondary sm:self-auto"
+                            title={`Enviar ${ags.length} ${
+                              ags.length === 1 ? 'lembrete' : 'lembretes'
+                            } deste dia`}
+                            className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary sm:w-auto sm:gap-2 sm:px-3"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -324,13 +324,9 @@ export default function AgendaSemanal() {
                             }}
                             aria-label={`Enviar lembretes do dia ${formatarBRDataISO(dataISO)}`}
                           >
-                            <Send
-                              size={18}
-                              className="shrink-0"
-                              aria-hidden="true"
-                            />
+                            <Send size={18} aria-hidden="true" />
 
-                            <span>
+                            <span className="hidden whitespace-nowrap text-sm font-medium sm:inline">
                               Enviar {ags.length}{' '}
                               {ags.length === 1 ? 'lembrete' : 'lembretes'}
                             </span>
