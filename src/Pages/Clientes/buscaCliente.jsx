@@ -197,7 +197,7 @@ const PesquisandoClientes = () => {
                             Dados do Cliente
                           </h3>
 
-                          <div className="rounded-xl border border-primary/30 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
+                          <div className="rounded-lg border border-primary/30 bg-white p-5 shadow-md transition-all duration-200 hover:shadow-lg">
                             <h3 className="mb-3 text-xl font-bold text-primary">
                               {cliente.nome}
                             </h3>
@@ -287,7 +287,7 @@ const PesquisandoClientes = () => {
                           <h3 className="mb-3 mt-3 text-xl font-bold uppercase text-secondary">
                             Resumo Financeiro
                           </h3>
-                          <div className="mt-3 rounded-xl border border-primary/30 bg-white p-5 shadow-md">
+                          <div className="mt-3 rounded-lg border border-primary/30 bg-white p-5 shadow-md">
                             <div className="grid grid-cols-2 gap-3">
                               <div className="rounded-lg border border-green-100 bg-green-50 p-3">
                                 <p className="text-xs text-gray-500">
@@ -365,7 +365,7 @@ const PesquisandoClientes = () => {
                           <h3 className="mb-3 mt-3 text-xl font-bold text-primary">
                             Histórico de Agendamentos
                           </h3>
-                          <div className="rounded-xl border border-primary/30 bg-white p-4 shadow-md">
+                          <div className="rounded-lg border border-primary/30 bg-white p-4 shadow-md">
                             <HistoricoDoCliente
                               clienteId={cliente.id}
                               onResumoFinanceiro={atualizarResumoFinanceiro}

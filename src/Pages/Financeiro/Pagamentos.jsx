@@ -92,7 +92,7 @@ function Pagamentos() {
       <main className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="mb-8 rounded-lg border-b border-primary/30 pb-1">
+            <div className="mb-8 border-b border-primary/30 pb-1">
               <h1 className="flex gap-2 text-primary">
                 <ReceiptText className="text-secondary" size={24} />
                 Pagamentos pendentes
@@ -123,7 +123,7 @@ function Pagamentos() {
               </div>
 
               {pendentes.length === 0 ? (
-                <div className="rounded-xl bg-success/10 p-5 text-center">
+                <div className="rounded-lg bg-success/10 p-5 text-center">
                   <p className="font-medium text-green-700">
                     Todos os pagamentos estão em dia.
                   </p>
@@ -137,7 +137,7 @@ function Pagamentos() {
                   {pendentes.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm transition hover:shadow-md"
+                      className="rounded-lg border border-primary/30 bg-white p-4 shadow-sm transition hover:shadow-md"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

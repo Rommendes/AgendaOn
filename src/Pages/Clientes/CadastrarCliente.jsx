@@ -150,7 +150,7 @@ const CadastrarCliente = () => {
       {avisoSucesso && (
         <div
           role="status"
-          className="fixed right-4 top-24 z-50 flex w-[calc(100%-2rem)] max-w-sm items-center justify-between gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-lg"
+          className="fixed right-4 top-24 z-50 flex w-[calc(100%-2rem)] max-w-sm items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-700 shadow-lg"
         >
           <div className="flex items-center gap-2">
             <CircleCheck size={21} className="shrink-0" />

@@ -293,18 +293,18 @@ export default function LembreteAgendamentos() {
 
               <div className="grid gap-3 md:hidden">
                 {carregando ? (
-                  <div className="rounded-xl border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
+                  <div className="rounded-lg border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
                     Carregando…
                   </div>
                 ) : filtrada.length === 0 ? (
-                  <div className="rounded-xl border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
+                  <div className="rounded-lg border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
                     Nenhum agendamento no intervalo.
                   </div>
                 ) : (
                   filtrada.map((ag) => (
                     <div
                       key={ag.id}
-                      className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm"
+                      className="rounded-lg border border-primary/30 bg-white p-4 shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>

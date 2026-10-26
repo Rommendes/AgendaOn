@@ -89,11 +89,11 @@ body {
   }
 
   .tabela-responsiva {
-    @apply mt-6 w-full overflow-x-auto rounded-xl border border-slate-200;
+    @apply mt-6 w-full overflow-x-auto rounded-lg border border-slate-200;
   }
 
   .botao-menu {
-    @apply flex items-center gap-4 rounded-xl bg-primary p-2 text-white transition hover:bg-blue-800;
+    @apply flex items-center gap-4 rounded-lg bg-primary p-2 text-white transition hover:bg-blue-800;
   }
 
   .botao-submenu {
@@ -137,7 +137,7 @@ body {
 
   /* ✅ Cobranças Pendentes (cards / badges) */
   .card-pendente {
-    @apply rounded-lg border border-l-4 border-red-100 border-l-red-500 bg-white p-3 shadow-sm;
+    @apply rounded-lg border border-l-4 border-cinza/30 border-l-red-500 bg-white p-3 shadow-sm;
   }
 
   .badge-pendente {

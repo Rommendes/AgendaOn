@@ -273,7 +273,10 @@ export default function AgendaSemanal() {
                       <button
                         type="button"
                         title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
-                        className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary sm:w-auto sm:gap-2 sm:px-3"
+                        className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
+                        npm
+                        run
+                        dev
                         onClick={() => imprimirSemana(sem.ano, sem.semana)}
                         aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
                       >
@@ -309,7 +312,7 @@ export default function AgendaSemanal() {
                             title={`Enviar ${ags.length} ${
                               ags.length === 1 ? 'lembrete' : 'lembretes'
                             } deste dia`}
-                            className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary sm:w-auto sm:gap-2 sm:px-3"
+                            className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -503,7 +506,7 @@ export default function AgendaSemanal() {
               aria-modal="true"
               aria-labelledby="titulo-aviso"
             >
-              <div className="w-full max-w-sm overflow-hidden rounded-xl bg-white shadow-xl">
+              <div className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-xl">
                 <div className="px-5 py-4">
                   <h2
                     id="titulo-aviso"

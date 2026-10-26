@@ -479,7 +479,7 @@ const HistoricoLembretes = () => {
                     return (
                       <div
                         key={grupo.chave}
-                        className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm"
+                        className="rounded-lg border border-primary/30 bg-white p-4 shadow-sm"
                       >
                         {/* Cliente, quantidade e botão */}
                         <div className="flex items-start justify-between gap-3">

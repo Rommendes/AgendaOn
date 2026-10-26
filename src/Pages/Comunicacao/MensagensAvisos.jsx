@@ -311,13 +311,13 @@ function MensagensAvisos() {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="mb-6 border-b border-cinza/30 pb-4">
+            <div className="mb-6 border-b border-secondary/50 pb-1">
               <h1 className="flex items-center gap-2 text-primary">
                 <Megaphone size={25} className="shrink-0 text-secondary" />
                 Enviar mensagens e avisos
               </h1>
 
-              <p className="mt-2 text-sm text-cinza/80">
+              <p className="mb-1 mt-1 text-sm text-cinza/80">
                 Envie avisos importantes, promoções, novidades ou mensagens
                 personalizadas.
               </p>
@@ -339,7 +339,7 @@ function MensagensAvisos() {
                     id="tipo-comunicacao"
                     value={tipoComunicacao}
                     onChange={(e) => setTipoComunicacao(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
+                    className="w-full rounded-lg border border-primary/30 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
                   >
                     {tiposComunicacao.map((tipo) => (
                       <option key={tipo.valor} value={tipo.valor}>
@@ -354,7 +354,7 @@ function MensagensAvisos() {
                   <p className="mb-2 font-medium text-primary">Destinatários</p>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
+                    <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-primary/30 bg-gray-50 p-3">
                       <input
                         type="radio"
                         name="destinatarios"
@@ -367,7 +367,7 @@ function MensagensAvisos() {
                       <span>Todos os clientes</span>
                     </label>
 
-                    <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
+                    <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-primary/30 bg-gray-50 p-3">
                       <input
                         type="radio"
                         name="destinatarios"
@@ -384,7 +384,7 @@ function MensagensAvisos() {
 
                 {/* Seleção dos clientes */}
                 {tipoDestinatario === 'selecionados' && (
-                  <div className="rounded-xl border border-gray-200 p-4">
+                  <div className="rounded-lg border border-gray-200 p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <p className="flex items-center gap-2 font-medium text-primary">
                         <Users size={19} className="text-secondary" />
@@ -449,7 +449,7 @@ function MensagensAvisos() {
                     value={titulo}
                     onChange={(e) => setTitulo(e.target.value)}
                     placeholder="Ex.: Horário especial de atendimento"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
+                    className="w-full rounded-lg border border-primary/30 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
                   />
                 </div>
 
@@ -468,7 +468,7 @@ function MensagensAvisos() {
                     onChange={(e) => setMensagem(e.target.value)}
                     rows={8}
                     placeholder={`Olá, {nome}!\n\nDigite aqui sua mensagem.`}
-                    className="w-full resize-y rounded-xl border border-gray-200 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
+                    className="w-full resize-y rounded-lg border border-primary/30 bg-gray-50 p-3 text-cinza outline-none focus:border-secondary"
                   />
 
                   <p className="mt-2 text-xs text-cinza/70">
@@ -480,14 +480,14 @@ function MensagensAvisos() {
 
               {/* PRÉVIA */}
               <div>
-                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 lg:sticky lg:top-4">
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 lg:sticky lg:top-4">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h2 className="flex items-center gap-2 font-semibold text-primary">
                       <Eye size={20} className="text-secondary" />
                       Prévia da mensagem
                     </h2>
 
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary">
+                    <span className="rounded-lg border border-primary/30 bg-white px-3 py-1 text-xs font-semibold text-primary">
                       {quantidadeDestinatarios}{' '}
                       {quantidadeDestinatarios === 1
                         ? 'destinatário'
@@ -495,7 +495,7 @@ function MensagensAvisos() {
                     </span>
                   </div>
 
-                  <div className="min-h-48 whitespace-pre-wrap rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-cinza shadow-sm">
+                  <div className="min-h-48 whitespace-pre-wrap rounded-lg border border-green-100 bg-white p-4 text-sm text-cinza shadow-sm">
                     {mensagemDaPrevia || (
                       <span className="text-cinza/50">
                         A prévia aparecerá aqui enquanto você escreve.
@@ -517,7 +517,7 @@ function MensagensAvisos() {
         {/* RETORNO */}
         {retorno.mensagem && (
           <div
-            className={`mt-6 flex items-start gap-3 rounded-xl border p-4 text-sm ${
+            className={`mt-6 flex items-start gap-3 rounded-lg border p-4 text-sm ${
               retorno.tipo === 'erro'
                 ? 'border-red-200 bg-red-50 text-red-700'
                 : retorno.tipo === 'sucesso'
@@ -537,7 +537,7 @@ function MensagensAvisos() {
 
         {/* FILA DE ENVIO */}
         {filaEnvio.length > 0 && (
-          <div className="mt-6 rounded-xl border border-primary/20 bg-white p-4 shadow-sm">
+          <div className="mt-6 rounded-lg border border-primary/20 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-semibold text-primary">Fila de envio</p>

@@ -343,7 +343,7 @@ function ExtratoFinanceiro() {
                     {pagamentos.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-primary/10 bg-cinza/5 p-3 shadow-sm"
+                        className="rounded-lg border border-primary/10 bg-cinza/5 p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
@@ -478,7 +478,7 @@ function ExtratoFinanceiro() {
                     {pendencias.map((item) => (
                       <div
                         key={item.id}
-                        className="rounded-xl border border-primary/30 border-l-danger bg-white p-3 shadow-sm"
+                        className="rounded-lg border border-primary/30 border-l-danger bg-white p-3 shadow-sm"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">

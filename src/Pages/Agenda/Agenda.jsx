@@ -698,7 +698,7 @@ const AgendaAtendimento = () => {
                         return (
                           <div
                             key={agendamento.id}
-                            className="rounded-xl border border-primary/30 bg-white p-4 shadow-sm"
+                            className="rounded-lg border border-primary/30 bg-white p-4 shadow-sm"
                           >
                             {/* Cliente e status */}
                             <div>
@@ -715,7 +715,7 @@ const AgendaAtendimento = () => {
 
                             {editandoId === agendamento.id ? (
                               /* MODO DE EDIÇÃO NO CELULAR */
-                              <div className="mt-4 space-y-3 rounded-xl border border-blue-200 bg-blue-50/40 p-3">
+                              <div className="mt-4 space-y-3 rounded-lg border border-blue-200 bg-blue-50/40 p-3">
                                 <div>
                                   <label className="label-padrao">Data</label>
                                   <InputData
@@ -995,7 +995,7 @@ const AgendaAtendimento = () => {
                       })}
                     </div>
 
-                    <div className="hidden w-full overflow-x-auto rounded-xl border border-primary/30 bg-gradient-to-b from-white to-violet-50/30 md:block">
+                    <div className="hidden w-full overflow-x-auto rounded-lg border border-primary/30 bg-gradient-to-b from-white to-violet-50/30 md:block">
                       <table className="w-full min-w-[820px] border-separate border-spacing-0">
                         <thead className="justify-normal border bg-primary/5 text-center text-sm font-extrabold uppercase tracking-wide text-primary">
                           {/* bg-cinza/10 text-[11px] uppercase text-primary */}

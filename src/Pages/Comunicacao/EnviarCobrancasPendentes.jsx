@@ -29,15 +29,6 @@ export default function EnviarCobrancasPendentes() {
   const [cobrancasEnviadas, setCobrancasEnviadas] = useState({});
   const [quantidadeCobrancas, setQuantidadeCobrancas] = useState({});
 
-  // useEffect(() => {
-  //   async function carregarAgendamentos() {
-  //     const resultado = await getAgendamentosPendentes();
-
-  //     setAgendamentos(resultado || []);
-  //   }
-  //   carregarAgendamentos();
-  // }, []);
-
   useEffect(() => {
     async function carregarPendencias() {
       const dados = await getAgendamentosPendentes();
@@ -89,9 +80,7 @@ export default function EnviarCobrancasPendentes() {
                 ainda não realizaram o pagamento.
               </p>
             </div>
-            <div className="container-formulario">
-              {/* mb-5 flex gap-2 border-b text-primary */}
-
+            <div className="container">
               {/* DESKTOP (>= sm): TABELA */}
               <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[700px] border text-left">
@@ -178,11 +167,11 @@ export default function EnviarCobrancasPendentes() {
                   agendamentos.map((a) => (
                     <div key={a.id} className="card-pendente">
                       <div className="flex items-center justify-between">
-                        <h2 className="font-semibold text-primary">
+                        <h2 className="text-sm font-bold text-primary">
                           {a.clientes?.nome || 'Sem nome'}
                         </h2>
 
-                        <div className="flex gap-2 text-secondary">
+                        <div className="flex gap-2 text-xs text-secondary">
                           <Loader2
                             className="animate-spin"
                             size={24}
