@@ -64,7 +64,7 @@ body {
     @apply mx-auto min-h-screen w-full max-w-7xl bg-azulClaro/5 px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
   } */
   .main {
-    @apply mx-auto min-h-screen w-full max-w-7xl bg-gradient-to-br from-azulClaro/10 to-white px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
+    @apply mx-auto min-h-screen w-full max-w-7xl from-azulClaro/10 to-white px-4 py-6 font-Poppins sm:px-5 md:px-6 lg:px-8;
   }
 
   .main-container {

@@ -17,39 +17,62 @@ function ComunicacaoMenu() {
           <div className="flex flex-col gap-4">
             <Link
               to="/lembretes"
-              className="botao-menu w-full transition hover:scale-[1.02]"
+              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
             >
-              <BellRing className="shrink-0 text-secondary" size={32} />
+              <BellRing
+                size={32}
+                className="shrink-0 text-secondary"
+                aria-hidden="true"
+              />
 
-              <div>
-                <h1>Lembretes de agendamento</h1>
+              <div className="min-w-0">
+                <h2 className="text-xl font-medium leading-tight">
+                  Lembretes de agendamento
+                </h2>
 
-                <p>Envie lembretes de agendamentos para clientes.</p>
+                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                  Envie lembretes de agendamentos para clientes.
+                </p>
               </div>
             </Link>
+
             <Link
               to="/cobrancas"
-              className="botao-menu w-full transition hover:scale-[1.02]"
+              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
             >
-              <CircleAlert className="text-secondary" size={32} />
+              <CircleAlert
+                className="shrink-0 text-secondary"
+                aria-hidden="true"
+                size={32}
+              />
 
-              <div>
-                <h1>Pendências</h1>
+              <div className="min-w-0">
+                <h2 className="text-xl font-medium leading-tight">
+                  Pendências
+                </h2>
 
-                <p>Envie cobranças para clientes com pagamentos pendentes.</p>
+                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                  Envie cobranças para clientes com pagamentos pendentes.
+                </p>
               </div>
             </Link>
 
             <Link
               to="/historico-lembretes"
-              className="botao-menu w-full transition hover:scale-[1.02]"
+              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
             >
-              <Hourglass className="text-secondary" shrink-0 size={32} />
+              <Hourglass
+                size={32}
+                className="shrink-0 text-secondary"
+                aria-hidden="true"
+              />
 
-              <div>
-                <h1>Histórico de lembretes</h1>
+              <div className="min-w-0">
+                <h2 className="text-xl font-medium leading-tight">
+                  Histórico de lembretes
+                </h2>
 
-                <p>
+                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
                   Registro de lembretes enviados, incluindo status e horários de
                   envio.
                 </p>
@@ -58,14 +81,20 @@ function ComunicacaoMenu() {
 
             <Link
               to="/mensagens-avisos"
-              className="botao-menu w-full transition hover:scale-[1.02]"
+              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
             >
-              <Bell className="shrink-0 text-secondary" size={32} />
+              <Bell
+                className="shrink-0 text-secondary"
+                size={32}
+                aria-hidden="true"
+              />
 
-              <div>
-                <h1>Avisos e mensagens</h1>
+              <div className="min-w-0">
+                <h2 className="text-xl font-medium leading-tight">
+                  Avisos e mensagens
+                </h2>
 
-                <p>
+                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
                   Envie avisos para clientes sobre eventos ou informações
                   importantes.
                 </p>
