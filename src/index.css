@@ -104,12 +104,11 @@ body {
     @apply bg-secondary hover:bg-alternativo;
   }
 
-  /* .input-padrao {
-    @apply w-full appearance-none rounded-md border border-secondary bg-secondary/5 px-3 py-2 text-sm font-normal leading-tight text-cinza focus:border-b-2 focus:border-primary focus:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-borderLigth;
-  } */
   .input-padrao {
-    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply box-border min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+    width: 100%;
   }
+
   /* Botão base e variações de cor */
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded px-3 py-1.5 text-sm text-white transition;

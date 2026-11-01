@@ -135,46 +135,52 @@ export default function LembreteAgendamentos() {
                 Lembre seu cliente do agendamento.
               </p>
             </div>
-            <div className="container-formulario mb-4 rounded-lg border border-primary/30 bg-white p-4 shadow-sm">
+            <div className="mb-4 rounded-lg border border-primary/30 bg-white p-3 shadow-sm sm:p-4">
               {/* Filtros */}
               <div className="mb-3 grid grid-cols-2 gap-3 md:grid-cols-3">
-                <div className="col-span-2 md:col-span-1">
-                  <label className="text-sm text-cinza/80">Dia</label>
+                <div className="col-span-2 min-w-0 md:col-span-1">
+                  <label className="mb-1 block text-sm text-cinza/80">
+                    Dia
+                  </label>
 
                   <input
                     type="date"
                     value={dataBase}
                     onChange={(e) => setDataBase(e.target.value)}
-                    className="input-padrao"
+                    className="input-padrao min-w-0 max-w-full"
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm text-cinza/80">Hora inicial</label>
+                <div className="min-w-0">
+                  <label className="mb-1 block whitespace-nowrap text-sm text-cinza/80">
+                    Hora inicial
+                  </label>
 
                   <input
                     type="time"
                     value={horaInicio}
                     onChange={(e) => setHoraInicio(e.target.value)}
-                    className="input-padrao"
+                    className="input-padrao min-w-0 max-w-full"
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm text-cinza/80">Hora final</label>
+                <div className="min-w-0">
+                  <label className="mb-1 block whitespace-nowrap text-sm text-cinza/80">
+                    Hora final
+                  </label>
 
                   <input
                     type="time"
                     value={horaFim}
                     onChange={(e) => setHoraFim(e.target.value)}
-                    className="input-padrao"
+                    className="input-padrao min-w-0 max-w-full"
                   />
                 </div>
               </div>
 
               <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p
-                  className={`text-sm ${
+                  className={`text-sm leading-5 ${
                     intervaloInvalido ? 'text-red-600' : 'text-cinza/80'
                   }`}
                 >
@@ -189,7 +195,7 @@ export default function LembreteAgendamentos() {
                   disabled={
                     carregando || filtrada.length === 0 || intervaloInvalido
                   }
-                  className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-primary disabled:text-primary disabled:hover:bg-transparent"
+                  className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end whitespace-nowrap rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-secondary/40 disabled:text-secondary/40 disabled:hover:bg-transparent"
                   title={
                     filtrada.length === 0
                       ? 'Nenhum agendamento disponível para envio'
@@ -197,191 +203,8 @@ export default function LembreteAgendamentos() {
                   }
                 >
                   <BellRing size={18} className="shrink-0" />
-                  Enviar lembretes
-                  <BellRing size={18} className="shrink-0" />
+                  <span>Enviar lembretes</span>
                 </button>
-              </div>
-              {/* Tabela (desktop) */}
-              <div className="hidden overflow-x-auto md:block">
-                <table className="w-full min-w-[700px] border border-primary/30 text-left">
-                  <thead className="bg-alternativo/10 text-sm font-bold uppercase text-primary">
-                    <tr>
-                      <th className="border p-2">Cliente</th>
-                      <th className="border p-2">Serviço</th>
-                      <th className="border p-2">Data</th>
-                      <th className="border p-2">Hora</th>
-                      {/* <th className="border p-2">Obs.</th> */}
-                      <th className="border p-2">Ação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {carregando ? (
-                      <tr>
-                        <td
-                          colSpan={6}
-                          className="p-4 text-center text-sm text-cinza/80"
-                        >
-                          Carregando…
-                        </td>
-                      </tr>
-                    ) : filtrada.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={6}
-                          className="p-4 text-center text-sm text-cinza/80"
-                        >
-                          Nenhum agendamento no intervalo.
-                        </td>
-                      </tr>
-                    ) : (
-                      filtrada.map((ag) => (
-                        <tr key={ag.id} className="border">
-                          <td className="p-2">{ag.clientes?.nome || '-'}</td>
-                          <td className="p-2">{ag.servico || '-'}</td>
-                          <td className="p-2">
-                            {new Date(ag.data + 'T12:00:00').toLocaleDateString(
-                              'pt-BR'
-                            )}
-                          </td>
-                          <td className="p-2">{horaBR(ag.horario)}</td>
-                          {/* <td className="p-2">{ag.obs || '-'}</td> */}
-                          <td className="p-2">
-                            <button
-                              type="button"
-                              onClick={() => enviarUm(ag)}
-                              disabled={!!enviando[ag.id]}
-                              className={`btn inline-flex items-center gap-2 transition hover:bg-secondary/20 ${
-                                enviando[ag.id] ? 'btn-gray' : 'btn-alt'
-                              }`}
-                              title="Enviar lembrete."
-                            >
-                              {enviando[ag.id] ? (
-                                'Enviando...'
-                              ) : (
-                                <>
-                                  <BellRing
-                                    size={18}
-                                    className="text-secondary"
-                                  />
-                                  <span className="text-primary">Lembrete</span>
-                                </>
-                              )}
-                            </button>
-
-                            {status[ag.id] && (
-                              <span
-                                className={`ml-2 text-xs ${
-                                  status[ag.id] === 'enviado'
-                                    ? 'text-emerald-700'
-                                    : 'text-cinza/80'
-                                }`}
-                              >
-                                {status[ag.id] === 'enviado'
-                                  ? 'Enviado'
-                                  : 'Copiado'}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Cards (mobile) */}
-
-              <div className="grid gap-3 md:hidden">
-                {carregando ? (
-                  <div className="rounded-lg border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
-                    Carregando…
-                  </div>
-                ) : filtrada.length === 0 ? (
-                  <div className="rounded-lg border border-primary/30 bg-white p-4 text-center text-sm text-cinza/80 shadow-sm">
-                    Nenhum agendamento no intervalo.
-                  </div>
-                ) : (
-                  filtrada.map((ag) => (
-                    <div
-                      key={ag.id}
-                      className="rounded-lg border border-primary/30 bg-white p-4 shadow-sm"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-xs text-cinza/70">Cliente</p>
-
-                          <h2 className="font-semibold text-primary">
-                            {ag.clientes?.nome || '-'}
-                          </h2>
-                        </div>
-
-                        {status[ag.id] && (
-                          <span
-                            className={`whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${
-                              status[ag.id] === 'enviado'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-gray-100 text-cinza'
-                            }`}
-                          >
-                            {status[ag.id] === 'enviado'
-                              ? 'Enviado'
-                              : 'Copiado'}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                        <div className="col-span-2">
-                          <p className="text-xs text-cinza/70">Serviço</p>
-
-                          <p className="text-cinza">{ag.servico || '-'}</p>
-                        </div>
-
-                        <div>
-                          <p className="text-xs text-cinza/70">Data</p>
-
-                          <p className="text-cinza">
-                            {new Date(`${ag.data}T12:00:00`).toLocaleDateString(
-                              'pt-BR'
-                            )}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="text-xs text-cinza/70">Horário</p>
-
-                          <p className="font-medium text-primary">
-                            {horaBR(ag.horario)}
-                          </p>
-                        </div>
-
-                        {ag.obs && (
-                          <div className="col-span-2">
-                            <p className="text-xs text-cinza/70">Observações</p>
-
-                            <p className="break-words text-cinza">{ag.obs}</p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-4 flex justify-end border-t border-cinza/20 pt-3">
-                        <button
-                          type="button"
-                          onClick={() => enviarUm(ag)}
-                          disabled={Boolean(enviando[ag.id])}
-                          className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-primary disabled:text-primary disabled:hover:bg-transparent"
-                          title={`Enviar lembrete para ${
-                            ag.clientes?.nome || 'o cliente'
-                          }`}
-                        >
-                          <BellRing size={18} className="shrink-0" />
-
-                          {enviando[ag.id] ? 'Enviando...' : 'Enviar lembrete'}
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
               </div>
             </div>
           </div>

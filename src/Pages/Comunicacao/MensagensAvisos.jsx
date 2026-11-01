@@ -480,7 +480,7 @@ function MensagensAvisos() {
 
               {/* PRÉVIA */}
               <div>
-                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 lg:sticky lg:top-4">
+                {/* <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 lg:sticky lg:top-4">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <h2 className="flex items-center gap-2 font-semibold text-primary">
                       <Eye size={20} className="text-secondary" />
@@ -488,6 +488,40 @@ function MensagensAvisos() {
                     </h2>
 
                     <span className="rounded-lg border border-primary/30 bg-white px-3 py-1 text-xs font-semibold text-primary">
+                      {quantidadeDestinatarios}{' '}
+                      {quantidadeDestinatarios === 1
+                        ? 'destinatário'
+                        : 'destinatários'}
+                    </span>
+                  </div>
+
+                  <div className="min-h-48 whitespace-pre-wrap rounded-lg border border-green-100 bg-white p-4 text-sm text-cinza shadow-sm">
+                    {mensagemDaPrevia || (
+                      <span className="text-cinza/50">
+                        A prévia aparecerá aqui enquanto você escreve.
+                      </span>
+                    )}
+                  </div>
+
+                  {clienteDaPrevia && (
+                    <p className="mt-3 text-xs text-cinza/70">
+                      Prévia para: {clienteDaPrevia.nome}
+                    </p>
+                  )}
+                </div> */}
+
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 sm:p-4 lg:sticky lg:top-4">
+                  <div className="mb-4 flex items-center justify-between gap-2">
+                    <h2 className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-primary sm:gap-2 sm:text-base">
+                      <Eye
+                        size={20}
+                        className="h-4 w-4 shrink-0 text-secondary sm:h-5 sm:w-5"
+                      />
+
+                      <span>Prévia da mensagem</span>
+                    </h2>
+
+                    <span className="shrink-0 whitespace-nowrap rounded-lg border border-primary/30 bg-white px-2 py-1 text-[11px] font-semibold text-primary sm:px-3 sm:text-xs">
                       {quantidadeDestinatarios}{' '}
                       {quantidadeDestinatarios === 1
                         ? 'destinatário'

@@ -83,7 +83,7 @@ function ComunicacaoMenu() {
               to="/mensagens-avisos"
               className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
             >
-              <Bell
+              <MessageSquareText
                 className="shrink-0 text-secondary"
                 size={32}
                 aria-hidden="true"

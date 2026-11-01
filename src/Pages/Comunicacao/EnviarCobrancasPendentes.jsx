@@ -89,7 +89,7 @@ export default function EnviarCobrancasPendentes() {
                       <th className="border p-2">Cliente</th>
                       <th className="border p-2">Telefone</th>
                       <th className="border p-2">Valor</th>
-                      <th className="border p-2">Status</th>
+                      {/* <th className="border p-2">Status</th> */}
                       <th className="border p-2">Ação</th>
                     </tr>
                   </thead>
@@ -114,17 +114,7 @@ export default function EnviarCobrancasPendentes() {
                               'Sem telefone'}
                           </td>
                           <td className="p-2">{formatarValorBR(a.valor)}</td>
-                          <td className="p-2">
-                            <div className="flex items-center gap-2">
-                              <Loader2
-                                className="h-8 w-8 animate-spin text-danger"
-                                size={40}
-                              />
-                              <span className="text-sm text-danger">
-                                aguardando...
-                              </span>
-                            </div>
-                          </td>
+                          {/* <td className="p-2"></td> */}
                           <td className="p-2">
                             <div className="mt-2 space-y-1 text-sm text-cinza"></div>
 
@@ -170,17 +160,6 @@ export default function EnviarCobrancasPendentes() {
                         <h2 className="text-sm font-bold text-primary">
                           {a.clientes?.nome || 'Sem nome'}
                         </h2>
-
-                        <div className="flex gap-2 text-xs text-secondary">
-                          <Loader2
-                            className="animate-spin"
-                            size={24}
-                            aria-label="Pagamento pendente"
-                          >
-                            <title>Pagamento pendente</title>
-                          </Loader2>
-                          aguardando...
-                        </div>
                       </div>
                       <div className="mt-3 grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_auto] gap-2 rounded-lg bg-gray-50 p-3">
                         <div className="min-w-0">
