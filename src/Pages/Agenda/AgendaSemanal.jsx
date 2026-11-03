@@ -25,6 +25,16 @@ function hojeISO() {
 function formatarBRDataISO(iso) {
   return new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR');
 }
+const formatarDiaSemana = (dataISO) => {
+  const diaSemana = new Date(`${dataISO}T12:00:00`).toLocaleDateString(
+    'pt-BR',
+    {
+      weekday: 'long',
+    }
+  );
+
+  return diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
+};
 
 //🟣 telefone válido?
 function temTelefone(ag) {
@@ -259,7 +269,7 @@ export default function AgendaSemanal() {
                   className="mb-5 rounded-lg border border-primary/30 bg-white pt-5 shadow-sm"
                 >
                   {/* Cabeçalho da semana */}
-                  <div className="flex flex-col gap-3 px-3 py-4 sm:ml-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
+                  <div className="flex items-center justify-between gap-3 border-b border-primary/20 px-3 py-3 sm:px-4">
                     <h2 className="whitespace-nowrap text-lg font-semibold text-primary sm:text-xl">
                       Semana{' '}
                       <span className="font-bold text-secondary">
@@ -268,51 +278,46 @@ export default function AgendaSemanal() {
                       de {sem.ano}
                     </h2>
 
-                    {/* Ações da semana */}
-                    <div className="flex self-end sm:self-auto">
-                      <button
-                        type="button"
-                        title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
-                        className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
-                        npm
-                        run
-                        dev
-                        onClick={() => imprimirSemana(sem.ano, sem.semana)}
-                        aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
-                      >
-                        <Printer size={19} aria-hidden="true" />
+                    <button
+                      type="button"
+                      title={`Imprimir ou salvar em PDF a semana ${sem.semana}`}
+                      className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary md:w-auto md:gap-2 md:px-3"
+                      onClick={() => imprimirSemana(sem.ano, sem.semana)}
+                      aria-label={`Imprimir ou salvar em PDF a semana ${sem.semana} de ${sem.ano}`}
+                    >
+                      <Printer size={19} aria-hidden="true" />
 
-                        <span className="hidden whitespace-nowrap text-sm font-medium sm:inline">
-                          Imprimir / PDF
-                        </span>
-                      </button>
-                    </div>
+                      <span className="hidden whitespace-nowrap text-sm font-medium md:inline">
+                        Imprimir / PDF
+                      </span>
+                    </button>
                   </div>
-
                   {/* Dias da semana */}
-                  <div className="space-y-2 p-2 sm:ml-3 sm:p-4">
+                  <div className="space-y-3 px-3 pb-3 pt-1 sm:px-4">
                     {sem.dias.map(([dataISO, ags]) => (
                       <div key={dataISO}>
                         {/* Cabeçalho do dia */}
-                        <div className="flex items-center justify-between gap-3 p-2">
-                          <div className="flex items-center gap-2 font-semibold text-primary">
+                        <div className="mb-1 flex items-center justify-between gap-2 py-1.5">
+                          <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary sm:text-base">
                             <CalendarClock
-                              className="shrink-0 text-secondary"
                               size={19}
+                              className="shrink-0 text-secondary"
                               aria-hidden="true"
                             />
 
                             <span className="whitespace-nowrap">
                               {formatarBRDataISO(dataISO)}
+                              <span className="font-normal text-cinza/70">
+                                {' '}
+                                • {formatarDiaSemana(dataISO)}
+                              </span>
                             </span>
                           </div>
 
                           <button
                             type="button"
-                            title={`Enviar ${ags.length} ${
-                              ags.length === 1 ? 'lembrete' : 'lembretes'
-                            } deste dia`}
-                            className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
+                            title={`Enviar lembretes de ${formatarBRDataISO(dataISO)}`}
+                            className="btn-icone inline-flex h-9 w-9 shrink-0 items-center justify-center text-secondary md:w-auto md:gap-2 md:px-3"
                             onClick={async () => {
                               const { enviados, copiados } =
                                 await enviarLembretesEmLote(ags, {
@@ -329,7 +334,7 @@ export default function AgendaSemanal() {
                           >
                             <Send size={18} aria-hidden="true" />
 
-                            <span className="hidden whitespace-nowrap text-sm font-medium sm:inline">
+                            <span className="hidden whitespace-nowrap text-sm font-medium md:inline">
                               Enviar {ags.length}{' '}
                               {ags.length === 1 ? 'lembrete' : 'lembretes'}
                             </span>
@@ -431,7 +436,7 @@ export default function AgendaSemanal() {
                         </div>
 
                         {/* CARDS — TELAS PEQUENAS */}
-                        <div className="grid gap-3 p-2 md:hidden">
+                        <div className="grid gap-3 md:hidden">
                           {ags.map((ag) => (
                             <div
                               key={ag.id}

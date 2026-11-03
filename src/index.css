@@ -108,6 +108,34 @@ body {
     @apply box-border min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
     width: 100%;
   }
+  /*
+  .input-padrao {
+    @apply box-border block w-full min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    font-size: 16px;
+  }*/
+
+  /* Campos nativos de data e horário no iPhone */
+
+  input[type='date'].input-padrao,
+  input[type='time'].input-padrao {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  /* No desktop, volta para 14px */
+  @media (min-width: 768px) {
+    .input-padrao {
+      font-size: 14px;
+    }
+  }
 
   /* Botão base e variações de cor */
   .btn {
