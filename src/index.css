@@ -118,6 +118,28 @@ body {
     font-size: 16px;
   }
 
+  /* Ajustes para data e horário no Safari/iPhone */
+  input[type='date'].input-padrao,
+  input[type='time'].input-padrao,
+  input[type='month'].input-padrao,
+  input[type='datetime-local'].input-padrao {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+
+    inline-size: 100%;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+
+  input.input-padrao::-webkit-date-and-time-value {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+  }
   /* Campos nativos de data e horário no iPhone */
 
   input[type='date'].input-padrao,
@@ -128,6 +150,11 @@ body {
     max-width: 100%;
     min-height: 44px;
     box-sizing: border-box;
+  }
+  input.input-padrao::-webkit-date-and-time-value {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
   }
 
   /* No desktop, volta para 14px */
