@@ -1,10 +1,9 @@
 import Header from '../../Componentes/Header/Header.jsx';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../api/supabaseClient.js';
+import { Link } from 'react-router-dom';
 import {
   Save,
-  SquareCheckBig,
-  SquareScissorsIcon,
   CreditCard,
   Scissors,
   CalendarDays,
@@ -17,14 +16,8 @@ import {
 } from 'lucide-react';
 
 function ResumoFinanceiro() {
-  const [pendentes, setPendentes] = useState([]);
   const [pagos, setPagos] = useState([]);
-
-  const [formaPagamento, setFormaPagamento] = useState({});
-
-  const [mostrarConfirmacao, setMostrarConfirmacao] = useState({});
   useEffect(() => {
-    buscarPendentes();
     buscarPagos();
     buscarResumoFinanceiro();
   }, []);
@@ -40,35 +33,6 @@ function ResumoFinanceiro() {
     return total + Number(item.valor || 0);
   }, 0);
 
-  async function buscarPendentes() {
-    const { data, error } = await supabase
-      .from('agendamentos')
-      .select(
-        `
-      id,
-      data,
-      horario,
-      servico,
-      valor,
-      pagamento,
-      status_agendamento,
-      clientes (
-        nome,
-        telefone
-      )
-    `
-      )
-      .eq('pagamento', 'Pendente')
-      .neq('status_agendamento', 'cancelado')
-      .order('data', { ascending: true });
-
-    if (error) {
-      console.error('Erro ao buscar pendentes:', error);
-      return;
-    }
-
-    setPendentes(data || []);
-  }
   async function buscarPagos() {
     const { data, error } = await supabase
       .from('agendamentos')
@@ -178,29 +142,6 @@ function ResumoFinanceiro() {
       concluidos: pagamentosRegistrados,
     });
   }
-  async function registrarPagamento(agendamentoId, tipoPagamento) {
-    if (!agendamentoId || !tipoPagamento) return;
-
-    const { error } = await supabase
-      .from('agendamentos')
-      .update({
-        pagamento: tipoPagamento,
-        data_pagamento: new Date().toISOString(),
-      })
-      .eq('id', agendamentoId);
-
-    if (error) {
-      console.error('Erro ao registrar pagamento:', error);
-      return;
-    }
-
-    await buscarPendentes();
-    await buscarPagos();
-    await buscarResumoFinanceiro();
-
-    setFormaPagamento({});
-    setMostrarConfirmacao({});
-  }
 
   const mesAtual = new Date().toLocaleDateString('pt-BR', {
     month: 'long',
@@ -215,7 +156,7 @@ function ResumoFinanceiro() {
           <div className="container-formulario">
             <h1 className="flex items-center gap-2 text-primary">
               <ChartNoAxesCombined className="text-secondary" />
-              Resumo Financeiro
+              Resumo do mês atual
             </h1>
 
             <p className="mb-6 text-sm text-cinza/80">
@@ -265,7 +206,7 @@ function ResumoFinanceiro() {
                     <span className="flex items-center justify-center rounded-lg p-1.5">
                       <UserRound className="text-secondary" size={24} />
                     </span>
-                    Clientes com pendências
+                    Clientes com pendências no mês
                   </p>
                   <h2 className="whitespace-nowrap text-xl font-bold tracking-tight text-danger md:mt-3 md:text-2xl">
                     {resumoFinanceiro.clientesDevedores}
@@ -290,120 +231,31 @@ function ResumoFinanceiro() {
               </div>
             </div>
             <section className="conteudo-amplo">
-              <div className="mb-4">
-                <h2 className="flex items-center gap-2 text-xl font-medium text-primary">
-                  <span>
-                    <CircleAlert className="text-secondary" size={24} />
-                  </span>
-                  Pendências de pagamento
-                </h2>
-              </div>
+              <div className="rounded-2xl border border-primary/30 bg-white p-4 shadow-sm sm:p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h2 className="flex items-center gap-2 text-xl font-medium text-primary">
+                      <CircleAlert
+                        size={24}
+                        className="shrink-0 text-secondary"
+                      />
+                      Pagamentos pendentes
+                    </h2>
 
-              <div className="rounded-2xl border border-primary/30 bg-white p-5 shadow-sm">
-                {/* <input
-                type="text"
-                placeholder="Buscar cliente..."
-                className="input-padrao mb-4 w-full max-w-[350px]"
-              /> */}
-                {/* COBRANÇAS PENDENTES */}
-
-                <p className="mb-4 text-sm text-gray-500">
-                  Selecione a forma de pagamento para registrar o recebimento
-                </p>
-
-                {pendentes.length === 0 ? (
-                  <p className="text-md rounded-lg p-3 text-center font-medium uppercase text-white">
-                    Todos os pagamentos estão em dia.
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {pendentes.map((item) => (
-                      <div
-                        key={item.id}
-                        className="rounded-lg border border-cinza/30 p-3"
-                      >
-                        <p className="font-medium text-primary">
-                          {item.clientes?.nome || 'Cliente sem nome'}
-                        </p>
-                        <div className="mt-2 space-y-1">
-                          <p className="flex items-center gap-2 text-xs text-cinza">
-                            <CalendarDays
-                              size={20}
-                              className="text-secondary"
-                            />
-
-                            {item.data
-                              ? new Date(
-                                  `${item.data}T12:00:00`
-                                ).toLocaleDateString('pt-BR')
-                              : 'Data não informada'}
-
-                            {' • '}
-
-                            {item.horario
-                              ? item.horario.slice(0, 5)
-                              : 'Horário não informado'}
-                          </p>
-
-                          <p className="flex items-center gap-2 text-xs text-cinza">
-                            <Scissors size={20} className="text-secondary" />
-                            {item.servico}
-                          </p>
-
-                          <p className="flex items-center gap-2 text-secondary">
-                            <BadgeDollarSign
-                              size={20}
-                              className="font-bold text-secondary"
-                            />
-                            <span className="text-sm font-bold text-danger">
-                              {Number(item.valor || 0).toLocaleString('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL',
-                              })}
-                            </span>
-                          </p>
-                        </div>
-
-                        <select
-                          className="input-padrao mt-3 flex max-w-[220px] text-cinza"
-                          value={formaPagamento[item.id] || ''}
-                          onChange={(e) => {
-                            setFormaPagamento((prev) => ({
-                              ...prev,
-                              [item.id]: e.target.value,
-                            }));
-
-                            setMostrarConfirmacao((prev) => ({
-                              ...prev,
-                              [item.id]: !!e.target.value,
-                            }));
-                          }}
-                        >
-                          <option value="">Selecione o pagamento</option>
-                          <option value="Pix">Pix</option>
-                          <option value="Cartão">Cartão</option>
-                          <option value="Dinheiro">Dinheiro</option>
-                          <option value="Pendente">Pendente</option>
-                        </select>
-                        {mostrarConfirmacao[item.id] && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              registrarPagamento(
-                                item.id,
-                                formaPagamento[item.id]
-                              )
-                            }
-                            className="rounded-md p-2 text-success transition hover:bg-success/10"
-                            title="Confirme pagamento"
-                          >
-                            <SquareCheckBig size={20} />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                    <p className="mt-2 text-sm text-cinza/70">
+                      Consulte e registre pagamentos pendentes, inclusive de
+                      meses anteriores.
+                    </p>
                   </div>
-                )}
+
+                  <Link
+                    to="/pagamentos"
+                    className="btn-icone inline-flex h-10 w-fit shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 sm:self-auto"
+                  >
+                    <CreditCard size={18} />
+                    Ver pagamentos pendentes
+                  </Link>
+                </div>
               </div>
             </section>
 
