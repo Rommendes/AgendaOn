@@ -103,12 +103,6 @@ body {
   .botao-submenu-cor {
     @apply bg-secondary hover:bg-alternativo;
   }
-
-  /*  .input-padrao {
-    @apply box-border min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
-    width: 100%;
-  }*/
-
   .input-padrao {
     @apply box-border block w-full min-w-0 max-w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 font-normal text-cinza shadow-sm transition duration-200 placeholder:text-gray-400 hover:border-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
 
@@ -118,7 +112,7 @@ body {
     font-size: 16px;
   }
 
-  /* Ajustes para data e horário no Safari/iPhone */
+  /* Campos nativos de data e horário */
   input[type='date'].input-padrao,
   input[type='time'].input-padrao,
   input[type='month'].input-padrao,
@@ -135,26 +129,33 @@ body {
     max-inline-size: 100%;
   }
 
-  input.input-padrao::-webkit-date-and-time-value {
-    width: 100%;
+  input[type='date'].input-padrao::-webkit-date-and-time-value,
+  input[type='time'].input-padrao::-webkit-date-and-time-value,
+  input[type='month'].input-padrao::-webkit-date-and-time-value,
+  input[type='datetime-local'].input-padrao::-webkit-date-and-time-value {
     min-width: 0;
     text-align: left;
   }
-  /* Campos nativos de data e horário no iPhone */
 
-  input[type='date'].input-padrao,
-  input[type='time'].input-padrao {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    min-height: 44px;
-    box-sizing: border-box;
-  }
-  input.input-padrao::-webkit-date-and-time-value {
-    width: 100%;
-    min-width: 0;
-    text-align: left;
+  /*
+ * O Safari do iPhone calcula incorretamente a largura dos
+ * campos temporais quando existe padding horizontal.
+ */
+  @supports (-webkit-touch-callout: none) {
+    input[type='date'].input-padrao,
+    input[type='time'].input-padrao,
+    input[type='month'].input-padrao,
+    input[type='datetime-local'].input-padrao {
+      padding-inline: 0;
+    }
+
+    input[type='date'].input-padrao::-webkit-date-and-time-value,
+    input[type='time'].input-padrao::-webkit-date-and-time-value,
+    input[type='month'].input-padrao::-webkit-date-and-time-value,
+    input[type='datetime-local'].input-padrao::-webkit-date-and-time-value {
+      padding-inline-start: 0.75rem;
+      padding-inline-end: 0.25rem;
+    }
   }
 
   /* No desktop, volta para 14px */
