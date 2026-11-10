@@ -3,7 +3,16 @@ import { supabase } from '../../api/supabaseClient'; // Importe seu Supabase
 import EnderecoForm from '../../Componentes/EnderecoForm';
 
 import Header from '../../Componentes/Header/Header';
-import { CircleCheck, X, UserRoundPlus, Save } from 'lucide-react';
+import {
+  Search,
+  X,
+  SquarePen,
+  Trash2,
+  Users,
+  UserCheck,
+  UserRoundPlus,
+} from 'lucide-react';
+
 import {
   apenasNumeros,
   formatarCEP,
@@ -31,7 +40,18 @@ const CadastrarCliente = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const [pesquisa, setPesquisa] = useState('');
+  const [termoPesquisa, setTermoPesquisa] = useState('');
+  const [pagina, setPagina] = useState(1);
+  const [totalClientes, setTotalClientes] = useState(0);
+  const [totalEncontrados, setTotalEncontrados] = useState(0);
+
+  const itensPorPagina = 20;
+
   const [loading, setLoading] = useState(false); // Estado para indicar o carregamento
+  const [buscandoCEP, setBuscandoCEP] = useState(false);
+  const [erroCEP, setErroCEP] = useState('');
 
   // ✅ Função para validar número ou retornar null
   const toNullableNumber = (value) => {
@@ -73,20 +93,77 @@ const CadastrarCliente = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const buscarCEP = async (cepInformado) => {
+    const cepLimpo = apenasNumeros(cepInformado);
+
+    if (cepLimpo.length !== 8) return;
+
+    setBuscandoCEP(true);
+    setErroCEP('');
+
+    try {
+      const resposta = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
+      );
+
+      if (!resposta.ok) {
+        throw new Error('Não foi possível consultar o CEP.');
+      }
+
+      const dados = await resposta.json();
+
+      if (dados.erro) {
+        setErroCEP('CEP não encontrado.');
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        endereco: {
+          ...prev.endereco,
+          cep: formatarCEP(cepLimpo),
+          rua: dados.logradouro || prev.endereco.rua,
+          bairro: dados.bairro || prev.endereco.bairro,
+          cidade: dados.localidade || prev.endereco.cidade,
+        },
+      }));
+    } catch (error) {
+      logger.error('Erro ao consultar CEP:', error);
+      setErroCEP('Não foi possível consultar o CEP.');
+    } finally {
+      setBuscandoCEP(false);
+    }
+  };
+
   const handleEnderecoChange = (e) => {
     const { name, value } = e.target;
 
     if (name === 'cep') {
+      const cepLimpo = apenasNumeros(value);
+
       setFormData((prev) => ({
         ...prev,
-        endereco: { ...prev.endereco, cep: formatarCEP(value) },
+        endereco: {
+          ...prev.endereco,
+          cep: formatarCEP(cepLimpo),
+        },
       }));
+
+      setErroCEP('');
+
+      if (cepLimpo.length === 8) {
+        buscarCEP(cepLimpo);
+      }
+
       return;
     }
 
     setFormData((prev) => ({
       ...prev,
-      endereco: { ...prev.endereco, [name]: value },
+      endereco: {
+        ...prev.endereco,
+        [name]: value,
+      },
     }));
   };
 
@@ -234,7 +311,7 @@ const CadastrarCliente = () => {
                 </div>
 
                 {/* Data de aniversário */}
-                <div>
+                <div className="min-w-0">
                   <label className="block px-2 text-left font-medium">
                     Data de Aniversário
                     <span className="font-bold text-danger">*</span>
@@ -266,17 +343,9 @@ const CadastrarCliente = () => {
               <EnderecoForm
                 formData={formData.endereco}
                 handleChange={handleEnderecoChange}
+                buscandoCEP={buscandoCEP}
+                erroCEP={erroCEP}
               />
-
-              {/* <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="ml-40 w-fit rounded-lg bg-primary p-3 text-white transition-all hover:bg-secondary"
-                  disabled={loading}
-                >
-                  {loading ? 'Cadastrando...' : 'Cadastrar'}
-                </button> 
-              </div>*/}
 
               {/* Botão de cadastrar */}
               <div className="flex justify-end">

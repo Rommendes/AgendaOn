@@ -5,11 +5,13 @@ import { supabase } from '../../api/supabaseClient';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { createLogger } from '../../lib/logger';
+
+import { apenasNumeros, formatarCEP } from '../Utilitarios/formadores';
+
 const logger = createLogger('EditarCliente');
 
 const EditarCliente = () => {
   const { id } = useParams(); // Pegando o ID do cliente pela URL
-  console.log('ID da URL:', id);
 
   const navigate = useNavigate();
 
@@ -30,17 +32,18 @@ const EditarCliente = () => {
   const [redirect, setRedirect] = useState(false);
 
   const [loading, setLoading] = useState(true);
-  console.log('RENDER: loading =', loading);
+  const [buscandoCEP, setBuscandoCEP] = useState(false);
+  const [erroCEP, setErroCEP] = useState('');
 
   useEffect(() => {
     let ativo = true;
 
     const fetchCliente = async () => {
-      console.log('A) fetchCliente começou', id);
+      //console.log('A) fetchCliente começou', id);
       setLoading(true);
 
       try {
-        console.log('B) antes do await supabase');
+        //console.log('B) antes do await supabase');
 
         const { data, error } = await supabase
           .from('clientes')
@@ -50,10 +53,10 @@ const EditarCliente = () => {
           .eq('id', id)
           .single();
 
-        console.log('C) depois do await supabase', { data, error });
+        //console.log('C) depois do await supabase', { data, error });
 
         if (error) {
-          console.log('D) entrou no if(error)');
+          //console.log('D) entrou no if(error)');
           logger.error('Erro ao buscar cliente:', error);
           alert('Erro ao carregar dados do cliente.');
           return;
@@ -68,14 +71,14 @@ const EditarCliente = () => {
           complemento: data?.complemento || '',
           bairro: data?.bairro || '',
           cidade: data?.cidade || '',
-          cep: data?.cep ?? '',
+          cep: data?.cep ? formatarCEP(String(data.cep)) : '',
         });
       } catch (e) {
-        console.log('E) caiu no catch', e);
+        //console.log('E) caiu no catch', e);
         logger.error('Erro inesperado ao buscar cliente:', e);
         alert('Erro inesperado ao carregar dados do cliente.');
       } finally {
-        console.log('F) finally rodou -> setLoading(false)');
+        //console.log('F) finally rodou -> setLoading(false)');
         setLoading(false);
       }
     };
@@ -87,6 +90,60 @@ const EditarCliente = () => {
     };
   }, [id]);
 
+  const buscarCEP = async (cepInformado) => {
+    const cepLimpo = apenasNumeros(cepInformado);
+
+    if (cepLimpo.length !== 8) return;
+
+    setBuscandoCEP(true);
+    setErroCEP('');
+
+    try {
+      const resposta = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`
+      );
+
+      if (!resposta.ok) {
+        throw new Error('Não foi possível consultar o CEP.');
+      }
+
+      const dados = await resposta.json();
+
+      if (dados.erro) {
+        setErroCEP('CEP não encontrado.');
+        return;
+      }
+
+      setCliente((prev) => ({
+        ...prev,
+        cep: formatarCEP(cepLimpo),
+        rua: dados.logradouro || prev.rua,
+        bairro: dados.bairro || prev.bairro,
+        cidade: dados.localidade || prev.cidade,
+      }));
+    } catch (error) {
+      logger.error('Erro ao consultar CEP:', error);
+      setErroCEP('Não foi possível consultar o CEP.');
+    } finally {
+      setBuscandoCEP(false);
+    }
+  };
+
+  const handleCEPChange = (e) => {
+    const cepLimpo = apenasNumeros(e.target.value);
+
+    setCliente((prev) => ({
+      ...prev,
+      cep: formatarCEP(cepLimpo),
+    }));
+
+    setErroCEP('');
+
+    if (cepLimpo.length === 8) {
+      buscarCEP(cepLimpo);
+    }
+  };
+
   const handleSalvar = async (e) => {
     e.preventDefault();
 
@@ -95,14 +152,19 @@ const EditarCliente = () => {
       return;
     }
 
-    const { data, error } = await supabase
+    const clienteAtualizado = {
+      ...cliente,
+      cep: cliente.cep ? String(cliente.cep).replace(/\D/g, '') : null,
+    };
+
+    const { error } = await supabase
       .from('clientes')
-      .update(cliente)
+      .update(clienteAtualizado)
       .eq('id', id)
-      .select(); // ✅ Garante que os dados atualizados sejam retornados
+      .select();
 
     if (error) {
-      console.log('❌ Deu erro no update', error);
+      logger.error('Erro ao atualizar cliente:', error);
       alert('Erro ao atualizar cliente. Verifique o console.');
     } else {
       setRedirect(true);
@@ -215,7 +277,27 @@ const EditarCliente = () => {
             required
           />
         </label>
-
+        <label className="block">
+          CEP:
+          <input
+            type="text"
+            value={cliente.cep}
+            onChange={handleCEPChange}
+            placeholder="00000-000"
+            maxLength={9}
+            autoComplete="postal-code"
+            className="mt-1 block w-full rounded border p-2"
+            required
+          />
+          {buscandoCEP && (
+            <span className="mt-1 block text-xs text-cinza/70">
+              Buscando endereço...
+            </span>
+          )}
+          {erroCEP && (
+            <span className="mt-1 block text-xs text-danger">{erroCEP}</span>
+          )}
+        </label>
         <label className="block">
           Cidade:
           <input
@@ -227,27 +309,16 @@ const EditarCliente = () => {
           />
         </label>
 
-        <label className="block">
-          CEP:
-          <input
-            type="text"
-            value={cliente.cep}
-            onChange={(e) => setCliente({ ...cliente, cep: e.target.value })}
-            className="mt-1 block w-full rounded border p-2"
-            required
-          />
-        </label>
-
         <div className="flex justify-between">
           <button
             type="submit"
-            className="rounded bg-green-500 px-4 py-2 text-white"
+            className="rounded bg-primary px-4 py-2 text-white"
           >
             Salvar Alterações
           </button>
           <button
             onClick={() => navigate('/lista-clientes')}
-            className="rounded bg-gray-500 px-4 py-2 text-white"
+            className="rounded bg-secondary px-4 py-2 text-white"
           >
             Cancelar
           </button>
