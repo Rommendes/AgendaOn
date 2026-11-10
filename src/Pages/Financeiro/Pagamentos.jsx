@@ -92,7 +92,31 @@ function Pagamentos() {
       <main className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <div className="mb-8 border-b border-primary/30 pb-1">
+            <div className="mb-6 flex flex-col border-b border-primary/30 pb-3">
+              <h1 className="flex gap-2 text-primary">
+                <ReceiptText className="shrink-0 text-secondary" size={24} />
+                Pagamentos pendentes
+              </h1>
+
+              <p className="mt-1 text-sm text-cinza/80">
+                Selecione a forma de pagamento para registrar o recebimento.
+              </p>
+
+              <Link
+                to="/agenda"
+                className="btn-icone mt-2 inline-flex items-center gap-1 self-start text-secondary transition hover:text-primary max-[479px]:!h-auto max-[479px]:!w-auto max-[479px]:!border-0 max-[479px]:!bg-transparent max-[479px]:!p-0 max-[479px]:!text-xs max-[479px]:!shadow-none sm:mt-4 sm:h-10 sm:self-end sm:rounded sm:border sm:border-secondary sm:px-2 sm:text-sm"
+                aria-label="Voltar para a Agenda"
+              >
+                <ArrowLeft
+                  size={18}
+                  className="h-3.5 w-3.5 shrink-0 sm:h-[18px] sm:w-[18px]"
+                />
+
+                <span className="whitespace-nowrap">Voltar para a Agenda</span>
+              </Link>
+            </div>
+
+            {/* <div className="mb-8 border-b border-primary/30 pb-1">
               <h1 className="flex gap-2 text-primary">
                 <ReceiptText className="text-secondary" size={24} />
                 Pagamentos pendentes
@@ -101,17 +125,23 @@ function Pagamentos() {
               <p className="mt-1 text-sm text-cinza/80">
                 Selecione a forma de pagamento para registrar o recebimento.
               </p>
-            </div>
-            <div className="mb-5 flex justify-end">
+            </div> */}
+            {/* <div className="mb-5 flex justify-end">
               <Link
                 to="/agenda"
-                className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
+                className="btn-icone flex h-10 w-auto items-center justify-center gap-1 rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary max-[479px]:!h-7 max-[479px]:!min-h-0 max-[479px]:!gap-1 max-[479px]:!px-2 max-[479px]:!py-0 max-[479px]:!text-[11px]"
                 aria-label="Voltar para Agenda"
               >
-                <ArrowLeft size={18} />
-                Voltar para Agenda
+                <ArrowLeft
+                  size={18}
+                  className="shrink-0 max-[479px]:!h-3.5 max-[479px]:!w-3.5"
+                />
+
+                <span className="hidden whitespace-nowrap sm:inline">
+                  Voltar para Agenda
+                </span>
               </Link>
-            </div>
+            </div> */}
 
             <section className="">
               <div className="mb-2 flex items-center gap-4">
