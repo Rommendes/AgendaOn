@@ -159,7 +159,7 @@ const PesquisandoClientes = () => {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <h1 className="flex gap-2 pb-4 text-primary">
+            <h1 className="flex gap-2 pb-4 text-sm text-primary">
               <UserSearch className="text-lg text-secondary" size={25} />
               Pesquise um cliente para visualizar os dados
             </h1>

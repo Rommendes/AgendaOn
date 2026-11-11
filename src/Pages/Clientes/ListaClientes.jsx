@@ -94,7 +94,7 @@ const ListaClientes = () => {
           <div className="container-formulario">
             <div className="mb-6">
               {/* Cabeçalho */}
-              <h1 className="flex gap-2 text-primary">
+              <h1 className="flex gap-2 text-primary sm:text-xs">
                 <UserRoundPlus className="text-secondary" />
                 Clientes cadastrados
               </h1>
