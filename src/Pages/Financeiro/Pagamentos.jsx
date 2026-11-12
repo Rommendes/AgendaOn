@@ -104,7 +104,7 @@ function Pagamentos() {
 
               <Link
                 to="/agenda"
-                className="btn-icone mt-2 inline-flex items-center gap-1 self-start text-secondary transition hover:text-primary max-[479px]:!h-auto max-[479px]:!w-auto max-[479px]:!border-0 max-[479px]:!bg-transparent max-[479px]:!p-0 max-[479px]:!text-xs max-[479px]:!shadow-none sm:mt-4 sm:h-10 sm:self-end sm:rounded sm:border sm:border-secondary sm:px-2 sm:text-sm"
+                className="btn-icone mt-2 inline-flex w-auto items-center gap-1 self-start text-xs text-secondary transition hover:text-primary sm:mt-4 sm:min-h-10 sm:self-end sm:rounded sm:border sm:border-secondary sm:px-3 sm:py-2 sm:text-sm"
                 aria-label="Voltar para a Agenda"
               >
                 <ArrowLeft
