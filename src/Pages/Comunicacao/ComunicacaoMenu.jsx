@@ -17,7 +17,7 @@ function ComunicacaoMenu() {
           <div className="flex flex-col gap-4">
             <Link
               to="/lembretes"
-              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
+              className="botao-menu w-full transition hover:scale-[1.02]"
             >
               <BellRing
                 size={32}
@@ -26,11 +26,9 @@ function ComunicacaoMenu() {
               />
 
               <div className="min-w-0">
-                <h2 className="text-xl font-medium leading-tight">
-                  Lembretes de agendamento
-                </h2>
+                <h1>Lembretes de agendamento</h1>
 
-                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                <p className="text-sm leading-tight">
                   Envie lembretes de agendamentos para clientes.
                 </p>
               </div>
@@ -38,7 +36,7 @@ function ComunicacaoMenu() {
 
             <Link
               to="/cobrancas"
-              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
+              className="botao-menu w-full shadow-lg transition hover:scale-[1.02]"
             >
               <CircleAlert
                 className="shrink-0 text-secondary"
@@ -47,11 +45,9 @@ function ComunicacaoMenu() {
               />
 
               <div className="min-w-0">
-                <h2 className="text-xl font-medium leading-tight">
-                  Pendências
-                </h2>
+                <h1>Pendências</h1>
 
-                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                <p className="text-sm leading-tight">
                   Envie cobranças para clientes com pagamentos pendentes.
                 </p>
               </div>
@@ -59,7 +55,7 @@ function ComunicacaoMenu() {
 
             <Link
               to="/historico-lembretes"
-              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
+              className="botao-menu w-full transition hover:scale-[1.02]"
             >
               <Hourglass
                 size={32}
@@ -68,11 +64,9 @@ function ComunicacaoMenu() {
               />
 
               <div className="min-w-0">
-                <h2 className="text-xl font-medium leading-tight">
-                  Histórico de lembretes
-                </h2>
+                <h1 className="leading-tight">Histórico de lembretes</h1>
 
-                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                <p className="text-sm leading-tight">
                   Registro de lembretes enviados, incluindo status e horários de
                   envio.
                 </p>
@@ -81,7 +75,7 @@ function ComunicacaoMenu() {
 
             <Link
               to="/mensagens-avisos"
-              className="grid w-full grid-cols-[44px_minmax(0,1fr)] items-center gap-x-3 rounded-xl bg-primary px-4 py-4 text-white shadow"
+              className="botao-menu w-full transition hover:scale-[1.02]"
             >
               <MessageSquareText
                 className="shrink-0 text-secondary"
@@ -90,11 +84,11 @@ function ComunicacaoMenu() {
               />
 
               <div className="min-w-0">
-                <h2 className="text-xl font-medium leading-tight">
+                <h1 className="text-xl font-medium leading-tight">
                   Avisos e mensagens
-                </h2>
+                </h1>
 
-                <p className="mt-1 text-sm leading-[18px] text-white/90 sm:text-base">
+                <p className="text-sm leading-tight">
                   Envie avisos para clientes sobre eventos ou informações
                   importantes.
                 </p>

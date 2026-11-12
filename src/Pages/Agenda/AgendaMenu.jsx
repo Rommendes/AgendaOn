@@ -23,7 +23,9 @@ function AgendamentosMenu() {
 
               <div>
                 <h1>Agenda</h1>
-                <p>Gerencie sua agenda e os atendimentos da semana.</p>
+                <p className="leading-tight">
+                  Gerencie sua agenda e os atendimentos da semana.
+                </p>
               </div>
             </Link>
 
@@ -36,7 +38,7 @@ function AgendamentosMenu() {
               <div>
                 <h1>Agenda Semanal</h1>
 
-                <p>
+                <p className="leading-tight">
                   Consulte seus atendimentos desta semana e envie lembretes.
                 </p>
               </div>

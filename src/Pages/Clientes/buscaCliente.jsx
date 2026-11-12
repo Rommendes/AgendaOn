@@ -159,11 +159,17 @@ const PesquisandoClientes = () => {
       <div className="main">
         <div className="main-container">
           <div className="container-formulario">
-            <h1 className="flex gap-2 pb-4 text-sm text-primary">
-              <UserSearch className="text-lg text-secondary" size={25} />
-              Pesquise um cliente para visualizar os dados
-            </h1>
-
+            <div className="mb-6">
+              <h1 className="flex gap-2 text-primary">
+                <UserSearch className="text-lg text-secondary" size={25} />
+                Pesquise um cliente
+              </h1>
+              <p className="text-sm text-cinza/70">
+                Aqui você pode pesquisar clientes cadastrados e visualizar
+                informações detalhadas sobre eles, incluindo histórico de
+                agendamentos e resumo financeiro.
+              </p>
+            </div>
             {/* Input separado */}
             <div className="mx-auto mb-5 max-w-md">
               <div className="relative">
