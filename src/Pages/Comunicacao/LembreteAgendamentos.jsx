@@ -178,7 +178,7 @@ export default function LembreteAgendamentos() {
                 </div>
               </div>
 
-              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="mb-4">
                 <p
                   className={`text-sm leading-5 ${
                     intervaloInvalido ? 'text-red-600' : 'text-cinza/80'
@@ -189,24 +189,73 @@ export default function LembreteAgendamentos() {
                     : `Exibindo agendamentos entre ${horaInicio} e ${horaFim}.`}
                 </p>
 
-                <button
-                  type="button"
-                  onClick={enviarTodos}
-                  disabled={
-                    carregando || filtrada.length === 0 || intervaloInvalido
-                  }
-                  className="btn-icone inline-flex h-10 w-auto items-center justify-center gap-2 self-end whitespace-nowrap rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-secondary/40 disabled:text-secondary/40 disabled:hover:bg-transparent"
-                  title={
-                    filtrada.length === 0
-                      ? 'Nenhum agendamento disponível para envio'
-                      : 'Enviar lembretes para todos os clientes listados'
-                  }
-                >
-                  <BellRing size={18} className="shrink-0" />
-                  <span>Enviar lembretes</span>
-                </button>
+                <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div className="min-w-0 flex-1 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <p className="text-sm font-semibold text-primary">
+                      Clientes agendados para o dia:
+                    </p>
+
+                    {filtrada.length === 0 ? (
+                      <p className="mt-1 text-sm text-cinza/70">
+                        Nenhum cliente neste intervalo.
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-1">
+                        {filtrada.map((agendamento) => (
+                          <li
+                            key={agendamento.id}
+                            className="text-sm text-cinza"
+                          >
+                            {/* <span className="font-medium text-primary">
+                              {agendamento.clientes?.nome || 'Cliente sem nome'}
+                            </span>
+
+                            {' — '} */}
+                            <span className="font-semibold text-secondary">
+                              {agendamento.horario
+                                ? agendamento.horario.slice(0, 5)
+                                : 'Horário não informado'}
+                            </span>
+
+                            {' — '}
+
+                            <span className="font-medium text-primary">
+                              {agendamento.clientes?.nome || 'Cliente sem nome'}
+                            </span>
+
+                            {' — '}
+
+                            <span>
+                              {agendamento.servico || 'Serviço não informado'}
+                            </span>
+
+                            {agendamento.servico || 'Serviço não informado'}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={enviarTodos}
+                    disabled={
+                      carregando || filtrada.length === 0 || intervaloInvalido
+                    }
+                    className="btn-icone inline-flex h-10 w-auto shrink-0 items-center justify-center gap-2 self-end whitespace-nowrap rounded border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 disabled:cursor-not-allowed disabled:border-secondary/40 disabled:text-secondary/40 disabled:hover:bg-transparent"
+                    title={
+                      filtrada.length === 0
+                        ? 'Nenhum agendamento disponível para envio'
+                        : 'Enviar lembretes para todos os clientes listados'
+                    }
+                  >
+                    <BellRing size={18} className="shrink-0" />
+                    <span>Enviar lembretes</span>
+                  </button>
+                </div>
               </div>
             </div>
+            {/*Aqui*/}
           </div>
         </div>
       </div>
