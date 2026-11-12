@@ -1,24 +1,10 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+
 import logoAgendaOn from '../assets/logoAgendaOn.png';
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
-import {
-  MessagesSquare,
-  CalendarRange,
-  ReceiptText,
-  UserRoundArrowLeft,
-} from 'lucide-react';
-
-import { useNavigate } from 'react-router-dom';
+import { MessagesSquare, ReceiptText, UserRoundArrowLeft } from 'lucide-react';
 
 export default function Home() {
-  const [mostrarSubmenu, setMostrarSubmenu] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleSubmenu = () => {
-    setMostrarSubmenu(!mostrarSubmenu);
-  };
-
   return (
     <div className="main">
       <div className="main-container">
@@ -27,7 +13,7 @@ export default function Home() {
           <img
             src={logoAgendaOn}
             alt="AgendaOn"
-            className="mx-auto h-auto w-64 rounded-lg p-2 px-4 shadow-lg"
+            className="mx-auto h-auto w-64 p-2 px-4"
           />
 
           <p className="mt-2 text-lg text-primary">
@@ -92,6 +78,9 @@ export default function Home() {
               <p>Gerencie pagamentos, pendẽncias e extratos</p>
             </div>
           </Link>
+        </div>
+        <div className="mt-3 flex justify-end pt-4">
+          <BotaoSair />
         </div>
       </div>
     </div>

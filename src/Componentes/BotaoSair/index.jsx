@@ -38,12 +38,11 @@ const BotaoSair = ({ modoMenu = false }) => {
       type="button"
       onClick={handleLogout}
       aria-label="Sair do sistema"
-      className="w-fit rounded bg-secondary px-1.5 pt-1 text-primary shadow-lg hover:bg-alternativo"
+      title="Sair do sistema"
+      className="btn-icone inline-flex h-10 w-fit items-center justify-center gap-2 rounded-lg border border-secondary px-3 text-sm font-medium text-secondary transition hover:bg-secondary/10 hover:text-primary"
     >
-      <LogOut
-        size={28}
-        className="pb-2 text-2xl text-primary hover:text-secondary"
-      />
+      <LogOut size={18} className="shrink-0" />
+      <span>Sair</span>
     </button>
   );
 };
