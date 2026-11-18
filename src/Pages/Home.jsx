@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import logoAgendaOn from '../assets/logoAgendaOn.png';
 import BotaoSair from '../Componentes/BotaoSair/index.jsx';
 import { MessagesSquare, ReceiptText, UserRoundArrowLeft } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
+  const { empresa, papel, erroEmpresa } = useAuth();
+
   return (
     <div className="main">
       <div className="main-container">
@@ -17,8 +20,20 @@ export default function Home() {
           />
 
           <p className="mt-2 text-lg text-primary">
-            mais que agenda, sua parceira de confiança.
+            mais que agenda, sua parceira de gestão.
           </p>
+          {empresa && (
+            <div className="mt-3 text-sm text-primary">
+              <p className="font-semibold">{empresa.nome}</p>
+              <p className="capitalize">{papel}</p>
+            </div>
+          )}
+
+          {erroEmpresa && (
+            <p role="alert" className="mt-3 text-sm text-red-600">
+              {erroEmpresa}
+            </p>
+          )}
         </div>
         {/* ATENDIMENTOS */}
 

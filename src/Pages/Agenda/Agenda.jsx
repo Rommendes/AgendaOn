@@ -3,6 +3,7 @@ import StatusBadge from '../../Componentes/StatusBadge/StatusBadge';
 import getStatusBadge from '../../Componentes/Utilitarios/getStatusBadge';
 import { useEffect, useState, Fragment } from 'react';
 import { supabase } from '../../api/supabaseClient';
+import { useAuth } from '../../context/AuthContext';
 import {
   SquareCheckBig,
   Pencil,
@@ -33,6 +34,7 @@ function formatarValor(valor) {
 
 const AgendaAtendimento = () => {
   const navigate = useNavigate();
+  const { empresaId, loadingEmpresa, erroEmpresa } = useAuth();
   const [statusLocal, setStatusLocal] = useState({});
   const [clientes, setClientes] = useState([]);
   const [confirmacao, setConfirmacao] = useState({
@@ -172,7 +174,21 @@ const AgendaAtendimento = () => {
 
     const dataConvertida = converterDataParaISO(data);
 
+    if (loadingEmpresa) {
+      mostrarMensagem('erro', 'Aguarde o carregamento dos dados do salão.');
+      return;
+    }
+
+    if (erroEmpresa || !empresaId) {
+      mostrarMensagem(
+        'erro',
+        erroEmpresa || 'Não foi possível identificar o salão. Entre novamente.'
+      );
+      return;
+    }
+
     const agendamentoFinal = {
+      empresa_id: empresaId,
       data: dataConvertida,
       horario,
       cliente_id,
@@ -183,7 +199,7 @@ const AgendaAtendimento = () => {
       status_agendamento: 'agendado',
     };
 
-    const { data: novoRegistro, error } = await supabase
+    const { error } = await supabase
       .from('agendamentos')
       .insert([agendamentoFinal]);
 
@@ -414,43 +430,101 @@ const AgendaAtendimento = () => {
   const enviarProximoLembrete = async () => {
     if (abrindoLembrete) return;
 
-    setAbrindoLembrete(true);
-
-    await tocarSomLeve(); // 👈 aqui fica o som
-
-    const proximoIndice = filaLembretes.indiceAtual + 1;
-    const proximoAgendamento = filaLembretes.lista[proximoIndice];
-
-    if (!proximoAgendamento) {
-      setFilaLembretes({
-        aberta: false,
-        lista: [],
-        indiceAtual: 0,
-      });
-
-      setAbrindoLembrete(false);
-      mostrarMensagem('sucesso', 'Todos os lembretes foram abertos.');
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      mostrarMensagem(
+        'erro',
+        loadingEmpresa
+          ? 'Aguarde o carregamento dos dados do salão.'
+          : erroEmpresa || 'Não foi possível identificar o salão.'
+      );
       return;
     }
 
-    setFilaLembretes((prev) => ({
-      ...prev,
-      indiceAtual: proximoIndice,
-    }));
+    setAbrindoLembrete(true);
 
-    await enviarLembreteDeAgendamento(proximoAgendamento);
-    await salvarHistoricoLembrete(proximoAgendamento);
+    try {
+      const proximoIndice = filaLembretes.indiceAtual + 1;
+      const proximoAgendamento = filaLembretes.lista[proximoIndice];
 
-    setAbrindoLembrete(false);
+      if (!proximoAgendamento) {
+        setFilaLembretes({
+          aberta: false,
+          lista: [],
+          indiceAtual: 0,
+        });
+
+        mostrarMensagem('sucesso', 'Todos os lembretes foram abertos.');
+        return;
+      }
+
+      // await enviarLembreteDeAgendamento(proximoAgendamento);
+
+      // setFilaLembretes((prev) => ({
+      //   ...prev,
+      //   indiceAtual: proximoIndice,
+      // }));
+
+      // const historicoSalvo = await salvarHistoricoLembrete(proximoAgendamento);
+
+      // if (!historicoSalvo) {
+      //   mostrarMensagem(
+      //     'erro',
+      //     'O lembrete foi aberto, mas não foi possível registrar o histórico.'
+      //   );
+      // }
+      const resultado = await enviarLembreteDeAgendamento(proximoAgendamento);
+
+      if (resultado !== 'enviado') {
+        mostrarMensagem(
+          'erro',
+          resultado === 'bloqueado'
+            ? 'O navegador bloqueou a abertura do WhatsApp. O lembrete não foi registrado como aberto.'
+            : 'Cliente sem telefone válido. O lembrete não foi registrado como aberto.'
+        );
+        return;
+      }
+
+      setFilaLembretes((prev) => ({
+        ...prev,
+        indiceAtual: proximoIndice,
+      }));
+
+      const historicoSalvo = await salvarHistoricoLembrete(proximoAgendamento);
+
+      if (!historicoSalvo) {
+        mostrarMensagem(
+          'erro',
+          'O WhatsApp foi aberto, mas não foi possível registrar o histórico.'
+        );
+      }
+    } catch (error) {
+      console.error('Erro ao abrir próximo lembrete:', error);
+      mostrarMensagem(
+        'erro',
+        'Não foi possível completar a abertura do lembrete.'
+      );
+    } finally {
+      setAbrindoLembrete(false);
+    }
   };
 
   const salvarHistoricoLembrete = async (agendamento) => {
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      mostrarMensagem(
+        'erro',
+        loadingEmpresa
+          ? 'Aguarde o carregamento dos dados do salão.'
+          : erroEmpresa || 'Não foi possível identificar o salão.'
+      );
+      return false;
+    }
+
     const mensagem = montarTextoLembreteDeAgendamento(agendamento);
 
-    const { data, error } = await supabase
-      .from('lembretes_enviados')
-      .insert([
+    try {
+      const { error } = await supabase.from('lembretes_enviados').insert([
         {
+          empresa_id: empresaId,
           agendamento_id: agendamento.id,
           cliente_id: agendamento.cliente_id,
           cliente_nome: agendamento.clientes?.nome || 'Cliente',
@@ -459,34 +533,16 @@ const AgendaAtendimento = () => {
           tipo: 'lembrete_agendamento',
           status: 'aberto_whatsapp',
         },
-      ])
-      .select(
-        `
-        id,
-        cliente_nome,
-        telefone,
-        mensagem,
-        tipo,
-        status,
-        enviado_em,
-        agendamentos (
-          data,
-          horario,
-          servico,
-          valor
-        )
-      `
-      )
+      ]);
 
-      .order('enviado_em', { ascending: false });
+      if (error) throw error;
 
-    if (error) {
+      return true;
+    } catch (error) {
       console.error('Erro ao salvar histórico:', error);
       mostrarMensagem('erro', 'Erro ao salvar histórico do lembrete.');
-      return;
+      return false;
     }
-
-    //console.log('Histórico salvo com sucesso:', data);
   };
 
   return (

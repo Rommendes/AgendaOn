@@ -1,17 +1,12 @@
 import { useState } from 'react';
 import { supabase } from '../../api/supabaseClient'; // Importe seu Supabase
+
+import { useAuth } from '../../context/AuthContext';
+
 import EnderecoForm from '../../Componentes/EnderecoForm';
 
 import Header from '../../Componentes/Header/Header';
-import {
-  Search,
-  X,
-  SquarePen,
-  Trash2,
-  Users,
-  UserCheck,
-  UserRoundPlus,
-} from 'lucide-react';
+import { X, UserRoundPlus, CircleCheck } from 'lucide-react';
 
 import {
   apenasNumeros,
@@ -23,6 +18,7 @@ import { createLogger } from '../../lib/logger';
 const logger = createLogger('CadastrarCliente');
 
 const CadastrarCliente = () => {
+  const { empresaId, loadingEmpresa, erroEmpresa } = useAuth();
   const [avisoSucesso, setAvisoSucesso] = useState('');
   const [formData, setFormData] = useState({
     nome: '',
@@ -170,31 +166,55 @@ const CadastrarCliente = () => {
   // Função para cadastrar cliente no Supabase
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+
+    setAvisoSucesso('');
+
+    if (loadingEmpresa) {
+      alert('Aguarde o carregamento dos dados do salão.');
+      return;
+    }
+
+    if (erroEmpresa || !empresaId) {
+      alert(
+        erroEmpresa ||
+          'Não foi possível identificar o salão. Saia e entre novamente.'
+      );
+      return;
+    }
+
     if (!validate()) return;
 
     setLoading(true);
 
     try {
-      const { error } = await supabase.from('clientes').insert([
-        {
-          nome: formData.nome,
-          telefone: apenasNumeros(formData.telefone),
-          email: formData.email,
-          data_aniversario: formData.dataAniversario,
-          rua: formData.endereco.rua,
-          numero: toNullableNumber(formData.endereco.numero),
-          complemento: formData.endereco.complemento,
-          bairro: formData.endereco.bairro,
-          cidade: formData.endereco.cidade,
-          cep: toNullableNumber(apenasNumeros(formData.endereco.cep)),
-        },
-      ]);
+      const { data: clienteSalvo, error } = await supabase
+        .from('clientes')
+        .insert([
+          {
+            empresa_id: empresaId,
+            nome: formData.nome,
+            telefone: apenasNumeros(formData.telefone),
+            email: formData.email,
+            data_aniversario: formData.dataAniversario,
+            rua: formData.endereco.rua,
+            numero: toNullableNumber(formData.endereco.numero),
+            complemento: formData.endereco.complemento,
+            bairro: formData.endereco.bairro,
+            cidade: formData.endereco.cidade,
+            cep: toNullableNumber(apenasNumeros(formData.endereco.cep)),
+          },
+        ])
+        .select('id, empresa_id')
+        .single();
 
       if (error) throw error;
+      console.log('Empresa enviada:', empresaId);
+      console.log('Cliente salvo:', clienteSalvo);
 
       setAvisoSucesso('Cliente cadastrado com sucesso!');
 
-      // Resetar formulário após sucesso
       setFormData({
         nome: '',
         telefone: '',
@@ -213,6 +233,7 @@ const CadastrarCliente = () => {
       setErrors({});
     } catch (error) {
       logger.error('Erro ao cadastrar cliente:', error.message);
+
       alert(
         `Erro ao cadastrar cliente: ${error.message || 'Erro desconhecido'}`
       );
