@@ -98,13 +98,13 @@ function Pagamentos() {
                 Pagamentos pendentes
               </h1>
 
-              <p className="mt-1 text-sm text-cinza/80">
+              <p className="my-4 text-sm text-cinza/80">
                 Selecione a forma de pagamento para registrar o recebimento.
               </p>
 
               <Link
                 to="/agenda"
-                className="btn-icone mt-2 inline-flex w-auto items-center gap-1 self-start text-xs text-secondary transition hover:text-primary sm:mt-4 sm:min-h-10 sm:self-end sm:rounded sm:border sm:border-secondary sm:px-3 sm:py-2 sm:text-sm"
+                className="btn-icone inline-flex h-10 w-fit items-center justify-center gap-1 self-start rounded border border-secondary px-2 text-sm font-medium text-secondary hover:bg-primary/5 hover:text-primary"
                 aria-label="Voltar para a Agenda"
               >
                 <ArrowLeft
