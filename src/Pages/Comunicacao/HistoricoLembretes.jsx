@@ -1,7 +1,8 @@
 import { Fragment, useEffect, useState, useMemo } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import Header from '../../Componentes/Header/Header';
-import { enviarLembreteDeAgendamento } from '../../utils/whatsapp';
+import { abrirWhatsApp } from '../../utils/whatsapp';
+import { useAuth } from '../../context/AuthContext';
 import {
   Hourglass,
   RotateCcw,
@@ -11,55 +12,79 @@ import {
 } from 'lucide-react';
 
 const HistoricoLembretes = () => {
+  const { empresaId, loadingEmpresa, erroEmpresa } = useAuth();
+  const [reenviando, setReenviando] = useState(false);
   const [lembretes, setLembretes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [clienteAberto, setClienteAberto] = useState(null);
   const [limpandoHistorico, setLimpandoHistorico] = useState(false);
 
   useEffect(() => {
+    let ativo = true;
+
+    setLembretes([]);
+    setClienteAberto(null);
+
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      setCarregando(false);
+      return;
+    }
+
     const buscarHistorico = async () => {
       setCarregando(true);
 
-      const { data, error } = await supabase
-        .from('lembretes_enviados')
-        .select(
-          `
-            id,
-            cliente_nome,
-            telefone,
-            mensagem,
-            tipo,
-            status,
-            enviado_em,
-            agendamentos (
-                data,
-                horario,
-                servico,
-                valor
-            )
+      try {
+        const { data, error } = await supabase
+          .from('lembretes_enviados')
+          .select(
             `
-        )
-        .in('tipo', [
-          'lembrete_agendamento',
-          'aviso_importante',
-          'promocao',
-          'novidade',
-          'atualizacao_servico',
-          'mensagem_personalizada',
-        ])
-        .order('enviado_em', { ascending: false });
+          id,
+          empresa_id,
+          agendamento_id,
+          cliente_id,
+          cliente_nome,
+          telefone,
+          mensagem,
+          tipo,
+          status,
+          enviado_em,
+          agendamentos (
+            data,
+            horario,
+            servico,
+            valor
+          )
+        `
+          )
+          .eq('empresa_id', empresaId)
+          .in('tipo', [
+            'lembrete_agendamento',
+            'aviso_importante',
+            'promocao',
+            'novidade',
+            'atualizacao_servico',
+            'mensagem_personalizada',
+          ])
+          .order('enviado_em', { ascending: false });
 
-      if (error) {
+        if (error) throw error;
+
+        if (ativo) setLembretes(data || []);
+      } catch (error) {
         console.error('Erro ao buscar histórico:', error);
-      } else {
-        setLembretes(data || []);
-      }
 
-      setCarregando(false);
+        if (ativo) alert('Não foi possível carregar o histórico.');
+      } finally {
+        if (ativo) setCarregando(false);
+      }
     };
 
     buscarHistorico();
-  }, []);
+
+    return () => {
+      ativo = false;
+    };
+  }, [empresaId, loadingEmpresa, erroEmpresa]);
 
   const formatarDataHora = (data) => {
     if (!data) return '';
@@ -127,8 +152,36 @@ const HistoricoLembretes = () => {
   }, [lembretes]);
 
   const limparHistoricosAntigos = async () => {
+    if (limpandoHistorico) return;
+
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      alert(erroEmpresa || 'Aguarde o carregamento do salão.');
+      return;
+    }
+
+    const limiteDeNoventaDias = new Date();
+    limiteDeNoventaDias.setDate(limiteDeNoventaDias.getDate() - 90);
+
+    const idsParaExcluir = lembretes
+      .filter((lembrete) => {
+        if (lembrete.empresa_id !== empresaId) return false;
+        if (!lembrete.enviado_em) return false;
+
+        const dataEnvio = new Date(lembrete.enviado_em);
+
+        return (
+          !Number.isNaN(dataEnvio.getTime()) && dataEnvio < limiteDeNoventaDias
+        );
+      })
+      .map((lembrete) => lembrete.id);
+
+    if (idsParaExcluir.length === 0) {
+      alert('Nenhum histórico com mais de 90 dias foi encontrado.');
+      return;
+    }
+
     const confirmou = window.confirm(
-      'Deseja excluir os lembretes enviados há mais de 90 dias e os registros sem agendamento? Essa ação não poderá ser desfeita.'
+      `Deseja excluir ${idsParaExcluir.length} registro(s) do histórico deste salão com mais de 90 dias? Essa ação não poderá ser desfeita.`
     );
 
     if (!confirmou) return;
@@ -136,52 +189,41 @@ const HistoricoLembretes = () => {
     setLimpandoHistorico(true);
 
     try {
-      const limiteDeNoventaDias = new Date();
-      limiteDeNoventaDias.setDate(limiteDeNoventaDias.getDate() - 90);
-
-      const idsParaExcluir = lembretes
-        .filter((lembrete) => {
-          const dataEnvio = new Date(lembrete.enviado_em);
-
-          const antigo =
-            !Number.isNaN(dataEnvio.getTime()) &&
-            dataEnvio < limiteDeNoventaDias;
-
-          const semAgendamento = !lembrete.agendamentos;
-
-          return antigo || semAgendamento;
-        })
-        .map((lembrete) => lembrete.id);
-
-      if (idsParaExcluir.length === 0) {
-        alert('Nenhum histórico antigo foi encontrado.');
-        return;
-      }
-
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('lembretes_enviados')
         .delete()
-        .in('id', idsParaExcluir);
+        .eq('empresa_id', empresaId)
+        .lt('enviado_em', limiteDeNoventaDias.toISOString())
+        .in('id', idsParaExcluir)
+        .select('id');
 
-      if (error) {
-        console.error('Erro ao limpar histórico:', error);
-        alert('Não foi possível limpar o histórico.');
+      if (error) throw error;
+
+      const idsRemovidos = new Set((data || []).map((item) => item.id));
+
+      if (idsRemovidos.size === 0) {
+        alert(
+          'Nenhum registro foi removido. Verifique as permissões de exclusão.'
+        );
         return;
       }
 
       setLembretes((anteriores) =>
-        anteriores.filter((lembrete) => !idsParaExcluir.includes(lembrete.id))
+        anteriores.filter((lembrete) => !idsRemovidos.has(lembrete.id))
       );
 
       setClienteAberto(null);
 
       alert(
-        `${idsParaExcluir.length} ${
-          idsParaExcluir.length === 1
+        `${idsRemovidos.size} ${
+          idsRemovidos.size === 1
             ? 'registro foi removido'
             : 'registros foram removidos'
         }.`
       );
+    } catch (error) {
+      console.error('Erro ao limpar histórico:', error);
+      alert('Não foi possível limpar o histórico.');
     } finally {
       setLimpandoHistorico(false);
     }
@@ -202,48 +244,58 @@ const HistoricoLembretes = () => {
   };
 
   const reenviarRegistro = async (item) => {
-    if (item.tipo === 'lembrete_agendamento' && item.agendamentos) {
-      if (!item.agendamentos || !item.telefone) return;
+    if (reenviando) return;
 
-      const agendamento = {
-        ...item.agendamentos,
-        clientes: {
-          nome: item.cliente_nome,
-          telefone: item.telefone,
-        },
-      };
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      alert(erroEmpresa || 'Aguarde o carregamento do salão.');
+      return;
+    }
 
-      await enviarLembreteDeAgendamento(agendamento);
+    if (item.empresa_id !== empresaId) {
+      alert('Este registro não pertence ao salão atual.');
       return;
     }
 
     const telefone = prepararTelefoneWhatsapp(item.telefone);
 
-    if (!telefone || !item.mensagem) return;
+    if (!telefone || !item.mensagem) {
+      alert('Telefone inválido ou mensagem indisponível para reenvio.');
+      return;
+    }
 
-    const link = `https://wa.me/${telefone}?text=${encodeURIComponent(
-      item.mensagem
-    )}`;
+    setReenviando(true);
 
-    const novaAba = window.open(link, '_blank');
+    try {
+      const janela = abrirWhatsApp(telefone, item.mensagem);
 
-    if (!novaAba) return;
+      if (!janela) {
+        alert(
+          'Não foi possível confirmar a abertura do WhatsApp. Confira o navegador antes de tentar novamente.'
+        );
+        return;
+      }
 
-    const novoEnvio = {
-      cliente_nome: item.cliente_nome,
-      telefone: item.telefone,
-      mensagem: item.mensagem,
-      tipo: item.tipo,
-      status: 'aberto_whatsapp',
-      enviado_em: new Date().toISOString(),
-    };
-
-    const { data, error } = await supabase
-      .from('lembretes_enviados')
-      .insert([novoEnvio])
-      .select(
-        `
+      const { data, error } = await supabase
+        .from('lembretes_enviados')
+        .insert([
+          {
+            empresa_id: empresaId,
+            agendamento_id: item.agendamento_id || null,
+            cliente_id: item.cliente_id || null,
+            cliente_nome: item.cliente_nome,
+            telefone,
+            mensagem: item.mensagem,
+            tipo: item.tipo,
+            status: 'aberto_whatsapp',
+            enviado_em: new Date().toISOString(),
+          },
+        ])
+        .select(
+          `
         id,
+        empresa_id,
+        agendamento_id,
+        cliente_id,
         cliente_nome,
         telefone,
         mensagem,
@@ -251,23 +303,26 @@ const HistoricoLembretes = () => {
         status,
         enviado_em
       `
-      )
-      .single();
+        )
+        .single();
 
-    if (error) {
-      console.error('Erro ao registrar reenvio:', error);
-      return;
+      if (error) {
+        console.error('Erro ao registrar reenvio:', error);
+        alert('O WhatsApp foi aberto, mas o novo histórico não foi salvo.');
+        return;
+      }
+
+      setLembretes((anteriores) => [
+        { ...data, agendamentos: item.agendamentos },
+        ...anteriores,
+      ]);
+    } catch (error) {
+      console.error('Erro no reenvio:', error);
+      alert('Não foi possível concluir a operação. Confira o histórico.');
+    } finally {
+      setReenviando(false);
     }
-
-    setLembretes((anteriores) => [
-      {
-        ...data,
-        agendamentos: null,
-      },
-      ...anteriores,
-    ]);
   };
-
   return (
     <>
       <Header
@@ -440,7 +495,13 @@ const HistoricoLembretes = () => {
 
                                           <button
                                             type="button"
-                                            disabled={!podeReenviar}
+                                            disabled={
+                                              !podeReenviar ||
+                                              reenviando ||
+                                              loadingEmpresa ||
+                                              !!erroEmpresa ||
+                                              !empresaId
+                                            }
                                             onClick={() =>
                                               reenviarRegistro(item)
                                             }
