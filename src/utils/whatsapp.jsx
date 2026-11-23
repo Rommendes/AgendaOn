@@ -50,7 +50,10 @@ export function limpa(str) {
 
 export function buildWaUrl(numero, textoPuro) {
   const digitos = soDigitos(numero);
-  const numeroE164 = digitos.startsWith('55') ? digitos : `55${digitos}`;
+
+  const numeroE164 = [10, 11].includes(digitos.length)
+    ? `55${digitos}`
+    : digitos;
   const texto = encodeURIComponent(textoPuro ?? '');
 
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -61,24 +64,30 @@ export function buildWaUrl(numero, textoPuro) {
 
   return `https://web.whatsapp.com/send?phone=${numeroE164}&text=${texto}`;
 }
-
 export function abrirWhatsApp(numero, textoPuro) {
   const url = buildWaUrl(numero, textoPuro);
+  let janela;
 
   try {
-    const janela = window.open(url, '_blank');
-
-    if (!janela) {
-      logger.warn('Popup bloqueado pelo navegador.');
-      return null;
-    }
-
-    janela.focus();
-    return janela;
+    janela = window.open(url, '_blank');
   } catch (error) {
     logger.error('Erro ao abrir WhatsApp:', error);
     return null;
   }
+
+  if (!janela) {
+    logger.warn('O navegador não retornou uma referência da janela.');
+    return null;
+  }
+
+  // Uma falha ao focar não deve invalidar a abertura.
+  try {
+    janela.focus();
+  } catch (error) {
+    logger.warn('Janela aberta, mas não foi possível dar foco:', error);
+  }
+
+  return janela;
 }
 
 export function criarLinksDeAcoes({ nome, data, hora }) {
