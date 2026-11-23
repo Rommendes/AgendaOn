@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import Header from '../../Componentes/Header/Header.jsx';
 import { supabase } from '../../api/supabaseClient.js';
 import { useAuth } from '../../context/AuthContext';
@@ -40,6 +40,8 @@ export default function LembreteAgendamentos() {
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState('');
   const [lista, setLista] = useState([]);
+  const [aberturaPendente, setAberturaPendente] = useState(null);
+  const operacaoEmAndamento = useRef(false);
   const [carregando, setCarregando] = useState(false);
 
   // Busca os agendamentos do DIA (filtraremos as horas no frontend)
@@ -49,6 +51,7 @@ export default function LembreteAgendamentos() {
     setLista([]);
     setFila(null);
     setAviso('');
+    setAberturaPendente(null);
 
     if (!empresaId || loadingEmpresa || erroEmpresa || !dataBase) {
       setCarregando(false);
@@ -100,8 +103,48 @@ export default function LembreteAgendamentos() {
     );
   }, [lista, horaInicio, horaFim]);
 
+  async function registrarAbertura(dados) {
+    if (
+      !empresaId ||
+      loadingEmpresa ||
+      erroEmpresa ||
+      dados.empresa_id !== empresaId
+    ) {
+      setAviso('Não foi possível validar o salão. Recarregue a página.');
+      return;
+    }
+
+    setAberturaPendente(null);
+
+    // Avança apenas se o registro ainda for o cliente atual.
+    setFila((atual) => {
+      if (!atual || atual.lista[atual.indice]?.id !== dados.agendamento_id) {
+        return atual;
+      }
+
+      return { ...atual, indice: atual.indice + 1 };
+    });
+
+    try {
+      const { error } = await supabase
+        .from('lembretes_enviados')
+        .insert([dados]);
+
+      if (error) throw error;
+
+      setAviso(
+        `Abertura do lembrete de ${dados.cliente_nome} registrada no histórico.`
+      );
+    } catch (error) {
+      logger.error(error);
+      setAviso(
+        `A abertura de ${dados.cliente_nome} foi informada, mas o histórico não foi salvo. Não repita o envio para tentar salvar.`
+      );
+    }
+  }
+
   async function enviarUm(ag) {
-    if (enviando) return;
+    if (operacaoEmAndamento.current) return;
 
     if (loadingEmpresa || erroEmpresa || !empresaId) {
       setAviso(erroEmpresa || 'Aguarde o carregamento do salão.');
@@ -113,6 +156,7 @@ export default function LembreteAgendamentos() {
       return;
     }
 
+    operacaoEmAndamento.current = true;
     setEnviando(true);
     setAviso('');
 
@@ -141,48 +185,48 @@ export default function LembreteAgendamentos() {
       }
 
       const numero = telefone.length === 13 ? telefone : `55${telefone}`;
+
+      const dados = {
+        empresa_id: empresaId,
+        agendamento_id: ag.id,
+        cliente_id: ag.cliente_id,
+        cliente_nome: nome,
+        telefone: numero,
+        mensagem: texto,
+        tipo: 'lembrete_agendamento',
+        status: 'aberto_whatsapp',
+      };
+
       const janela = abrirWhatsApp(numero, texto);
 
       if (!janela) {
+        setAberturaPendente(dados);
         setAviso(
-          'Não foi possível confirmar a abertura do WhatsApp. Confira o navegador antes de tentar novamente.'
+          'O WhatsApp abriu com a mensagem? Ao voltar, toque em “Abriu, continuar”. Se não abriu, use “Tentar novamente”.'
         );
         return;
       }
 
-      // Avança após abrir, evitando repetir a abertura se o histórico falhar.
-      setFila((atual) =>
-        atual ? { ...atual, indice: atual.indice + 1 } : atual
-      );
-
-      const { error } = await supabase.from('lembretes_enviados').insert([
-        {
-          empresa_id: empresaId,
-          agendamento_id: ag.id,
-          cliente_id: ag.cliente_id,
-          cliente_nome: nome,
-          telefone: numero,
-          mensagem: texto,
-          tipo: 'lembrete_agendamento',
-          status: 'aberto_whatsapp',
-        },
-      ]);
-
-      if (error) {
-        logger.error(error);
-        setAviso(
-          `O WhatsApp de ${nome} foi aberto, mas o histórico não foi salvo.`
-        );
-        return;
-      }
-
-      setAviso(`Abertura do lembrete de ${nome} registrada no histórico.`);
+      await registrarAbertura(dados);
     } catch (error) {
       logger.error(error);
-      setAviso(
-        'Não foi possível concluir a operação. Confira o WhatsApp e o histórico.'
-      );
+      setAviso('Não foi possível preparar o lembrete.');
     } finally {
+      operacaoEmAndamento.current = false;
+      setEnviando(false);
+    }
+  }
+
+  async function confirmarAbertura() {
+    if (operacaoEmAndamento.current || !aberturaPendente) return;
+
+    operacaoEmAndamento.current = true;
+    setEnviando(true);
+
+    try {
+      await registrarAbertura(aberturaPendente);
+    } finally {
+      operacaoEmAndamento.current = false;
       setEnviando(false);
     }
   }
@@ -358,7 +402,7 @@ export default function LembreteAgendamentos() {
             )}
 
             {fila && (
-              <div className="rounded-lg border border-primary/20 bg-white p-4">
+              <div className="rounded-lg border border-secondary/30 bg-secondary/10 p-4">
                 {fila.indice < fila.lista.length ? (
                   <>
                     <p className="mb-3 text-sm text-primary">
@@ -369,25 +413,50 @@ export default function LembreteAgendamentos() {
                     </p>
 
                     <div className="flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        disabled={enviando}
-                        onClick={() => enviarUm(fila.lista[fila.indice])}
-                        className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
-                      >
-                        {enviando ? 'Registrando...' : 'Próximo lembrete'}
-                      </button>
+                      {aberturaPendente ? (
+                        <>
+                          <button
+                            type="button"
+                            disabled={enviando}
+                            onClick={confirmarAbertura}
+                            className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
+                          >
+                            {enviando ? 'Registrando...' : 'Abriu, continuar'}
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={enviando}
+                            onClick={() => enviarUm(fila.lista[fila.indice])}
+                            className="rounded-lg border border-secondary px-4 py-2 text-secondary disabled:opacity-50"
+                          >
+                            Tentar novamente
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={enviando}
+                          onClick={() => enviarUm(fila.lista[fila.indice])}
+                          className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
+                        >
+                          {enviando ? 'Registrando...' : 'Próximo lembrete'}
+                        </button>
+                      )}
 
                       <button
                         type="button"
                         disabled={enviando}
-                        onClick={() =>
+                        onClick={() => {
+                          setAberturaPendente(null);
+                          setAviso('');
+
                           setFila((atual) =>
                             atual
                               ? { ...atual, indice: atual.indice + 1 }
                               : atual
-                          )
-                        }
+                          );
+                        }}
                         className="rounded-lg border border-secondary px-4 py-2 text-secondary disabled:opacity-50"
                       >
                         Pular cliente
@@ -403,8 +472,11 @@ export default function LembreteAgendamentos() {
                 <button
                   type="button"
                   disabled={enviando}
-                  onClick={() => setFila(null)}
-                  className="mt-3 text-sm text-primary underline disabled:opacity-50"
+                  onClick={() => {
+                    setFila(null);
+                    setAberturaPendente(null);
+                  }}
+                  className="mt-3 text-sm text-secondary underline disabled:opacity-50"
                 >
                   Fechar fila
                 </button>
