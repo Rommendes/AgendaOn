@@ -6,6 +6,7 @@ import {
 import { apenasNumeros } from '../Utilitarios/formadores.js';
 import { supabase } from '../../api/supabaseClient.js';
 import { Check, Loader2, PhoneOff, Send } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function BotaoEnviarCobranca({
   agendamento,
@@ -15,6 +16,7 @@ export default function BotaoEnviarCobranca({
   className = '',
   disabled: disabledExternamente = false, // ✅ NOVO
 }) {
+  const { empresaId, loadingEmpresa, erroEmpresa } = useAuth();
   const [enviando, setEnviando] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState(false);
@@ -22,46 +24,145 @@ export default function BotaoEnviarCobranca({
   const disabledFinal =
     enviando || status === 'enviado' || disabledExternamente;
 
-  const handleClick = async () => {
-    if (disabledFinal) return; // ✅ proteção extra
+  // const handleClick = async () => {
+  //   if (disabledFinal) return; // ✅ proteção extra
 
-    setEnviando(true);
+  //   setEnviando(true);
+  //   setMensagem('');
+  //   setErro(false);
+
+  //   try {
+  //     const cliente = agendamento?.clientes || {};
+  //     const nome = cliente?.nome || 'Cliente';
+
+  //     // ✅ TELEFONE SEGURO
+  //     const tel = apenasNumeros(cliente?.telefone);
+  //     if (tel.length !== 11 && !(tel.length === 13 && tel.startsWith('55'))) {
+  //       setErro(true);
+  //       setMensagem('Cliente sem telefone válido.');
+  //       return;
+  //     }
+
+  //     const numeroE164 = tel.startsWith('55') ? tel : `55${tel}`;
+
+  //     const payload = {
+  //       nome,
+  //       servico: agendamento?.servico || agendamento?.serviço || '',
+  //       data: agendamento?.data_formatada || agendamento?.data || '',
+  //       hora: agendamento?.horario || agendamento?.hora || '',
+  //       valor: Number(agendamento?.valor || 0),
+  //       formaPagamento:
+  //         agendamento?.forma_pagamento || agendamento?.pagamento || '',
+  //       linkPagamento: agendamento?.link_pagamento || '',
+  //       observacoes: agendamento?.obs || agendamento?.observacoes || '',
+  //     };
+
+  //     const textoEncoded = montarMensagemCobranca(payload);
+  //     abrirWhatsApp(numeroE164, textoEncoded);
+
+  //     const { data: historicoSalvo, error: erroHistorico } = await supabase
+  //       .from('lembretes_enviados')
+  //       .insert([
+  //         {
+  //           agendamento_id: agendamento.id,
+  //           cliente_id: agendamento.cliente_id,
+  //           cliente_nome: nome,
+  //           telefone: numeroE164,
+  //           mensagem: textoEncoded,
+  //           tipo: 'cobranca_pendente',
+  //           status: 'aberto_whatsapp',
+  //         },
+  //       ])
+  //       .select();
+
+  //     if (erroHistorico) {
+  //       console.error('Erro ao salvar histórico da cobrança:', erroHistorico);
+  //     } else {
+  //       console.log('Histórico da cobrança salvo:', historicoSalvo);
+  //     }
+
+  //     atualizarStatus?.(agendamento.id, 'enviado');
+  //     setMensagem('');
+  //   } catch (e) {
+  //     console.error(e);
+  //     setErro(true);
+  //     setMensagem('Não foi possível abrir o WhatsApp.');
+  //   } finally {
+  //     setEnviando(false);
+  //   }
+  // };
+  const handleClick = async () => {
+    if (disabledFinal) return;
+
     setMensagem('');
     setErro(false);
 
-    try {
-      const cliente = agendamento?.clientes || {};
-      const nome = cliente?.nome || 'Cliente';
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      setErro(true);
+      setMensagem(
+        loadingEmpresa
+          ? 'Aguarde o carregamento dos dados do salão.'
+          : erroEmpresa || 'Não foi possível identificar o salão.'
+      );
+      return;
+    }
 
-      // ✅ TELEFONE SEGURO
-      const tel = apenasNumeros(cliente?.telefone);
+    if (agendamento?.empresa_id && agendamento.empresa_id !== empresaId) {
+      setErro(true);
+      setMensagem('Este agendamento pertence a outro salão.');
+      return;
+    }
+
+    if (!agendamento?.id || !agendamento?.cliente_id) {
+      setErro(true);
+      setMensagem('Agendamento sem identificação do atendimento ou cliente.');
+      return;
+    }
+
+    setEnviando(true);
+
+    try {
+      const cliente = agendamento.clientes || {};
+      const nome = cliente.nome || 'Cliente';
+
+      const tel = apenasNumeros(cliente.telefone || '');
+
       if (tel.length !== 11 && !(tel.length === 13 && tel.startsWith('55'))) {
         setErro(true);
         setMensagem('Cliente sem telefone válido.');
         return;
       }
 
-      const numeroE164 = tel.startsWith('55') ? tel : `55${tel}`;
+      const numeroE164 = tel.length === 13 ? tel : `55${tel}`;
 
       const payload = {
         nome,
-        servico: agendamento?.servico || agendamento?.serviço || '',
-        data: agendamento?.data_formatada || agendamento?.data || '',
-        hora: agendamento?.horario || agendamento?.hora || '',
-        valor: Number(agendamento?.valor || 0),
+        servico: agendamento.servico || agendamento.serviço || '',
+        data: agendamento.data_formatada || agendamento.data || '',
+        hora: agendamento.horario || agendamento.hora || '',
+        valor: Number(agendamento.valor || 0),
         formaPagamento:
-          agendamento?.forma_pagamento || agendamento?.pagamento || '',
-        linkPagamento: agendamento?.link_pagamento || '',
-        observacoes: agendamento?.obs || agendamento?.observacoes || '',
+          agendamento.forma_pagamento || agendamento.pagamento || '',
+        linkPagamento: agendamento.link_pagamento || '',
+        observacoes: agendamento.obs || agendamento.observacoes || '',
       };
 
       const textoEncoded = montarMensagemCobranca(payload);
-      abrirWhatsApp(numeroE164, textoEncoded);
+      const janela = abrirWhatsApp(numeroE164, textoEncoded);
 
-      const { data: historicoSalvo, error: erroHistorico } = await supabase
+      if (!janela) {
+        setErro(true);
+        setMensagem(
+          'Não foi possível confirmar a abertura do WhatsApp. Verifique se o navegador bloqueou a janela.'
+        );
+        return;
+      }
+
+      const { error: erroHistorico } = await supabase
         .from('lembretes_enviados')
         .insert([
           {
+            empresa_id: empresaId,
             agendamento_id: agendamento.id,
             cliente_id: agendamento.cliente_id,
             cliente_nome: nome,
@@ -70,26 +171,29 @@ export default function BotaoEnviarCobranca({
             tipo: 'cobranca_pendente',
             status: 'aberto_whatsapp',
           },
-        ])
-        .select();
+        ]);
+
+      // Mantém o controle atual do botão após abrir o WhatsApp.
+      atualizarStatus?.(agendamento.id, 'enviado');
 
       if (erroHistorico) {
         console.error('Erro ao salvar histórico da cobrança:', erroHistorico);
-      } else {
-        console.log('Histórico da cobrança salvo:', historicoSalvo);
+        setErro(true);
+        setMensagem(
+          'O WhatsApp foi aberto, mas não foi possível salvar o histórico.'
+        );
+        return;
       }
 
-      atualizarStatus?.(agendamento.id, 'enviado');
       setMensagem('');
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Erro no fluxo da cobrança:', error);
       setErro(true);
-      setMensagem('Não foi possível abrir o WhatsApp.');
+      setMensagem('Não foi possível concluir a operação. Confira o histórico.');
     } finally {
       setEnviando(false);
     }
   };
-
   return (
     <div className="flex flex-col items-start gap-1">
       <button
