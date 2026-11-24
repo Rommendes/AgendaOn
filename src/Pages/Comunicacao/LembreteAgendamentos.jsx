@@ -137,9 +137,7 @@ export default function LembreteAgendamentos() {
       );
     } catch (error) {
       logger.error(error);
-      setAviso(
-        `A abertura de ${dados.cliente_nome} foi informada, mas o histórico não foi salvo. Não repita o envio para tentar salvar.`
-      );
+      setAviso('');
     }
   }
 
@@ -198,12 +196,9 @@ export default function LembreteAgendamentos() {
       };
 
       const janela = abrirWhatsApp(numero, texto);
-
       if (!janela) {
         setAberturaPendente(dados);
-        setAviso(
-          'O WhatsApp abriu com a mensagem? Ao voltar, toque em “Abriu, continuar”. Se não abriu, use “Tentar novamente”.'
-        );
+        setAviso('');
         return;
       }
 
@@ -405,12 +400,17 @@ export default function LembreteAgendamentos() {
               <div className="rounded-lg border border-secondary/30 bg-secondary/10 p-4">
                 {fila.indice < fila.lista.length ? (
                   <>
-                    <p className="mb-3 text-sm text-primary">
-                      Próximo:{' '}
+                    <p className="mb-3 text-sm font-semibold text-primary">
                       {fila.lista[fila.indice].clientes?.nome || 'Cliente'}
-                      {' — '}
+                      {' · '}
                       {fila.indice + 1} de {fila.lista.length}
                     </p>
+
+                    {aberturaPendente && (
+                      <p className="mb-3 text-sm text-cinza/80">
+                        O WhatsApp abriu?
+                      </p>
+                    )}
 
                     <div className="flex flex-wrap gap-3">
                       {aberturaPendente ? (
@@ -421,7 +421,7 @@ export default function LembreteAgendamentos() {
                             onClick={confirmarAbertura}
                             className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
                           >
-                            {enviando ? 'Registrando...' : 'Abriu, continuar'}
+                            {enviando ? 'Registrando...' : 'Sim, continuar'}
                           </button>
 
                           <button
@@ -430,7 +430,7 @@ export default function LembreteAgendamentos() {
                             onClick={() => enviarUm(fila.lista[fila.indice])}
                             className="rounded-lg border border-secondary px-4 py-2 text-secondary disabled:opacity-50"
                           >
-                            Tentar novamente
+                            Abrir novamente
                           </button>
                         </>
                       ) : (
@@ -457,16 +457,14 @@ export default function LembreteAgendamentos() {
                               : atual
                           );
                         }}
-                        className="rounded-lg border border-secondary px-4 py-2 text-secondary disabled:opacity-50"
+                        className="self-center text-sm text-secondary underline underline-offset-4 disabled:opacity-50"
                       >
                         Pular cliente
                       </button>
                     </div>
                   </>
                 ) : (
-                  <p className="text-sm text-primary">
-                    Fila concluída. Confira os avisos sobre o histórico.
-                  </p>
+                  <p className="text-sm text-primary">Fila concluída.</p>
                 )}
 
                 <button
