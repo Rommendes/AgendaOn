@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import {
   CircleAlert,
   CircleCheck,
-  Eye,
   Loader2,
   Megaphone,
   Send,
@@ -35,6 +35,7 @@ function prepararTelefoneWhatsapp(telefone) {
 }
 
 function MensagensAvisos() {
+  const { empresaId, loadingEmpresa, erroEmpresa } = useAuth();
   const [clientes, setClientes] = useState([]);
   const [carregandoClientes, setCarregandoClientes] = useState(true);
 
@@ -56,26 +57,51 @@ function MensagensAvisos() {
   });
 
   useEffect(() => {
+    let ativo = true;
+
+    setClientes([]);
+    setClientesSelecionados([]);
+    setFilaEnvio([]);
+    setProximoIndice(0);
+
+    if (loadingEmpresa || erroEmpresa || !empresaId) {
+      setCarregandoClientes(loadingEmpresa);
+      return;
+    }
+
     async function buscarClientes() {
       setCarregandoClientes(true);
 
-      const { data, error } = await supabase
-        .from('clientes')
-        .select('id, nome, telefone')
-        .order('nome', { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('clientes')
+          .select('id, empresa_id, nome, telefone')
+          .eq('empresa_id', empresaId)
+          .order('nome', { ascending: true });
 
-      if (error) {
+        if (error) throw error;
+
+        if (ativo) setClientes(data || []);
+      } catch (error) {
         console.error('Erro ao buscar clientes:', error);
-        setClientes([]);
-      } else {
-        setClientes(data || []);
-      }
 
-      setCarregandoClientes(false);
+        if (ativo) {
+          setRetorno({
+            tipo: 'erro',
+            mensagem: 'Não foi possível carregar os clientes.',
+          });
+        }
+      } finally {
+        if (ativo) setCarregandoClientes(false);
+      }
     }
 
     buscarClientes();
-  }, []);
+
+    return () => {
+      ativo = false;
+    };
+  }, [empresaId, loadingEmpresa, erroEmpresa]);
 
   const alternarCliente = (clienteId) => {
     setClientesSelecionados((anteriores) =>
@@ -120,6 +146,23 @@ function MensagensAvisos() {
   };
 
   const abrirConversaWhatsapp = async (cliente) => {
+    if (
+      loadingEmpresa ||
+      erroEmpresa ||
+      !empresaId ||
+      cliente.empresa_id !== empresaId
+    ) {
+      setRetorno({
+        tipo: 'erro',
+        mensagem:
+          erroEmpresa || 'Não foi possível identificar o salão deste cliente.',
+      });
+
+      return {
+        abriu: false,
+        erroRegistro: false,
+      };
+    }
     const telefone = prepararTelefoneWhatsapp(cliente.telefone);
 
     if (!telefone) {
@@ -133,28 +176,17 @@ function MensagensAvisos() {
 
     const link = `https://wa.me/${telefone}?text=${encodeURIComponent(texto)}`;
 
-    const novaAba = window.open(link, '_blank');
-
-    if (!novaAba) {
-      setRetorno({
-        tipo: 'erro',
-        mensagem:
-          'O navegador bloqueou a abertura do WhatsApp. Autorize os pop-ups e tente novamente.',
-      });
-
-      return {
-        abriu: false,
-        erroRegistro: false,
-      };
-    }
+    window.open(link, '_blank');
 
     const { error } = await supabase.from('lembretes_enviados').insert([
       {
+        empresa_id: empresaId,
+        cliente_id: cliente.id,
         cliente_nome: cliente.nome,
         telefone: cliente.telefone,
         mensagem: texto,
         tipo: tipoComunicacao,
-        status: 'aberto_whatsapp',
+        status: 'abertura_solicitada',
         enviado_em: new Date().toISOString(),
       },
     ]);
@@ -226,6 +258,7 @@ function MensagensAvisos() {
 
     setFilaEnvio(clientesValidos);
     setProximoIndice(0);
+
     setEnviando(true);
 
     const resultado = await abrirConversaWhatsapp(clientesValidos[0]);
@@ -251,7 +284,7 @@ function MensagensAvisos() {
       mensagem:
         clientesSemTelefone > 0
           ? `${clientesSemTelefone} cliente(s) sem telefone válido foram ignorados.`
-          : 'A primeira conversa foi aberta no WhatsApp.',
+          : '',
     });
   };
 
@@ -479,71 +512,6 @@ function MensagensAvisos() {
               </div>
 
               {/* PRÉVIA */}
-              <div>
-                {/* <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 lg:sticky lg:top-4">
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <h2 className="flex items-center gap-2 font-semibold text-primary">
-                      <Eye size={20} className="text-secondary" />
-                      Prévia da mensagem
-                    </h2>
-
-                    <span className="rounded-lg border border-primary/30 bg-white px-3 py-1 text-xs font-semibold text-primary">
-                      {quantidadeDestinatarios}{' '}
-                      {quantidadeDestinatarios === 1
-                        ? 'destinatário'
-                        : 'destinatários'}
-                    </span>
-                  </div>
-
-                  <div className="min-h-48 whitespace-pre-wrap rounded-lg border border-green-100 bg-white p-4 text-sm text-cinza shadow-sm">
-                    {mensagemDaPrevia || (
-                      <span className="text-cinza/50">
-                        A prévia aparecerá aqui enquanto você escreve.
-                      </span>
-                    )}
-                  </div>
-
-                  {clienteDaPrevia && (
-                    <p className="mt-3 text-xs text-cinza/70">
-                      Prévia para: {clienteDaPrevia.nome}
-                    </p>
-                  )}
-                </div> */}
-
-                <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 sm:p-4 lg:sticky lg:top-4">
-                  <div className="mb-4 flex items-center justify-between gap-2">
-                    <h2 className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-primary sm:gap-2 sm:text-base">
-                      <Eye
-                        size={20}
-                        className="h-4 w-4 shrink-0 text-secondary sm:h-5 sm:w-5"
-                      />
-
-                      <span>Prévia da mensagem</span>
-                    </h2>
-
-                    <span className="shrink-0 whitespace-nowrap rounded-lg border border-primary/30 bg-white px-2 py-1 text-[11px] font-semibold text-primary sm:px-3 sm:text-xs">
-                      {quantidadeDestinatarios}{' '}
-                      {quantidadeDestinatarios === 1
-                        ? 'destinatário'
-                        : 'destinatários'}
-                    </span>
-                  </div>
-
-                  <div className="min-h-48 whitespace-pre-wrap rounded-lg border border-green-100 bg-white p-4 text-sm text-cinza shadow-sm">
-                    {mensagemDaPrevia || (
-                      <span className="text-cinza/50">
-                        A prévia aparecerá aqui enquanto você escreve.
-                      </span>
-                    )}
-                  </div>
-
-                  {clienteDaPrevia && (
-                    <p className="mt-3 text-xs text-cinza/70">
-                      Prévia para: {clienteDaPrevia.nome}
-                    </p>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -577,7 +545,7 @@ function MensagensAvisos() {
                 <p className="font-semibold text-primary">Fila de envio</p>
 
                 <p className="mt-1 text-sm text-cinza/70">
-                  {proximoIndice} de {filaEnvio.length} conversas abertas
+                  {proximoIndice} de {filaEnvio.length} aberturas solicitadas
                 </p>
 
                 {proximoIndice < filaEnvio.length && (
@@ -632,7 +600,13 @@ function MensagensAvisos() {
             <button
               type="button"
               onClick={iniciarEnvio}
-              disabled={enviando || carregandoClientes}
+              disabled={
+                enviando ||
+                carregandoClientes ||
+                loadingEmpresa ||
+                !!erroEmpresa ||
+                !empresaId
+              }
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-secondary px-5 py-3 font-medium text-white transition hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
             >
               {enviando ? (
