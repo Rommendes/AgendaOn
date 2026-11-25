@@ -132,9 +132,7 @@ export default function LembreteAgendamentos() {
 
       if (error) throw error;
 
-      setAviso(
-        `Abertura do lembrete de ${dados.cliente_nome} registrada no histórico.`
-      );
+      setAviso('');
     } catch (error) {
       logger.error(error);
       setAviso('');
