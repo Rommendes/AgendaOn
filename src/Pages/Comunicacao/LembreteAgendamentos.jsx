@@ -112,8 +112,6 @@ export default function LembreteAgendamentos() {
       return;
     }
 
-    setAberturaPendente(null);
-
     // Avança apenas se o registro ainda for o cliente atual.
     setFila((atual) => {
       if (!atual || atual.lista[atual.indice]?.id !== dados.agendamento_id) {
