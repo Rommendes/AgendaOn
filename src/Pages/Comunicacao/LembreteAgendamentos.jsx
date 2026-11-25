@@ -40,7 +40,6 @@ export default function LembreteAgendamentos() {
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState('');
   const [lista, setLista] = useState([]);
-  const [aberturaPendente, setAberturaPendente] = useState(null);
   const operacaoEmAndamento = useRef(false);
   const [carregando, setCarregando] = useState(false);
 
@@ -51,7 +50,6 @@ export default function LembreteAgendamentos() {
     setLista([]);
     setFila(null);
     setAviso('');
-    setAberturaPendente(null);
 
     if (!empresaId || loadingEmpresa || erroEmpresa || !dataBase) {
       setCarregando(false);
@@ -190,34 +188,14 @@ export default function LembreteAgendamentos() {
         telefone: numero,
         mensagem: texto,
         tipo: 'lembrete_agendamento',
-        status: 'aberto_whatsapp',
+        status: 'abertura_solicitada',
       };
 
-      const janela = abrirWhatsApp(numero, texto);
-      if (!janela) {
-        setAberturaPendente(dados);
-        setAviso('');
-        return;
-      }
-
+      abrirWhatsApp(numero, texto);
       await registrarAbertura(dados);
     } catch (error) {
       logger.error(error);
       setAviso('Não foi possível preparar o lembrete.');
-    } finally {
-      operacaoEmAndamento.current = false;
-      setEnviando(false);
-    }
-  }
-
-  async function confirmarAbertura() {
-    if (operacaoEmAndamento.current || !aberturaPendente) return;
-
-    operacaoEmAndamento.current = true;
-    setEnviando(true);
-
-    try {
-      await registrarAbertura(aberturaPendente);
     } finally {
       operacaoEmAndamento.current = false;
       setEnviando(false);
@@ -404,49 +382,20 @@ export default function LembreteAgendamentos() {
                       {fila.indice + 1} de {fila.lista.length}
                     </p>
 
-                    {aberturaPendente && (
-                      <p className="mb-3 text-sm text-cinza/80">
-                        O WhatsApp abriu?
-                      </p>
-                    )}
-
                     <div className="flex flex-wrap gap-3">
-                      {aberturaPendente ? (
-                        <>
-                          <button
-                            type="button"
-                            disabled={enviando}
-                            onClick={confirmarAbertura}
-                            className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
-                          >
-                            {enviando ? 'Registrando...' : 'Sim, continuar'}
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={enviando}
-                            onClick={() => enviarUm(fila.lista[fila.indice])}
-                            className="rounded-lg border border-secondary px-4 py-2 text-secondary disabled:opacity-50"
-                          >
-                            Abrir novamente
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled={enviando}
-                          onClick={() => enviarUm(fila.lista[fila.indice])}
-                          className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
-                        >
-                          {enviando ? 'Registrando...' : 'Próximo lembrete'}
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        disabled={enviando}
+                        onClick={() => enviarUm(fila.lista[fila.indice])}
+                        className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50"
+                      >
+                        {enviando ? 'Registrando...' : 'Próximo lembrete'}
+                      </button>
 
                       <button
                         type="button"
                         disabled={enviando}
                         onClick={() => {
-                          setAberturaPendente(null);
                           setAviso('');
 
                           setFila((atual) =>
